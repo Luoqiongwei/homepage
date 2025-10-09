@@ -36,13 +36,14 @@ jobs:
       - name: Build Astro
         run: npm run build
 
+      - name: Remove symlinks from dist
+        run: find ./dist -type l -exec rm {} +
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
           path: ./dist
-
-
 
   deploy:
     environment:
