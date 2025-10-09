@@ -10864,3 +10864,8 @@ body, .container, .row {
   .site-heading .subheading { font-size: 0.95rem; }
   .masthead { min-height: 55vh; padding: 3rem 0; }
 }
+
+body {
+  font-size: 1.25rem;
+  line-height: 1.7;
+}

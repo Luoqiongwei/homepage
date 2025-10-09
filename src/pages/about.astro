@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroHeader from "../components/HeroHeader.astro";
+
+const BASE = import.meta.env.BASE_URL || '/';
+const bg = `${BASE}assets/img/about-bg.jpg`;
+---
+<BaseLayout title="洛穹偎的一家言 - 关于" description="百合爱好者的随笔">
+  <HeroHeader
+    title="About Me"
+    subtitle="I know nothing except the fact of my ignorance."
+    background={bg}
+  />
+
+  <main class="mb-4">
+    <div class="container px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <span class="caption text-muted">头图由豆包生成，有修改</span>
+
+          <p>你好，欢迎你的到来，我是洛穹偎。</p>
+
+          <p>这里是一个用来安放我的热爱与思考的角落。我将这里视为展示我的理性与感性的交汇的地点。</p>
+
+          <p>一边，是我的思想的骨架。</p>
+
+          <p>我的思维常常沉浸于应用数学、统计学、计算机科学、计量经济学和运筹学构成的知识之海。在这里，世界被简化为优雅的模型与算法，我可以通过理想化的透镜，去窥探更复杂、更多变的世界。我追求逻辑的自洽、数据的印证与效率的最优解。</p>
+
+          <p>另一边，是我的幻想的灵魂。</p>
+
+          <p>我会自公式和代码中隐遁到VOCALOID或者说更大的电子音乐的世界，从初音未来的未来感旋律到洛天依的韵味，从重音Teto的活力到星尘的空灵，都让我感受到电子音乐与人声合成的无限可能。我对音乐史、音乐理论与电子音色有持续的兴趣。</p>
+
+          <p>同样的，在虚构的叙事里，我尤其喜爱那些细腻的情感图谱。我钟情于百合题材的番剧——无论是轻百合中那如清风拂面般的温馨日常，还是真百合里深沉的情感羁绊。我喜爱那些幻梦中最柔软、最真挚的微光。</p>
+
+          <p>那么，也可以据此猜测我的游戏品味。我喜爱逻辑编程解谜游戏，以及在肉鸽、经营类游戏中寻找“更优解”，当然，我也十分喜爱音游。</p>
+
+          <p>那么，我想在这里与你分享：</p>
+
+          <p>我对音乐的品味，科学与哲学的思辨，对某款游戏的鉴赏，对番剧的体会和热忱。此外，也可能摘选我的游记，我对某本书的读后感，抑或是更广泛的一些思考。</p>
+
+          <p>感谢你阅读到这里。希望在这个思维交汇的十字路口，你能找到一些引发共鸣的碎片。期待通过任何方式与你相遇，一起聊聊你或我热爱的一切。</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

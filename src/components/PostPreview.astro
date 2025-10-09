@@ -8,3 +8,11 @@ const { href, title, subtitle, meta } = Astro.props;
   {meta && <p class="post-meta">{meta}</p>}
 </div>
 <hr class="my-4" />
+
+<style>
+  /* 🔹 调整副标题字体稍大一点，并保持柔和的行距 */
+  .post-subtitle {
+    font-size: 1.25rem; /* 默认大约是1rem */
+    line-height: 1.6;
+  }
+</style>

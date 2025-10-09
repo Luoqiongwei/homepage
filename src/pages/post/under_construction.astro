@@ -1,0 +1,310 @@
+
+
+
+
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="施工中" description="洛穹偎的一家言 - 页面建设中">
+  <style>
+
+    /* 使用 :global 确保这些类在全局生效（脚本动态生成的元素也能被样式影响） */
+    :global(body) {
+      font-family: "Lora", serif;
+      background-color: #0d0f17;
+      color: #ddd;
+      padding-top: 70px;
+      text-align: center;
+    }
+    :global(h1) { color: #aaf; }
+
+    :global(#tape) {
+      display: flex;
+      justify-content: center;
+      margin: 1em auto;
+      gap: 4px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+    }
+    :global(.cell) {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: #1b1b1b;
+      color: #ccc;
+      font-family: monospace;
+      font-size: 1.05rem;
+    }
+    :global(.cell.head) {
+      background: #5a73ff;
+      color: #fff;
+    }
+
+    :global(textarea), :global(input), :global(select), :global(button) {
+      margin: 0.3em;
+      padding: 0.4em;
+      background: #0c0e14;
+      color: #ddd;
+      border: 1px solid #2f3642;
+      border-radius: 5px;
+    }
+    :global(button) { cursor: pointer; }
+
+    :global(.intro) {
+      max-width: 700px;
+      margin: 1.5em auto;
+      line-height: 1.6;
+      color: #bbb;
+    }
+    :global(footer) {
+      margin-top: 2em;
+      opacity: 0.7;
+    }
+    /* 保持 pre 的基础样式（和原页一致） */
+    :global(pre.example) {
+      background: rgba(255,255,255,0.02);
+      padding: 12px;
+      border-radius: 6px;
+      color: #ddd;
+      overflow:auto;
+      text-align:left;
+      max-width: 900px;
+      margin: 0.6em auto;
+    }
+  </style>
+
+  <main>
+    <!-- 与原始 HTML 一致的内容结构 -->
+    <section class="intro">
+      <p><strong>恭喜你闯入了这个神秘的页面。</strong><br />
+      这里原本是为尚未完成的内容准备的占位页。但我想，既然你已经来了，不妨玩一玩这个小游戏：<br />
+      这是一个最简单的图灵机模拟器。</p>
+    </section>
+
+    <p>编写转移规则，初始化带并运行图灵机。<br />
+    （建议使用 <strong>B</strong> 表示空格，也支持 <strong>_</strong> 或 <strong>□</strong>；状态名可用 <code>q0</code>、<code>q1</code> 或 <code>e</code> 等。）</p>
+
+    <div style="max-width:900px;margin:0 auto;">
+      <div class="controls">
+        <!-- 恢复原来的 textarea 默认内容（示例规则） -->
+        <textarea id="rules" rows="8" cols="48" placeholder="在此输入规则，每行一条，格式：q0 1 -> q1 2 L">q0 1 -> q1 2 L
+q1 1 -> q1 0 L
+q1 0 -> q1 1 L
+q1 B -> q2 B R
+q2 0 -> q2 0 R
+q2 1 -> q2 1 R
+q2 2 -> q3 0 R
+q3 0 -> q3 1 R
+q3 1 -> q3 0 R
+q3 B -> e B L</textarea>
+
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <label style="font-size:0.9rem">初始带（只写带中间的内容）</label>
+          <input id="tapeInput" type="text" value="1001001" placeholder="例如：1001001" style="width:220px;">
+          <label style="font-size:0.9rem">读写头位置</label>
+          <select id="headPos" style="width:200px;">
+            <option value="start">start（左端）</option>
+            <option value="center" selected>center（中间）</option>
+            <option value="end">end（右端）</option>
+          </select>
+
+          <div style="display:flex;flex-direction:row;gap:6px;margin-top:8px;">
+            <button onclick="initMachine()">初始化</button>
+            <button onclick="step()">执行一步</button>
+            <button onclick="run()">自动运行</button>
+            <button onclick="stopRun()">停止</button>
+          </div>
+
+          <small class="hint">提示：建议使用 <strong>B</strong> 代表空白，或用 <strong>_</strong>、<strong>□</strong>。状态 <strong>e</strong> 常用于终止（halt）。</small>
+        </div>
+      </div>
+
+      <p class="info">当前状态：<strong id="state">q0</strong> &nbsp; | &nbsp; 读头索引：<span id="headIndex">-</span></p>
+
+      <!-- 这是带子容器（脚本会在此处渲染方格） -->
+      <div id="tape" aria-live="polite" role="region"></div>
+
+      <hr style="margin:1.2em 0; border-color:#333;">
+      <h3>练习（示例题）</h3>
+      <p>我们从一个带中某个位置的 <code>1</code> 开始（请保证你的初始带和带头位置满足这一点，否则示例程序无法运行），将队列中的1变为0，0变为1，最后停止在初始01串的最右端。示例程序做的是先扫描到最左端再返回，并向右直到最右端，进入终止状态。</p>
+
+      <pre class="example">
+q0 1 -> q1 2 L
+q1 1 -> q1 0 L
+q1 0 -> q1 1 L
+q1 B -> q2 B R
+q2 0 -> q2 0 R
+q2 1 -> q2 1 R
+q2 2 -> q3 0 R
+q3 0 -> q3 1 R
+q3 1 -> q3 0 R
+q3 B -> e B L
+      </pre>
+    </div>
+
+    <!-- 完整保留你的原始脚本逻辑，is:inline 防止 Astro 打包改动 -->
+    <script is:inline>
+      let tape = [], head = 0, state = 'q0', rules = {}, running = false;
+
+      function initMachine() {
+          // 读取并解析规则
+          const raw = document.getElementById('rules').value || '';
+          const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length>0);
+          rules = {};
+          for (let line of lines) {
+              // 统一替换一些可选空白符表示法：全角下划线 -> 半角，下划线、方框或 B 视为空白
+              line = line.replace(/＿/g, "_").replace(/□/g, "B").trim();
+              // 规则格式： <state> <symbol> -> <newState> <newSymbol> <L|R>
+              // state/newState: 字母数字下划线组合 (\w+), symbol/newSymbol: 单字符非空白 (\S)
+              const m = line.match(/^(\w+)\s+(\S)\s*->\s*(\w+)\s+(\S)\s+([LR])$/);
+              if (!m) {
+                  console.warn('无法解析规则行：', line);
+                  continue;
+              }
+              let [, q, sym, nq, nsym, dir] = m;
+              // 把 B 映射为内部空白符号 '_'，其余符号保持原样
+              sym = (sym === 'B') ? '_' : (sym === '_' ? '_' : sym);
+              nsym = (nsym === 'B') ? '_' : (nsym === '_' ? '_' : nsym);
+              rules[q + sym] = { nq, nsym, dir };
+          }
+
+          // 初始化带（默认长度充分，居中填入输入）
+          const userInput = (document.getElementById('tapeInput').value || '').trim().split('');
+          const baseLen = Math.max(41, userInput.length + 21);
+          tape = new Array(baseLen).fill('_');
+          const startIndex = Math.floor(baseLen/2) - Math.floor(userInput.length/2);
+          for (let i = 0; i < userInput.length; i++) {
+              const ch = userInput[i];
+              tape[startIndex + i] = (ch === 'B' || ch === '□') ? '_' : ch;
+          }
+
+          // 读写头位置选择：start/center/end
+          const headPos = document.getElementById('headPos').value;
+          if (headPos === 'start') head = startIndex;
+          else if (headPos === 'end') head = startIndex + Math.max(0, userInput.length - 1);
+          else head = startIndex + Math.floor(userInput.length/2);
+
+          state = 'q0';
+          running = false;
+          renderTape();
+      }
+
+      function renderTape() {
+          const tapeDiv = document.getElementById('tape');
+          tapeDiv.innerHTML = '';
+          // 显示窗口：尽量中心化在 head 左右若干格
+          const windowSize = 21;
+          let start = head - Math.floor(windowSize/2);
+          if (start < 0) start = 0;
+          let end = start + windowSize;
+          if (end > tape.length) end = tape.length;
+          for (let i = start; i < end; i++) {
+              const c = document.createElement('div');
+              c.className = 'cell' + (i === head ? ' head' : '');
+              c.textContent = tape[i] === '_' ? '_' : tape[i];
+              tapeDiv.appendChild(c);
+          }
+          document.getElementById('state').textContent = state;
+          document.getElementById('headIndex').textContent = head;
+      }
+
+      function ensureTapeBounds() {
+          // 扩展左侧
+          while (head < 0) {
+              tape.unshift('_');
+              head++; // unshift 会把当前位置右移一位
+          }
+          // 扩展右侧
+          while (head >= tape.length) {
+              tape.push('_');
+          }
+      }
+
+      function step() {
+          const sym = tape[head];
+          const key = state + sym;
+          const rule = rules[key];
+          if (!rule) {
+              running = false;
+              if (state === 'e') {
+                  alert('机器已进入终止状态 e，程序停止。');
+              } else {
+                  alert('无匹配规则，程序停止。（当前状态：' + state + '，读到符号：' + sym + '）');
+              }
+              return;
+          }
+          // 执行写、移、转
+          tape[head] = rule.nsym;
+          if (rule.dir === 'R') head++; else head--;
+          state = rule.nq;
+          ensureTapeBounds();
+          renderTape();
+
+          // 如果进入显式终止状态（如 e），停止运行
+          if (state === 'e') {
+              running = false;
+              alert('已进入终止状态 e，程序停止。');
+          }
+      }
+
+      function run() {
+          if (running) return;
+          running = true;
+          function tick() {
+              if (!running) return;
+              const sym = tape[head];
+              const key = state + sym;
+              const rule = rules[key];
+              if (!rule) {
+                  running = false;
+                  if (state === 'e') {
+                      alert('机器已进入终止状态 e，程序停止。');
+                  } else {
+                      alert('无匹配规则，程序停止。（当前状态：' + state + '，读到符号：' + sym + '）');
+                  }
+                  return;
+              }
+              tape[head] = rule.nsym;
+              if (rule.dir === 'R') head++; else head--;
+              state = rule.nq;
+              ensureTapeBounds();
+              renderTape();
+              if (state === 'e') {
+                  running = false;
+                  alert('已进入终止状态 e，程序停止。');
+                  return;
+              }
+              setTimeout(tick, 250);
+          }
+          tick();
+      }
+
+      function stopRun() {
+          running = false;
+      }
+
+      // 页面加载时先初始化一次（保证页面一打开就能看到完整方格并填入默认带）
+      window.addEventListener('DOMContentLoaded', () => {
+        // 先确保初始带数组存在（用于 renderTape）
+        const defaultBaseLen = 41;
+        tape = new Array(defaultBaseLen).fill('_');
+        head = Math.floor(defaultBaseLen / 2);
+        renderTape();
+        // 然后再初始化（会读取 textarea 的默认规则与 input 的默认值）
+        initMachine();
+      });
+    </script>
+
+    <hr style="margin:1.2em 0; border-color:#333;">
+    <footer>
+      <p>© 2025 洛穹偎 | Powered by GitHub Pages</p>
+    </footer>
+  </main>
+</BaseLayout>
+
