@@ -2,24 +2,19 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CategoryNav from "../components/CategoryNav.astro";
 import PostPreview from "../components/PostPreview.astro";
+import HeroHeader from "../components/HeroHeader.astro";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
 
-<BaseLayout title="洛穹偎的一家言 - 文章目录" description="洛穹偎的文章目录">
-  <header class="masthead" style="background-image: url('/assets/img/articles-bg.jpg')">
-    <div class="container position-relative px-4 px-lg-5">
-      <div class="row gx-4 gx-lg-5 justify-content-center">
-        <div class="col-md-10 col-lg-8 col-xl-7">
-          <div class="post-heading">
-            <h1>目录</h1>
-            <h2 class="subheading">星屑簿</h2>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+<BaseLayout title="洛穹偎的一家言 - 文章目录" description="我的文章目录">
 
+  <HeroHeader
+    title="文章目录"
+    subtitle="星屑簿"
+    background=`${BASE}assets/img/articles-bg.jpg`
+  />
+  
   <CategoryNav />
 
   <div class="container px-4 px-lg-5">
