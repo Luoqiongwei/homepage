@@ -1,18 +1,37 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroHeader from "../components/HeroHeader.astro";
+import PostPreview from "../components/PostPreview.astro";
+import Pager from "../components/Pager.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-		<p>Welcome to my new Astro project.</p>
-	<p>Let's build something amazing!</p>
-	</body>
-</html>
+<BaseLayout title="洛穹偎的一家言 - 个人主页">
+  <HeroHeader
+    title="洛穹偎的一家言"
+    subtitle="一个百合爱好者的随笔"
+    background="/assets/img/home-bg.jpg"
+  />
+
+  <main class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+
+        <PostPreview
+          href="/post/fall_of_a_city.html"
+          title="一座城之死"
+          subtitle="微尘另册 1.2"
+          meta="Posted on July 08, 2025, uploaded on October 07, 2025"
+        />
+
+        <PostPreview
+          href="/post/BOCCHI_THE_ROCK!.html"
+          title="《孤独摇滚》：孤独的心"
+          subtitle="但是有你在，或许就不孤独？"
+          meta="Posted on February 15, 2025, uploaded on October 08, 2025"
+        />
+
+        <Pager href="/articles" text="Older Posts →" />
+      </div>
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,10 @@
+---
+const { href, title, subtitle, meta } = Astro.props;
+---
+
+<div class="post-preview">
+  <a href={href}><h3 class="post-title">{title}</h3></a>
+  {subtitle && <p class="post-subtitle">{subtitle}</p>}
+  {meta && <p class="post-meta">{meta}</p>}
+</div>
+<hr class="my-4" />

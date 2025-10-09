@@ -1,7 +1,4 @@
-
-````markdown
-
-```text
+```
 /
 ├── public/
 │   ├── assets/
@@ -12,5 +9,3 @@
     ├── layouts/
     └── pages/
 ```
-
-````
