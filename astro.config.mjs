@@ -1,8 +1,8 @@
-// @ts-check
+// https://astro.build/config
 import { defineConfig } from 'astro/config';
 
-// https://astro.build/config
 export default defineConfig({
-  site: 'https://luoqiongwei.github.io/homepage',
-  base: '/homepage/',
+  outDir: './dist', 
+  site: 'https://luoqiongwei.github.io/homepage', 
+  base: '/homepage/', 
 });
