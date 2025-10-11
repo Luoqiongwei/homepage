@@ -10796,10 +10796,10 @@ header.masthead .post-heading .meta a {
 
 
 /* ===== 强制基础排版（恢复大小） ===== */
-html { font-size: 16px; }               /* 1rem = 18px */
+html { font-size: 16px; }               /* 1rem = 16px */
 body {
   font-family: "Open Sans", "Lora", serif;
-  font-size: 1.3rem;                      /* 24px */
+  font-size: 1.3rem;                      /* 20.8px */
   line-height: 1.6;
   color: #222;
 }
