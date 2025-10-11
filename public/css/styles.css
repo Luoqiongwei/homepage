@@ -10861,3 +10861,24 @@ body, .container, .row {
   .site-heading .subheading { font-size: 0.95rem; }
   .masthead { min-height: 55vh; padding: 3rem 0; }
 }
+
+.archive-button {
+  display: inline-block;
+  margin: 3rem auto;
+  padding: 0.8rem 1.8rem;
+  border: 2px solid var(--bs-primary);
+  color: var(--bs-primary);
+  background-color: transparent;
+  font-family: "Open Sans", Lora, serif;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.25s ease-in-out;
+}
+
+.archive-button:hover {
+  background-color: var(--bs-primary);
+  color: white;
+  box-shadow: 0 0 8px rgba(0,133,161,0.3);
+  transform: translateY(-2px);
+}
