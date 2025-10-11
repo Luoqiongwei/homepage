@@ -58,7 +58,7 @@
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: Lora, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  --bs-body-font-size: 1rem;
+  --bs-body-font-size: 1.25rem;
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
   --bs-body-color: #212529;
@@ -121,47 +121,47 @@ h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
 }
 
 h1, .h1 {
-  font-size: calc(1.375rem + 1.5vw);
+  font-size: calc(1.625rem + 1.5vw);
 }
 @media (min-width: 1200px) {
   h1, .h1 {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
   }
 }
 
 h2, .h2 {
-  font-size: calc(1.325rem + 0.9vw);
+  font-size: calc(1.575rem + 0.9vw);
 }
 @media (min-width: 1200px) {
   h2, .h2 {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
 }
 
 h3, .h3 {
-  font-size: calc(1.3rem + 0.6vw);
+  font-size: calc(1.55rem + 0.6vw);
 }
 @media (min-width: 1200px) {
   h3, .h3 {
-    font-size: 1.75rem;
+    font-size: 2rem;
   }
 }
 
 h4, .h4 {
-  font-size: calc(1.275rem + 0.3vw);
+  font-size: calc(1.525rem + 0.3vw);
 }
 @media (min-width: 1200px) {
   h4, .h4 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 }
 
 h5, .h5 {
-  font-size: 1.25rem;
+  font-size: 1.50rem;
 }
 
 h6, .h6 {
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
 
 p {
@@ -10546,9 +10546,6 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-body {
-  font-size: 1.25rem;
-}
 
 hr {
   border-color: #dee2e6;
@@ -10863,9 +10860,4 @@ body, .container, .row {
   .site-heading h1 { font-size: 1.8rem; }
   .site-heading .subheading { font-size: 0.95rem; }
   .masthead { min-height: 55vh; padding: 3rem 0; }
-}
-
-body {
-  font-size: 1.25rem;
-  line-height: 1.7;
 }
