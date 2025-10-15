@@ -10882,3 +10882,19 @@ body, .container, .row {
   box-shadow: 0 0 8px rgba(0,133,161,0.3);
   transform: translateY(-2px);
 }
+
+/* 剧透文字（默认被遮盖） */
+.spoiler {
+  background-color: #000;       /* 黑色背景条 */
+  color: transparent;           /* 文字透明 */
+  border-radius: 4px;
+  padding: 0 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* 悬停时显露文字 */
+.spoiler:hover {
+  color: #fff;                  /* 变回白色文字 */
+  background-color: #00000080;  /* 半透明背景 */
+}
