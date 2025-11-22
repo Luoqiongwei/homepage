@@ -1,11 +1,22 @@
 ---
 // NOTE: `caption` may contain HTML. Only pass trusted/sanitized HTML here
 // to avoid XSS. If captions come from user input, sanitize them first.
-const { src, alt = '', caption = '', align = 'center', width = '100%', lightbox = false } = Astro.props;
+// captionIsHtml: when true, caption will be injected as HTML using set:html
+// when false (default), caption is treated as plain text and split into lines
+// by newline or `|` and rendered as multiple lines under the image.
+const { src, alt = '', caption = '', captionIsHtml = false, align = 'center', width = '100%', lightbox = false } = Astro.props;
 
 if (!src) {
   throw new Error('IllustrationEmbed: `src` prop is required');
 }
+
+// Precompute caption lines when caption is plain text.
+const captionLines: string[] = captionIsHtml
+  ? []
+  : caption
+      .split(/\r?\n|\|/)
+      .map((line: string) => line.trim())
+      .filter((line: string) => line.length > 0);
 ---
 
 <figure class={`illustration align-${align}`}>
@@ -17,17 +28,32 @@ if (!src) {
     <img src={src} alt={alt} style={`width: ${width}; max-width: 100%; height: auto;`} loading="lazy" />
   )}
 
-  {caption && <figcaption set:html={caption} />}
+  {caption && (
+    captionIsHtml ? (
+      <figcaption set:html={caption} />
+    ) : (
+      <figcaption>
+        {captionLines.map((line: string) => (
+          <div class="caption-line">{line}</div>
+        ))}
+      </figcaption>
+    )
+  )}
 </figure>
 
 <style>
   .illustration {
+    display: block;
+    width: 100%;
     margin: 1.25rem 0;
     clear: both;
+    text-align: center; /* center inline content as fallback */
   }
 
   /* Flow alignment */
+  /* left/right classes kept for backward compatibility (will not break centering) */
   .align-left {
+    /* if explicit left flow is desired, user can still pass align='left' */
     float: left;
     margin-right: 1rem;
     max-width: 50%;
@@ -39,21 +65,28 @@ if (!src) {
   }
   .align-center {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .illustration img {
     display: block;
+    margin: 0 auto; /* center image horizontally */
     border-radius: 6px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    max-width: 100%;
+    height: auto;
   }
 
   .illustration figcaption {
+    display: block;
+    clear: both; /* ensure caption appears below floated images */
     font-size: 0.9rem;
     color: #6b7280; /* slate-500-ish */
     text-align: center;
     margin-top: 0.5rem;
     line-height: 1.4;
+    width: 100%;
   }
 
   @media (max-width: 700px) {
