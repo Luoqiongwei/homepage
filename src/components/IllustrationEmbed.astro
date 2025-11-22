@@ -1,0 +1,66 @@
+---
+// NOTE: `caption` may contain HTML. Only pass trusted/sanitized HTML here
+// to avoid XSS. If captions come from user input, sanitize them first.
+const { src, alt = '', caption = '', align = 'center', width = '100%', lightbox = false } = Astro.props;
+
+if (!src) {
+  throw new Error('IllustrationEmbed: `src` prop is required');
+}
+---
+
+<figure class={`illustration align-${align}`}>
+  {lightbox ? (
+    <a href={src} target="_blank" rel="noopener noreferrer">
+      <img src={src} alt={alt} style={`width: ${width}; max-width: 100%; height: auto;`} loading="lazy" />
+    </a>
+  ) : (
+    <img src={src} alt={alt} style={`width: ${width}; max-width: 100%; height: auto;`} loading="lazy" />
+  )}
+
+  {caption && <figcaption set:html={caption} />}
+</figure>
+
+<style>
+  .illustration {
+    margin: 1.25rem 0;
+    clear: both;
+  }
+
+  /* Flow alignment */
+  .align-left {
+    float: left;
+    margin-right: 1rem;
+    max-width: 50%;
+  }
+  .align-right {
+    float: right;
+    margin-left: 1rem;
+    max-width: 50%;
+  }
+  .align-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  .illustration img {
+    display: block;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  .illustration figcaption {
+    font-size: 0.9rem;
+    color: #6b7280; /* slate-500-ish */
+    text-align: center;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 700px) {
+    .align-left, .align-right {
+      float: none;
+      max-width: 100%;
+      margin: 0.5rem 0;
+    }
+  }
+</style>
