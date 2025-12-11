@@ -102,7 +102,7 @@ import IllustrationEmbed from '../../components/IllustrationEmbed.astro';
 3) 暗色模式说明：
 
 - 在页面右上角的导航栏有主题切换按钮，会将偏好保存到 `localStorage`（key=`theme-preference`）。
-- 暗色主题的变量定义位于 `src/components/Navbar.astro` 的 `:global(html.theme-dark)` 块；亮色变量在 `public/css/styles.css` 的 `:root` 中。
+- 暗色主题的变量定义位于`public/css/styles.css`较靠后的位置 ；亮色变量在 `public/css/styles.css` 的 `:root` 中。
 
 
 ## 部署

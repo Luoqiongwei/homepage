@@ -3,11 +3,9 @@ const { src, title = "Embedded Video" } = Astro.props;
 
 let finalSrc = src;
 if (src.includes("player.bilibili.com")) {
-  // 如果链接中没有 ? ，说明还没参数
   if (!src.includes("?")) {
     finalSrc = `${src}?autoplay=0&muted=1&danmaku=0`;
   } else {
-    // 否则添加 & 开头的参数
     finalSrc = `${src}&autoplay=0&muted=1&danmaku=0`;
   }
 }
