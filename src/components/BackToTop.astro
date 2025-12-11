@@ -1,4 +1,9 @@
-<div id="back-to-top">∧</div>
+---
+---
+
+<div id="back-to-top">
+  <span class="arrow-up"></span>
+</div>
 
 <style>
 #back-to-top {
@@ -7,18 +12,21 @@
   right: 40px;
   width: 48px;
   height: 48px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
-  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: 0;              /* 初始隐藏 */
-  pointer-events: none;     /* 隐藏时不可点击 */
-  transition: opacity 0.3s ease;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+
+  box-shadow:
+    0 0 6px rgba(120, 160, 255, 0.25),
+    0 0 12px rgba(120, 160, 255, 0.15);
   z-index: 999;
 }
 
@@ -28,7 +36,21 @@
 }
 
 #back-to-top:hover {
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow:
+    0 0 10px rgba(150, 180, 255, 0.35),
+    0 0 18px rgba(150, 180, 255, 0.25);
+}
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 12px solid white;
+
+  /* 让箭头更柔和一点 */
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
 }
 </style>
 
@@ -36,12 +58,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("back-to-top");
 
-  // 滚动超过 400px 按钮出现
   window.addEventListener("scroll", () => {
     btn.classList.toggle("show", window.scrollY > 400);
   });
 
-  // 平滑返回顶部
   btn.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
