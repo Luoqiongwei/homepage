@@ -1,31 +1,8 @@
 ---
-import Navbar from "../components/Navbar.astro";
-import Footer from "../components/Footer.astro";
-
-const BASE = import.meta.env.BASE_URL || '/';
-const { title = "洛穹偎的一家言", description = "番剧、电子音乐与理性思考爱好者的随笔" } = Astro.props;
+import BaseLayout from "./BaseLayout.astro";
+const props = Astro.props;
 ---
-
-<html lang="zh-CN">
-  <head>
-    <meta name="msvalidate.01" content="532F252DDB89967ED2E197E9ACF230F5" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content={description} />
-    <meta name="author" content="洛穹偎" />
-    <title>{title}</title>
-    <link rel="icon" type="image/x-icon" href={`${BASE}assets/favicon.ico`} />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" />
-    <link href={`${BASE}css/styles.css`} rel="stylesheet" />
-  </head>
-
-  <body>
-    <Navbar />
-    <slot />  <!-- 页面内容插入点 -->
-    <Footer />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src={`${BASE}js/scripts.js`} is:inline></script>
-  </body>
-</html>
+<BaseLayout {...props}>
+  <meta slot="head" name="msvalidate.01" content="532F252DDB89967ED2E197E9ACF230F5" />
+  <slot /> 
+</BaseLayout>

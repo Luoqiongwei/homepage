@@ -1,0 +1,49 @@
+<div id="back-to-top">∧</div>
+
+<style>
+#back-to-top {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;              /* 初始隐藏 */
+  pointer-events: none;     /* 隐藏时不可点击 */
+  transition: opacity 0.3s ease;
+  z-index: 999;
+}
+
+#back-to-top.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#back-to-top:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+</style>
+
+<script is:inline>
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("back-to-top");
+
+  // 滚动超过 400px 按钮出现
+  window.addEventListener("scroll", () => {
+    btn.classList.toggle("show", window.scrollY > 400);
+  });
+
+  // 平滑返回顶部
+  btn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+</script>
