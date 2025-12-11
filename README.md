@@ -117,7 +117,17 @@ import IllustrationEmbed from '../../components/IllustrationEmbed.astro';
 
 ## 许可
 
-MIT License
+### Code License
+本项目的所有代码（包括 /src, /public 中的脚本、组件、样式等）均采用 MIT License 授权。  
+详见根目录下的 LICENSE 文件。
+
+### Content License
+所有原创文章内容（包括随笔、评论、图像等），除另行注明外，均采用 CC BY-NC 4.0 协议授权。  
+允许非商业转载，但必须注明作者“洛穹偎”及原文链接。  
+不得将内容用于任何商业用途。
+
+协议全文：
+https://creativecommons.org/licenses/by-nc/4.0/
 
 ---
 
