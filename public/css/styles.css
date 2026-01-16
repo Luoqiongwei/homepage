@@ -10893,13 +10893,21 @@ body, .container, .row {
   cursor: pointer;
 }
 
+.spoiler a {
+  color: transparent !important;  /* 强制链接文字透明 */
+  text-decoration: none;          /* 去掉下划线 */
+}
+
 /* 悬停时显露文字 */
 .spoiler:hover {
   color: #fff;                  /* 变回白色文字 */
   background-color: #00000080;  /* 半透明背景 */
 }
 
-
+.spoiler:hover a {
+  color: inherit !important;      /* 继承父级的白色 */
+  text-decoration: underline;     /* 可选：恢复下划线 */
+}
 
   /* Theme toggle button */
   .theme-toggle {

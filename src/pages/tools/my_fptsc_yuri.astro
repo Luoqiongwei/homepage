@@ -1,0 +1,69 @@
+---
+import StylizedLayout from "../../layouts/StylizedLayout.astro";
+
+const BASE = import.meta.env.BASE_URL || '/';
+---
+
+<StylizedLayout
+  title="洛穹偎的一家言 - 我的百合从夯到拉"
+  description="从夯到拉，来排榜！"
+  style={["from-pounding.css"]}
+>
+    
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <br><br><br>
+        <h2>我看过的...从夯到拉</h2>
+        <table id="1">
+            <tr>   
+                <th class="base-block first-block">夯</th>
+                <td class="data-block drop-zone" data-level="1">
+                    <img src={`${BASE}assets/img/bangumi/明天，美食广场见。.jpg`} alt="图片1">
+                    <img src={`${BASE}assets/img/bangumi/赛马娘 Pretty Derby 第二季.jpg`} alt="图片2">
+                    <img src={`${BASE}assets/img/bangumi/少女终末旅行.jpg`} alt="图片3">
+                    <img src={`${BASE}assets/img/bangumi/GIRLS BAND CRY.jpg`} alt="图片4">
+                </td>
+            </tr>
+            <tr>
+                <th class="base-block second-block">顶尖</th>
+                <td class="data-block drop-zone" data-level="2">
+                    <img src={`${BASE}assets/img/bangumi/孤独摇滚！.jpg`} alt="图片1">
+                    <img src={`${BASE}assets/img/bangumi/琉璃的宝石.jpg`} alt="图片2">
+                    <img src={`${BASE}assets/img/bangumi/我们不可能成为恋人！绝对不行。 (※似乎可行？).jpg`} alt="图片3">
+                    <img src={`${BASE}assets/img/bangumi/牵牛花与加濑同学。.jpg`} alt="图片4">
+                    <img src={`${BASE}assets/img/bangumi/安达与岛村.jpg`} alt="图片5">
+                    <img src={`${BASE}assets/img/bangumi/终将成为你.jpg`} alt="图片6">
+                    <img src={`${BASE}assets/img/bangumi/小林家的龙女仆.jpg`} alt="图片7">
+                    <img src={`${BASE}assets/img/bangumi/请问您今天要来点兔子吗？.jpg`} alt="图片8">
+                    <img src={`${BASE}assets/img/bangumi/BanG Dream!.jpg`} alt="图片9">
+                </td>
+            </tr>
+            <tr>
+                <th class="base-block third-block">人上人</th>
+                <td class="data-block drop-zone" data-level="3">
+
+                    <img src={`${BASE}assets/img/bangumi/梦想成为魔法少女.jpg`} alt="图片1">
+                    <img src={`${BASE}assets/img/bangumi/赛马娘 Pretty Derby.jpg`} alt="图片2">
+                    <img src={`${BASE}assets/img/bangumi/BanG Dream! It's MyGO!!!!!.jpg`} alt="图片3">
+                </td>
+            </tr>
+            <tr>
+                <th class="base-block fourth-block">NPC</th>
+                <td class="data-block drop-zone" data-level="4">
+                    <img src={`${BASE}assets/img/bangumi/BanG Dream! Ave Mujica.jpg`} alt="图片1">
+                </td>
+            </tr>
+            <tr>
+                <th class="base-block fifth-block">拉完了</th>
+                <td class="data-block drop-zone" data-level="5">
+                    <img src={`${BASE}assets/img/bangumi/神椿市建设中。.jpg`} alt="图片1">
+                </td>
+            </tr>
+        </table>
+
+
+    </div>
+
+<p>也想创作你的从夯到拉？前往<a href="../from-pounding-to-sharp-criticism/">创作页面</a></p>
+
+</StylizedLayout>
