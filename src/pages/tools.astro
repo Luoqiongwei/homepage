@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroHeader from "../components/HeroHeader.astro";
+
+const BASE = import.meta.env.BASE_URL || '/';
+---
+
+<BaseLayout
+  title="洛穹偎的一家言 - 工具与实验"
+  description="一些尚未完全成型的实验与工具。"
+>
+
+  <div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+
+        <section class="tool-section">
+          <br><br><br><br><br>
+          <h1 style="text-align:center;">工具 · 实验</h1>
+          <br><br>
+          <h2 class="mb-3">关于这个页面</h2>
+          <p>
+            这里收集的是一些可能是工具、实验、半成品，或者只是一个尚未想清楚用途的想法。
+          </p>
+        </section>
+
+        <hr class="my-5" />
+
+        <section class="tool-section">
+          <h2 class="mb-4">已上线的实验</h2>
+
+          <div class="tool-item">
+            <h3 class="mb-2">从夯到拉</h3>
+            <p class="tool-meta">
+              类型：交互式工具 · 前端实验
+            </p>
+            <a
+              class="btn btn-outline-primary btn-sm"
+              href={`${BASE}tools/from-pounding-to-sharp-criticism/`}
+            >
+              进入实验 →
+            </a>
+          </div>
+
+        </section>
+
+        <hr class="my-5" />
+
+        <section class="tool-section">
+          <h2 class="mb-3">进行中的想法</h2>
+          <ul>
+            <li>与文章内容联动的小工具</li>
+            <li>图灵完备？</li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.tool-section {
+  margin-bottom: 3rem;
+}
+
+.tool-item {
+  margin-bottom: 2rem;
+}
+
+.tool-desc {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.tool-meta {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 0.75rem;
+}
+</style>

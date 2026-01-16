@@ -1,0 +1,549 @@
+---
+import StylizedLayout from "../../layouts/StylizedLayout.astro";
+
+const BASE = import.meta.env.BASE_URL || '/';
+---
+
+<StylizedLayout
+  title="洛穹偎的一家言 - 从夯到拉"
+  description="一个用于对图像进行拖拽分类的交互式页面。"
+  style={["from-pounding.css"]}
+>
+    <!-- 工具栏切换按钮 -->
+    <button class="sidebar-toggle" id="sidebarToggle">⚙️</button>
+    
+    <!-- 右侧工具栏 -->
+    <div class="sidebar" id="sidebar">
+
+        <div class="tool-section">
+            <h3>📝 更改标题</h3>
+            <input type="text" id="titleInput" placeholder="输入新标题">
+            <button id="changeTitleBtn">更改标题</button>
+        </div>
+        
+        <div class="tool-section">
+            <h3>🖼️ 上传图片</h3>
+            <button id="uploadBtn">选择图片</button>
+            <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
+        </div>        
+        <p>主包没有做同一层次下的左右顺序排列，只能按默认顺序排，抱歉喵</p>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <br><br><br>
+        <h2>从夯到拉锐评……</h2>
+        <table id="1">
+            <tr>   
+                <th class="base-block first-block">夯</th>
+                <td class="data-block drop-zone" data-level="1"></td>
+            </tr>
+            <tr>
+                <th class="base-block second-block">顶尖</th>
+                <td class="data-block drop-zone" data-level="2"></td>
+            </tr>
+            <tr>
+                <th class="base-block third-block">人上人</th>
+                <td class="data-block drop-zone" data-level="3"></td>
+            </tr>
+            <tr>
+                <th class="base-block fourth-block">NPC</th>
+                <td class="data-block drop-zone" data-level="4"></td>
+            </tr>
+            <tr>
+                <th class="base-block fifth-block">拉完了</th>
+                <td class="data-block drop-zone" data-level="5"></td>
+            </tr>
+        </table>
+
+        <div class="waiting-area" id="waitingArea">
+            <h3>⏳ 等待区 - 拖拽图片到上方表格完成分类</h3>
+            <div id="imagePreview"></div>
+        </div>
+    </div>
+
+<script is:inline>
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const changeTitleBtn = document.getElementById('changeTitleBtn');
+    const titleInput = document.getElementById('titleInput');
+    const titleH2 = document.querySelector('h2');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    // 全局变量
+    let imageCount = 0;
+    let waitingArea = document.getElementById('waitingArea');
+    let dropZones = document.querySelectorAll('.drop-zone');
+    let imagesInWaiting = new Set(); // 跟踪等待区中的图片
+    let imagesInTable = new Set(); // 跟踪已分类的图片
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // 工具栏切换功能
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        sidebarToggle.classList.remove('auto-hidden');
+    });
+    
+    // 移动端触摸支持
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSidebarOpen = false;
+    
+    // 触摸开始
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    // 触摸结束 - 处理侧滑手势
+    document.addEventListener('touchend', (e) => {
+        if (!e.changedTouches[0]) return;
+        
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        
+        // 检测右滑手势（从屏幕右边缘开始）
+        if (touchStartX > window.innerWidth - 50 && deltaX < -50 && Math.abs(deltaY) < 100) {
+            sidebar.classList.remove('hidden');
+            isSidebarOpen = true;
+        }
+        // 检测左滑手势关闭侧边栏
+        else if (isSidebarOpen && deltaX < -50 && Math.abs(deltaY) < 100) {
+            sidebar.classList.add('hidden');
+            isSidebarOpen = false;
+        }
+    }, { passive: true });
+    
+    // 监听侧边栏状态变化
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                isSidebarOpen = !sidebar.classList.contains('hidden');
+            }
+        });
+    });
+    observer.observe(sidebar, { attributes: true });
+
+    themeToggle.addEventListener('change', () => {
+        applyTheme(themeToggle.checked ? 'dark' : 'light');
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        } else if (prefersDark.matches) {
+            applyTheme('dark');
+        } else {
+            applyTheme('light');
+        }
+    });
+
+    const handleSystemThemeChange = (event) => {
+        const savedTheme = localStorage.getItem('theme');
+        if (!savedTheme) {
+            applyTheme(event.matches ? 'dark' : 'light');
+        }
+    };
+
+    if (typeof prefersDark.addEventListener === 'function') {
+        prefersDark.addEventListener('change', handleSystemThemeChange);
+    } else if (typeof prefersDark.addListener === 'function') {
+        prefersDark.addListener(handleSystemThemeChange);
+    }
+
+    uploadBtn.addEventListener('click', () => {
+        imageUpload.click();
+    });
+
+    changeTitleBtn.addEventListener('click', () => {
+        if (titleInput.value.trim()) {
+            titleH2.textContent = titleInput.value;
+            titleInput.value = '';
+        }
+    });
+
+    imageUpload.addEventListener('change', (event) => {
+        const files = event.target.files;
+        for (let file of files) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.position = 'relative';
+                    img.addEventListener('mousedown', startDrag);
+                    img.addEventListener('touchstart', startTouchDrag, { passive: false });
+                    img.addEventListener('dragstart', (e) => e.preventDefault()); // 防止默认拖拽
+                    
+                    // 添加到等待区
+                    imagesInWaiting.add(img);
+                    imagePreview.appendChild(img);
+                    imageCount++;
+                    
+                    // 更新等待区排列
+                    updateWaitingArea();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+
+    let draggedElement = null;
+    let offsetX, offsetY;
+    let isDragging = false;
+
+    function startDrag(e) {
+        draggedElement = e.target;
+        const rect = draggedElement.getBoundingClientRect();
+        
+        // 计算相对于鼠标的偏移量
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        
+        // 设置固定定位，相对于视口
+        draggedElement.style.position = 'fixed';
+        draggedElement.style.left = rect.left + 'px';
+        draggedElement.style.top = rect.top + 'px';
+        draggedElement.style.zIndex = '1000';
+        draggedElement.style.pointerEvents = 'none'; // 防止拖拽时触发其他事件
+        draggedElement.classList.add('dragging');
+        isDragging = true;
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function startTouchDrag(e) {
+        if (e.touches.length !== 1) return;
+        draggedElement = e.target;
+        const rect = draggedElement.getBoundingClientRect();
+        
+        // 计算相对于触摸点的偏移量
+        offsetX = e.touches[0].clientX - rect.left;
+        offsetY = e.touches[0].clientY - rect.top;
+        
+        // 设置固定定位，相对于视口
+        draggedElement.style.position = 'fixed';
+        draggedElement.style.left = rect.left + 'px';
+        draggedElement.style.top = rect.top + 'px';
+        draggedElement.style.zIndex = '1000';
+        draggedElement.style.pointerEvents = 'none'; // 防止拖拽时触发其他事件
+        draggedElement.classList.add('dragging');
+        isDragging = true;
+        document.addEventListener('touchmove', touchDrag, { passive: false });
+        document.addEventListener('touchend', stopDrag);
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function drag(e) {
+        if (draggedElement && isDragging) {
+            // 计算相对于视口的位置
+            const newX = e.clientX - offsetX;
+            const newY = e.clientY - offsetY;
+            
+            // 设置绝对定位，相对于视口
+            draggedElement.style.position = 'fixed';
+            draggedElement.style.left = newX + 'px';
+            draggedElement.style.top = newY + 'px';
+            draggedElement.style.zIndex = '1000';
+            
+            // 获取图片中心点
+            const imgRect = draggedElement.getBoundingClientRect();
+            const imgCenterX = imgRect.left + imgRect.width / 2;
+            const imgCenterY = imgRect.top + imgRect.height / 2;
+            
+            // 检查是否在表格区域上方，提供视觉反馈
+            const tableRect = document.querySelector('table').getBoundingClientRect();
+            
+            // 清除所有drop-zone的高亮
+            dropZones.forEach(zone => zone.classList.remove('drag-over'));
+            
+            // 如果在表格区域内，高亮最近的drop-zone
+            if (imgCenterX >= tableRect.left && 
+                imgCenterX <= tableRect.right && 
+                imgCenterY >= tableRect.top && 
+                imgCenterY <= tableRect.bottom) {
+                
+                const closestZone = findClosestDropZoneByCenter(imgCenterX, imgCenterY);
+                if (closestZone) {
+                    closestZone.classList.add('drag-over');
+                }
+            }
+        }
+    }
+
+    function touchDrag(e) {
+        if (draggedElement && isDragging && e.touches.length === 1) {
+            e.preventDefault();
+            
+            // 计算相对于视口的位置
+            const newX = e.touches[0].clientX - offsetX;
+            const newY = e.touches[0].clientY - offsetY;
+            
+            // 设置绝对定位，相对于视口
+            draggedElement.style.position = 'fixed';
+            draggedElement.style.left = newX + 'px';
+            draggedElement.style.top = newY + 'px';
+            draggedElement.style.zIndex = '1000';
+        }
+    }
+
+    function stopDrag() {
+        if (draggedElement) {
+            draggedElement.style.zIndex = '1';
+            draggedElement.style.pointerEvents = 'auto'; // 恢复事件处理
+            draggedElement.classList.remove('dragging');
+            
+            // 清除所有drop-zone的高亮
+            dropZones.forEach(zone => zone.classList.remove('drag-over'));
+            
+            // 获取图片中心点
+            const imgRect = draggedElement.getBoundingClientRect();
+            const imgCenterX = imgRect.left + imgRect.width / 2;
+            const imgCenterY = imgRect.top + imgRect.height / 2;
+            
+            // 检查是否在表格区域内
+            const tableRect = document.querySelector('table').getBoundingClientRect();
+            if (imgCenterX >= tableRect.left && 
+                imgCenterX <= tableRect.right && 
+                imgCenterY >= tableRect.top && 
+                imgCenterY <= tableRect.bottom) {
+                
+                // 找到最近的drop-zone
+                const closestDropZone = findClosestDropZoneByCenter(imgCenterX, imgCenterY);
+                if (closestDropZone) {
+                    // 如果图片已经在表格中，检查是否移动到不同的drop-zone
+                    const currentDropZone = draggedElement.closest('.drop-zone');
+                    if (currentDropZone && currentDropZone !== closestDropZone) {
+                        // 移动到不同的drop-zone
+                        moveImageToTable(draggedElement, closestDropZone);
+                    } else if (!currentDropZone) {
+                        // 从等待区移动到表格
+                        moveImageToTable(draggedElement, closestDropZone);
+                    } else {
+                        // 回到原位置
+                        resetImagePosition(draggedElement);
+                    }
+                } else {
+                    // 回到原位置
+                    resetImagePosition(draggedElement);
+                }
+            } else {
+                // 检查是否拖拽到等待区
+                const waitingRect = waitingArea.getBoundingClientRect();
+                if (imgCenterX >= waitingRect.left && 
+                    imgCenterX <= waitingRect.right && 
+                    imgCenterY >= waitingRect.top && 
+                    imgCenterY <= waitingRect.bottom) {
+                    // 移动到等待区
+                    moveImageToWaiting(draggedElement);
+                } else {
+                    // 如果拖拽到无效区域，回到原位置
+                    resetImagePosition(draggedElement);
+                }
+            }
+            
+            draggedElement = null;
+        }
+        isDragging = false;
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', stopDrag);
+        document.removeEventListener('touchmove', touchDrag);
+        document.removeEventListener('touchend', stopDrag);
+    }
+    
+    // 找到最近的drop-zone
+    function findClosestDropZone(img) {
+        const imgRect = img.getBoundingClientRect();
+        let closestZone = null;
+        let minDistance = Infinity;
+        
+        dropZones.forEach(zone => {
+            const zoneRect = zone.getBoundingClientRect();
+            const distance = Math.sqrt(
+                Math.pow(imgRect.left - zoneRect.left, 2) + 
+                Math.pow(imgRect.top - zoneRect.top, 2)
+            );
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestZone = zone;
+            }
+        });
+        
+        return closestZone;
+    }
+    
+    // 根据中心点找到最近的drop-zone
+    function findClosestDropZoneByCenter(centerX, centerY) {
+        let closestZone = null;
+        let minDistance = Infinity;
+        
+        dropZones.forEach(zone => {
+            const zoneRect = zone.getBoundingClientRect();
+            const zoneCenterX = zoneRect.left + zoneRect.width / 2;
+            const zoneCenterY = zoneRect.top + zoneRect.height / 2;
+            
+            const distance = Math.sqrt(
+                Math.pow(centerX - zoneCenterX, 2) + 
+                Math.pow(centerY - zoneCenterY, 2)
+            );
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestZone = zone;
+            }
+        });
+        
+        return closestZone;
+    }
+    
+    // 重置图片位置
+    function resetImagePosition(img) {
+        // 重置图片样式
+        img.style.position = 'relative';
+        img.style.left = 'auto';
+        img.style.top = 'auto';
+        img.style.zIndex = '1';
+        img.style.pointerEvents = 'auto';
+    }
+    
+    // 移动图片到表格
+    function moveImageToTable(img, dropZone) {
+        // 记录原始位置
+        const originalParent = img.parentNode;
+        const originalNextSibling = img.nextSibling;
+        
+        // 从等待区移除（如果存在）
+        if (imagesInWaiting.has(img)) {
+            imagesInWaiting.delete(img);
+        }
+        
+        // 添加到表格
+        imagesInTable.add(img);
+        dropZone.appendChild(img);
+        dropZone.classList.add('has-image');
+        
+        // 重置图片样式
+        img.style.position = 'relative';
+        img.style.left = 'auto';
+        img.style.top = 'auto';
+        img.style.zIndex = '1';
+        img.style.pointerEvents = 'auto';
+        
+        // 为表格中的图片添加拖拽事件（如果还没有）
+        if (!img.hasAttribute('data-drag-events-added')) {
+            img.addEventListener('mousedown', startDrag);
+            img.addEventListener('touchstart', startTouchDrag, { passive: false });
+            img.addEventListener('dragstart', (e) => e.preventDefault());
+            img.setAttribute('data-drag-events-added', 'true');
+        }
+        
+        // 更新等待区和表格行高
+        updateWaitingArea();
+        updateTableRowHeights();
+    }
+    
+    // 移动图片回等待区
+    function moveImageToWaiting(img) {
+        // 从表格移除（如果存在）
+        if (imagesInTable.has(img)) {
+            imagesInTable.delete(img);
+        }
+        
+        // 添加到等待区
+        imagesInWaiting.add(img);
+        imagePreview.appendChild(img);
+        
+        // 重置图片样式
+        img.style.position = 'static';
+        img.style.left = 'auto';
+        img.style.top = 'auto';
+        img.style.zIndex = '1';
+        img.style.pointerEvents = 'auto';
+        
+        // 更新等待区和表格行高
+        updateWaitingArea();
+        updateTableRowHeights();
+    }
+    
+    // 更新等待区排列
+    function updateWaitingArea() {
+        const waitingImages = Array.from(imagesInWaiting);
+        if (waitingImages.length === 0) {
+            waitingArea.style.display = 'none';
+            return;
+        }
+        
+        waitingArea.style.display = 'block';
+        
+        // 重置所有图片的定位，让CSS Grid自动排列
+        waitingImages.forEach((img) => {
+            img.style.position = 'static';
+            img.style.left = 'auto';
+            img.style.top = 'auto';
+        });
+        
+        // 调整等待区高度
+        const totalRows = Math.ceil(waitingImages.length / Math.floor(imagePreview.offsetWidth / 135)); // 根据容器宽度计算每行数量
+        waitingArea.style.minHeight = (totalRows * 120) + 'px';
+    }
+    
+    // 更新表格行高
+    function updateTableRowHeights() {
+        dropZones.forEach(zone => {
+            const images = zone.querySelectorAll('img');
+            if (images.length === 0) {
+                zone.style.minHeight = '120px';
+                zone.classList.remove('has-image');
+            } else {
+                // 计算每行可以放置的图片数量（考虑容器宽度和图片尺寸）
+                const zoneWidth = zone.offsetWidth;
+                const imageWidth = 100; // 图片宽度
+                const gap = 10; // 图片间距
+                const padding = 20; // 容器内边距
+                
+                const availableWidth = zoneWidth;
+                const imagesPerRow = Math.floor(availableWidth / (imageWidth));
+                const actualImagesPerRow = Math.max(1, imagesPerRow) + 1;
+                
+                // 计算需要的行数
+                const rows = Math.ceil(images.length / actualImagesPerRow);
+                
+                // 计算高度：图片高度 + 间距 + 内边距
+                const imageHeight = 100;
+                const rowGap = 10;
+                const newHeight = Math.max(120, rows * (imageHeight + rowGap) + 20);
+                
+                zone.style.minHeight = newHeight + 'px';
+                zone.classList.add('has-image');
+            }
+        });
+    }
+    
+    // 窗口大小改变时重新计算行高
+    window.addEventListener('resize', () => {
+        setTimeout(() => {
+            updateTableRowHeights();
+            updateWaitingArea();
+        }, 100);
+    });
+    
+    // 页面加载完成后初始化行高
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            updateTableRowHeights();
+        }, 100);
+    });
+</script>
+
+
+</StylizedLayout>

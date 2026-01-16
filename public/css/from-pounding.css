@@ -1,0 +1,768 @@
+/* 从夯到拉 - 样式表 */
+@charset "UTF-8";
+:root {
+    --bg-color: #faf8f3;
+    --bg-gradient: linear-gradient(135deg, #faf8f3 0%, #f5f1e8 100%);
+    --text-color: #2c3e50;
+    --title-color: #34495e;
+    --particle-color: rgba(139, 115, 85, 0.05);
+    --sidebar-bg: rgba(255, 255, 255, 0.7);
+    --sidebar-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+    --sidebar-text: #2c3e50;
+    --toggle-bg: rgba(255, 255, 255, 0.9);
+    --toggle-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --table-bg: rgba(255, 255, 255, 0.95);
+    --table-border: rgba(0, 0, 0, 0.15);
+    --table-shadow: rgba(0, 0, 0, 0.18);
+    --cell-border: rgba(0, 0, 0, 0.08);
+    --tool-section-bg: rgba(102, 126, 234, 0.12);
+    --block-first: #d2191f;
+    --block-second: #ff6c13;
+    --block-third: #ffed6f;
+    --block-fourth: #fff2ca;
+    --block-fifth: #fefcff;
+}
+
+:is(html.theme-dark, body.dark-mode) {
+    --bg-color: #1a1a1a;
+    --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    --text-color: #e0e0e0;
+    --title-color: #ffffff;
+    --particle-color: rgba(255, 255, 255, 0.03);
+    --sidebar-bg: rgba(35, 35, 35, 0.6);
+    --sidebar-shadow: -5px 0 25px rgba(0, 0, 0, 0.55);
+    --sidebar-text: #d9ddff;
+    --toggle-bg: rgba(60, 60, 60, 0.9);
+    --toggle-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    --table-bg: rgba(45, 45, 45, 0.95);
+    --table-border: rgba(255, 255, 255, 0.08);
+    --table-shadow: rgba(0, 0, 0, 0.6);
+    --cell-border: rgba(255, 255, 255, 0.12);
+    --tool-section-bg: rgba(102, 126, 234, 0.1);
+    --block-first: #8f1d22;
+    --block-second: #ba4a1d;
+    --block-third: #d3b350;
+    --block-fourth: #9f8b61;
+    --block-fifth: #4b4b4b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+    padding: 20px;
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* 主容器 */
+.main-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+h2 {
+    color: var(--title-color);
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    animation: titleGlow 3s ease-in-out infinite;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+@keyframes titleGlow {
+    0%, 100% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); }
+    50% { text-shadow: 0 0 15px rgba(139, 115, 85, 0.3), 2px 2px 4px rgba(0, 0, 0, 0.1); }
+}
+
+body.dark-mode h2 {
+    animation: titleGlowDark 3s ease-in-out infinite;
+}
+
+@keyframes titleGlowDark {
+    0%, 100% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+    50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 2px 2px 4px rgba(0, 0, 0, 0.3); }
+}
+
+table{
+    border-collapse: collapse;
+    border: 4px solid var(--table-border);
+    background: var(--table-bg);
+    box-shadow: 0 15px 45px var(--table-shadow);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 1000px;
+    margin: 0;
+}
+.base-block{
+    width: 170px;
+    height: 120px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+    color: inherit;
+}
+.base-block:hover {
+    transform: scale(1.05);
+}
+.first-block{
+    background-color: var(--block-first);
+}
+.second-block{
+    background-color: var(--block-second);
+}
+.third-block{
+    background-color: var(--block-third);
+}
+.fourth-block{
+    background-color: var(--block-fourth);
+}
+.fifth-block{
+    background-color: var(--block-fifth);
+}
+tr td{
+    border: 3px solid var(--cell-border);
+    width: 1000px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    color: inherit;
+    position: relative;
+    min-height: 120px;
+    height: auto;
+    vertical-align: top;
+    overflow: visible;
+}
+
+/* 拖拽目标区域样式 */
+.drop-zone {
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 15px;
+    overflow: visible;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.drop-zone.drag-over {
+    background-color: rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+    border-style: dashed;
+}
+
+.drop-zone.has-image {
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+/* 表格中图片的样式 */
+.drop-zone img {
+    max-width: 100px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    cursor: move;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.drop-zone img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.drop-zone img.dragging {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+/* 等待区样式 */
+.waiting-area {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 2px dashed rgba(255, 193, 7, 0.5);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 20px;
+    min-height: 150px;
+    transition: all 0.3s ease;
+    width: 1000px;
+    margin: 20px 0 0 0;
+}
+
+.waiting-area h3 {
+    color: #ffc107;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+/* 等待区图片网格样式 */
+#imagePreview {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    align-items: start;
+    padding: 10px;
+}
+
+#imagePreview img {
+    max-width: 100px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#imagePreview img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+#imagePreview img {
+    max-height: 118px;
+    width: auto;
+    cursor: move;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* 右侧工具栏 */
+.sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(18px) saturate(140%);
+    box-shadow: var(--sidebar-shadow);
+    padding: 20px;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--sidebar-text);
+    --pointer-x: 50%;
+    --pointer-y: 50%;
+}
+
+.sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255, 255, 255, 0.25), transparent 55%);
+    mix-blend-mode: screen;
+    transition: background 0.2s ease;
+    pointer-events: none;
+}
+
+body.dark-mode .sidebar::before {
+    background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255, 255, 255, 0.15), transparent 60%);
+    mix-blend-mode: lighten;
+}
+
+.sidebar.hidden {
+    transform: translateX(100%);
+}
+
+.sidebar-toggle {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    z-index: 1001;
+    background: var(--toggle-bg);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: var(--toggle-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.3s ease, opacity 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.sidebar-toggle.auto-hidden {
+    opacity: 0;
+    transform: translateX(20px);
+    pointer-events: none;
+}
+
+.sidebar h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .sidebar h3 {
+    color: #8b9ef5;
+}
+
+.sidebar input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: inherit;
+}
+
+.sidebar input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+body.dark-mode .sidebar input[type="text"] {
+    border-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(60, 60, 60, 0.7);
+}
+
+button{
+    color: #ffffff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    border: none;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.tool-section {
+    margin-bottom: 30px;
+    padding: 15px;
+    background: var(--tool-section-bg);
+    border-radius: 16px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.tool-section:last-child {
+    margin-bottom: 0;
+}
+
+.theme-switch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    color: inherit;
+}
+
+.theme-switch input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.theme-switch .slider {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: rgba(102, 126, 234, 0.4);
+    border-radius: 999px;
+    transition: background 0.3s ease;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.theme-switch .slider::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.theme-switch input:checked + .slider {
+    background: rgba(102, 126, 234, 0.8);
+}
+
+.theme-switch input:checked + .slider::after {
+    transform: translateX(22px);
+}
+
+.theme-switch .theme-label {
+    font-size: 14px;
+    letter-spacing: 0.04em;
+}
+
+body.dark-mode .theme-switch .slider {
+    background: rgba(102, 126, 234, 0.35);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode table th,
+body.dark-mode table td {
+    color: #f2f2f2;
+}
+
+body.dark-mode button {
+    box-shadow: 0 4px 18px rgba(102, 126, 234, 0.4);
+}
+
+body.dark-mode .sidebar input[type="text"] {
+    color: #f1f1f1;
+}
+
+body.dark-mode .tool-section {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .base-block {
+    color: #f7f7f9;
+}
+
+/* 移动端响应式设计 */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .main-container {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    h2 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        padding: 0 10px;
+    }
+    
+    table {
+        width: 100%;
+        border-radius: 8px;
+        margin: 0 auto;
+    }
+    
+    .waiting-area {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .base-block {
+        width: 80px;
+        height: 60px;
+        font-size: 16px;
+        padding: 5px;
+    }
+    
+    tr td {
+        width: auto;
+        min-width: 200px;
+        padding: 8px;
+    }
+    
+    /* 移动端侧边栏 */
+    .sidebar {
+        width: 100%;
+        height: 100vh;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .sidebar:not(.hidden) {
+        transform: translateX(0);
+    }
+    
+    .sidebar-toggle {
+        right: 15px;
+        top: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+    
+    .sidebar h3 {
+        font-size: 1.1em;
+        margin-bottom: 12px;
+    }
+    
+    .sidebar input[type="text"] {
+        padding: 10px;
+        font-size: 16px; /* 防止iOS缩放 */
+    }
+    
+    button {
+        padding: 10px 15px;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .tool-section {
+        padding: 12px;
+        margin-bottom: 20px;
+    }
+    
+    #imagePreview {
+        min-height: 200px;
+        gap: 8px;
+    }
+    
+    #imagePreview img {
+        max-height: 80px;
+        max-width: 80px;
+    }
+}
+
+/* 小屏幕手机优化 */
+@media screen and (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+    
+    h2 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+    
+    .base-block {
+        width: 60px;
+        height: 45px;
+        font-size: 12px;
+        padding: 3px;
+    }
+    
+    tr td {
+        min-width: 150px;
+        padding: 5px;
+    }
+    
+    .sidebar {
+        padding: 15px;
+    }
+    
+    .sidebar h3 {
+        font-size: 1em;
+    }
+    
+    .sidebar input[type="text"] {
+        padding: 8px;
+        font-size: 16px;
+    }
+    
+    button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .sidebar-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        right: 10px;
+        top: 10px;
+    }
+}
+
+/* 横屏模式优化 */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .sidebar {
+        width: 50%;
+        max-width: 400px;
+    }
+    
+    .base-block {
+        width: 70px;
+        height: 50px;
+        font-size: 14px;
+    }
+    
+    tr td {
+        min-width: 180px;
+    }
+}
+
+/* 移动端表格优化 */
+@media screen and (max-width: 768px) {
+    table {
+        font-size: 14px;
+    }
+    
+    .base-block {
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    tr td {
+        vertical-align: middle;
+        text-align: center;
+    }
+    
+    /* 确保表格在小屏幕上可滚动 */
+    .main-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 300px;
+    }
+}
+
+/* 超小屏幕表格优化 */
+@media screen and (max-width: 480px) {
+    table {
+        font-size: 12px;
+        border-width: 2px;
+    }
+    
+    .base-block {
+        font-size: 10px;
+        padding: 2px;
+    }
+    
+    tr td {
+        padding: 3px;
+    }
+}
+
+/* 图片预览区域样式 */
+#imagePreview {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    min-height: 300px;
+    transition: all 0.3s ease;
+    overflow: visible;
+}
+
+
+#imagePreview img {
+    max-width: 100px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+    cursor: move;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+    position: relative;
+    display: inline-block;
+    object-fit: contain;
+}
+
+#imagePreview img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#imagePreview img.dragging {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+
+/* 移动端图片预览优化 */
+@media screen and (max-width: 768px) {
+    .waiting-area {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    #imagePreview {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 10px;
+        min-height: 200px;
+    }
+    
+    #imagePreview img {
+        max-height: 80px;
+        max-width: 80px;
+    }
+    
+    .drop-zone img {
+        max-width: 60px;
+        max-height: 60px;
+    }
+    
+    .drop-zone {
+        min-height: 80px;
+        padding: 5px;
+    }
+    
+}
+
+@media screen and (max-width: 480px) {
+    #imagePreview {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 8px;
+        min-height: 150px;
+    }
+    
+    #imagePreview img {
+        max-height: 60px;
+        max-width: 60px;
+    }
+    
+    .drop-zone img {
+        max-width: 50px;
+        max-height: 50px;
+    }
+    
+    .drop-zone {
+        min-height: 60px;
+        padding: 3px;
+    }
+}
