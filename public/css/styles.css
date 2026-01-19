@@ -12251,6 +12251,19 @@ header.masthead .post-heading .meta a {
   }
 }
 
+header.masthead .masthead-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+header.masthead > .container {
+  position: relative;
+  z-index: 1;
+}
+
 .section-heading {
   font-size: 2.25rem;
   font-weight: 700;

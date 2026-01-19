@@ -5,7 +5,7 @@ import HeroHeader from "../components/HeroHeader.astro";
 const BASE = import.meta.env.BASE_URL || '/';
 const bg = `${BASE}assets/img/about-bg.jpg`;
 ---
-<BaseLayout title="洛穹偎的一家言 - 关于" description="行者的随笔">
+<BaseLayout title="洛穹偎的一家言 - 关于" description="行者的随笔" background={bg}>
   <HeroHeader
     title="About Me"
     subtitle="I know nothing except the fact of my ignorance."
