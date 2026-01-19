@@ -1,5 +1,11 @@
 # 洛穹偎的一家言
 
+![Node.js](https://img.shields.io/badge/node.js-%3E%3D20.x-brightgreen?logo=node.js&logoColor=white)
+![npm](https://img.shields.io/badge/npm-%3E%3D9.x-red?logo=npm&logoColor=white)
+![Astro](https://img.shields.io/badge/astro-5.14.1-orange?logo=astro&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-5.9.3-blue?logo=typescript&logoColor=white)
+
 这是一个基于 Astro 的个人静态博客模板，使用 Bootstrap 的栅格系统。仓库包含站点源码、组件与样式，适合用于写个人文章、展示作品或搭建简洁的静态博客。
 
 ## 目录（快速导航）

@@ -80,8 +80,8 @@
   --bs-body-line-height: 1.5;
   --bs-body-color: #212529;
   --bs-body-color-rgb: 33, 37, 41;
-  --bs-body-bg: #fff;
-  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-body-bg: #faf8f3;
+  --bs-body-bg-rgb: 250, 248, 243;
   --bs-emphasis-color: #000;
   --bs-emphasis-color-rgb: 0, 0, 0;
   --bs-secondary-color: rgba(33, 37, 41, 0.75);
@@ -12421,7 +12421,7 @@ body {
 
   :root[data-bs-theme="dark"] {
     color-scheme: dark;
-    --bs-body-bg: #000000;
+    --bs-body-bg: #1a1a1a;
     --bs-body-color: #e5e7eb;
     --bs-link-color: #ffffff;
     --bs-link-hover-color: #6edff6;
@@ -12483,3 +12483,11 @@ body {
     background: #e2e8f0;
     color: #221e63;
   }
+
+  :root[data-bs-theme="dark"] .fa-stack .fa-circle {
+  color: #e9ecef !important;
+}
+
+:root[data-bs-theme="dark"] .fa-stack .fa-inverse {
+  color: #495057 !important;
+}
