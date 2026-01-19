@@ -4,13 +4,14 @@ import HeroHeader from "../components/HeroHeader.astro";
 import PostPreview from "../components/PostPreview.astro";
 
 const BASE = import.meta.env.BASE_URL || '/';
+const bg = `${BASE}assets/img/home-bg.jpg`;
 ---
 
-<IndexLayout title="洛穹偎的一家言 - 个人主页">
+<IndexLayout title="洛穹偎的一家言 - 个人主页" background={bg}>
   <HeroHeader
     title="洛穹偎的一家言"
     subtitle="一位行者的随笔"
-    background=`${BASE}assets/img/home-bg.jpg`
+    background={bg}
   />
 
   <main class="container px-4 px-lg-5">
