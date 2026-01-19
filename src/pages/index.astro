@@ -2,7 +2,6 @@
 import IndexLayout from "../layouts/IndexLayout.astro";
 import HeroHeader from "../components/HeroHeader.astro";
 import PostPreview from "../components/PostPreview.astro";
-import Pager from "../components/Pager.astro";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
@@ -46,7 +45,10 @@ const BASE = import.meta.env.BASE_URL || '/';
           meta="Posted on February 15, 2025, uploaded on October 08, 2025"
         />
 
-        <Pager href=`${BASE}articles/` text="Older Posts →" />
+        <div class="d-flex justify-content-end mb-4">
+          <a class="btn btn-primary btn-lg text-uppercase px-4 py-3 fs-6" href={`${BASE}articles/`}>{"Older Posts →"}</a>
+        </div>
+
 
         <div style="text-align:center;">
           <a 

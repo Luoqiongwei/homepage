@@ -23,7 +23,7 @@
     --block-fifth: #fefcff;
 }
 
-:is(html.theme-dark, body.dark-mode) {
+:is(:root[data-bs-theme="dark"], html.theme-dark, body.dark-mode) {
     --bg-color: #1a1a1a;
     --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     --text-color: #e0e0e0;

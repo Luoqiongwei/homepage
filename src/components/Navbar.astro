@@ -34,7 +34,7 @@ const BASE = import.meta.env.BASE_URL || '/';
 
   const apply = (mode) => {
     const isDark = mode === 'dark';
-    root.classList.toggle('theme-dark', isDark);
+    root.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
     btn.setAttribute('aria-pressed', String(isDark));
     btn.textContent = isDark ? '☀️' : '🌙';
   };
