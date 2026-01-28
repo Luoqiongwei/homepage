@@ -12172,7 +12172,7 @@ header.masthead {
   margin-bottom: 3rem;
   padding-top: calc(8rem + 57px);
   padding-bottom: 8rem;
-  min-width: 100vh;
+  width: 100%;
   background: no-repeat center center;
   background-color: #6c757d;
   background-size: cover;
