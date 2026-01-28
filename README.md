@@ -3,10 +3,9 @@
 ![Node.js](https://img.shields.io/badge/node.js-%3E%3D20.x-brightgreen?logo=node.js&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-%3E%3D9.x-red?logo=npm&logoColor=white)
 ![Astro](https://img.shields.io/badge/astro-5.14.1-orange?logo=astro&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-5.9.3-blue?logo=typescript&logoColor=white)
 
-这是一个基于 Astro 的个人静态博客模板，使用 Bootstrap 的栅格系统。仓库包含站点源码、组件与样式，适合用于写个人文章、展示作品或搭建简洁的静态博客。
+这是一个基于 Astro 的个人静态博客模板。仓库包含站点源码、组件与样式，适合用于写个人文章、展示作品或搭建简洁的静态博客。
 
 ## 目录（快速导航）
 
@@ -20,7 +19,7 @@
 
 ## 特性
 
-- 响应式布局（Bootstrap 5）
+- 布局在Bootstrap 5基础上进行了一些修改
 - 支持亮/暗主题切换
 - 组件：导航、页首 Hero、文章预览、图片/视频嵌入组件
 - 使用 Astro 进行静态页面生成，构建速度快，兼容 Markdown 页面
@@ -52,9 +51,9 @@
 组件说明（位于 `src/components/`）
 
 - `Navbar.astro`：站点导航条，包含主题切换按钮
-- `HeroHeader.astro`：页面顶部大图与标题区域
-- `IllustrationEmbed.astro`：在文章中嵌入图片，支持多行 caption、align、宽度和可选轻盒（lightbox）行为
-- `VideoEmbed.astro`：嵌入视频（对某些源自动追加参数）
+- `HeroHeader.astro`：页面顶部大图与标题区域，使用内置的 `<Image />` Astro 组件进行优化
+- `IllustrationEmbed.astro`：在文章中嵌入图片，支持多行 caption、align、宽度和可选lightbox行为
+- `VideoEmbed.astro`：嵌入视频
 - `PostPreview.astro`：文章列表项的预览样式
 
 ## 快速开始
@@ -91,7 +90,7 @@ http://localhost:4321/homepage/
 ---
 import PostLayout from '../../layouts/PostLayout.astro';
 ---
-<PostLayout title="示例文章" subtitle="副标题" meta="2025-12-11">
+<PostLayout title="示例文章" subtitle="副标题" meta="2025-04-15">
   <p>这里是文章正文。</p>
 </PostLayout>
 ```
@@ -107,8 +106,9 @@ import IllustrationEmbed from '../../components/IllustrationEmbed.astro';
 
 3) 暗色模式说明：
 
-- 在页面右上角的导航栏有主题切换按钮，会将偏好保存到 `localStorage`（key=`theme-preference`）。
-- 暗色主题的变量定义位于`public/css/styles.css`较靠后的位置 ；亮色变量在 `public/css/styles.css` 的 `:root` 中。
+- 在页面右上角的导航栏有主题切换按钮，会将偏好保存到 `localStorage`。
+- 整合了Bootstrap自带的与手动实现的暗色变量
+
 
 
 ## 部署

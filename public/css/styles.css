@@ -12172,6 +12172,7 @@ header.masthead {
   margin-bottom: 3rem;
   padding-top: calc(8rem + 57px);
   padding-bottom: 8rem;
+  min-width: 100vh;
   background: no-repeat center center;
   background-color: #6c757d;
   background-size: cover;
@@ -12186,6 +12187,7 @@ header.masthead:before {
   bottom: 0;
   background-color: #212529;
   opacity: 0.5;
+  z-index: 1;
 }
 header.masthead .page-heading,
 header.masthead .post-heading,
@@ -12256,12 +12258,12 @@ header.masthead .masthead-bg {
   top: 0; left: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  z-index: -1;
+  z-index: 0;
 }
 
 header.masthead > .container {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .section-heading {

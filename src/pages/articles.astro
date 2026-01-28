@@ -3,9 +3,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import CategoryNav from "../components/CategoryNav.astro";
 import PostPreview from "../components/PostPreview.astro";
 import HeroHeader from "../components/HeroHeader.astro";
+import bg from "../assets/img/articles-bg.jpg";
 
 const BASE = import.meta.env.BASE_URL || '/';
-const bg = `${BASE}assets/img/articles-bg.jpg`;
 ---
 
 <BaseLayout title="洛穹偎的一家言 - 文章目录" description="我的文章目录" background={bg}>

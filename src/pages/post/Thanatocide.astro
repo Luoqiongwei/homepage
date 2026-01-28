@@ -1,6 +1,7 @@
 ---
 import PostLayout from "../../layouts/PostLayout.astro";
 import IllustrationEmbed from "../../components/IllustrationEmbed.astro";
+import bg from "../../assets/img/post4-bg.jpg";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
@@ -10,7 +11,7 @@ const BASE = import.meta.env.BASE_URL || '/';
   subtitle="微尘另册 2.i"
   date="November 22 2025"
   upload="November 22, 2025"
-  background=`${BASE}assets/img/post4-bg.jpg`
+  background={bg}
 >
     <span class="caption text-muted">头图来自pixiv,pid:115240782</span>
     <p>死神住在一片草原里。不是在大理石砌成的殿堂，也不在淌着岩浆的炼狱，而就是在这片无垠的沃土上。有人说这是因为她厌倦了遮掩或伪装；也有人说，她本就不属于黑暗。原上草年复一年地枯了又荣，荣了又枯，随风流动着。</p>

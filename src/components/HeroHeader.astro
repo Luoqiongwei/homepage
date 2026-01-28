@@ -1,14 +1,17 @@
 ---
+import { Image } from "astro:assets";
+
 const BASE = import.meta.env.BASE_URL;
 const { title, subtitle, background } = Astro.props;
 ---
 
 <header class="masthead" style={`background-image: url('${background}')`}>
-  <img
+  <Image
     src={background}
     alt=""
-    fetchpriority="high"
-    decoding="async"
+    widths={[576, 768, 992, 1200, 1400]}
+    sizes="100vw"
+    loading="eager"
     class="masthead-bg"
   />
   <div class="container position-relative px-4 px-lg-5">

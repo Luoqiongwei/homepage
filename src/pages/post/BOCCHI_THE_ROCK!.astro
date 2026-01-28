@@ -1,5 +1,6 @@
 ---
 import PostLayout from "../../layouts/PostLayout.astro";
+import bg from "../../assets/img/post2-bg.jpg";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
@@ -9,7 +10,7 @@ const BASE = import.meta.env.BASE_URL || '/';
   subtitle="但是有你在，或许就不孤独？"
   date="February 15, 2025"
   upload="October 08, 2025"
-  background=`${BASE}assets/img/post2-bg.jpg`
+  background={bg}
 >
   <span class="caption text-muted">头图来自pixiv,pid:112201194</span>
 

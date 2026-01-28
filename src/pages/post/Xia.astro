@@ -1,6 +1,6 @@
 ---
 import PostLayout from "../../layouts/PostLayout.astro";
-import IllustrationEmbed from "../../components/IllustrationEmbed.astro";
+import bg from "../../assets/img/post5-bg.png";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
@@ -10,7 +10,7 @@ const BASE = import.meta.env.BASE_URL || '/';
   subtitle="但这一定是仁吗？"
   date="January 18 2026"
   upload="January 18, 2026"
-  background=`${BASE}assets/img/post5-bg.png`
+  background={bg}
 >
     <p>提到所谓的“中式RPG”，人们往往会迅速联想到一些题材层面的关键词，无非是江湖武侠、民俗志怪、历史传奇、神话传说，当然了，这只是在解释“中式”这一文化本身，而并不必然是RPG类型。其中一些母题在其他游戏类型中反而更为常见，例如志怪题材往往更多与解谜、恐怖类玩法结合。</p>
     <p>那么既然要说回到RPG上，中式的和日式、西式的一个很可能的叙事上的区别是，普通民众在其中占据的位置，或者说故事是否必须向天下苍生给出解释。一个西式RPG很可能是主角团对抗失控的巨型企业、腐朽的王国、扭曲的宗教，乃至直面黑暗力量甚至弑杀神明，背后推动故事前进的核心，通常来自个体层面的命运，比如血脉的特殊性、或者找回记忆，解除诅咒，寻找亲人，这就使得这个故事几乎只跟主角团有关。这类叙事的情感与道德重心，往往在于主角自身的成长、认同与救赎，整个世界更多地只不过是展现个人命运的舞台。</p>

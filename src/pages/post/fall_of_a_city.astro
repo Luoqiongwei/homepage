@@ -1,5 +1,6 @@
 ---
 import PostLayout from "../../layouts/PostLayout.astro";
+import bg from "../../assets/img/post-bg.jpg";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
@@ -9,7 +10,7 @@ const BASE = import.meta.env.BASE_URL || '/';
   subtitle="微尘另册 1.2"
   date="July 08, 2025"
   upload="October 07, 2025"
-  background=`${BASE}assets/img/post-bg.jpg`
+  background={bg}
 >
     <span class="caption text-muted">头图经过修改以消除人像和部分特征</span>
     <p>当跟着导航来到这座城市时，洛穹偎幻想能看到永不停息的工厂，但远远地望去，城市上空没有蒸汽也没浓烟；他又以为至少走近后能听到齐声的号子，可直到走在城市的柏油路上，也听不到一丝人声。只有每隔几分钟一辆挂着异地牌照的汽车呼啸过去，溅起一阵灰尘。</p>
