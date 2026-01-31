@@ -179,7 +179,7 @@ const BASE = import.meta.env.BASE_URL || '/';
                     img.style.position = 'relative';
                     img.addEventListener('mousedown', startDrag);
                     img.addEventListener('touchstart', startTouchDrag, { passive: false });
-                    img.addEventListener('dragstart', (e) => e.preventDefault()); // 防止默认拖拽
+                    img.addEventListener('dragstart', (e) => e.preventDefault());
                     
                     // 添加到等待区
                     imagesInWaiting.add(img);
@@ -513,10 +513,10 @@ const BASE = import.meta.env.BASE_URL || '/';
                 
                 const availableWidth = zoneWidth;
                 const imagesPerRow = Math.floor(availableWidth / (imageWidth));
-                const actualImagesPerRow = Math.max(1, imagesPerRow) + 1;
+                const actualImagesPerRow = Math.max(1, imagesPerRow);
                 
                 // 计算需要的行数
-                const rows = Math.ceil(images.length / actualImagesPerRow);
+                const rows = Math.ceil(images.length / actualImagesPerRow - 0.01);
                 
                 // 计算高度：图片高度 + 间距 + 内边距
                 const imageHeight = 100;

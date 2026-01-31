@@ -1,0 +1,104 @@
+<canvas id="bgCanvas"></canvas>
+
+<div class="vital-badge">
+    <div class="vital-value" id="bpmValue">72</div>
+    <div class="vital-label">BPM</div>
+</div>
+
+<script is:inline>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    const config = {
+        maxFPS: 90,
+        bufferSize: 1200,
+        amplitude: 0.16, 
+        speed: 1.5,
+        lineWidth: 1.2, 
+        baseline: 0.75
+    };
+    
+    let width, height, dpr;
+    let lastTime = 0;
+    let lastBPMUpdate = 0;
+    
+    const buffer = new Float32Array(config.bufferSize);
+    let writeIndex = 0;
+    let isBufferFull = false;
+
+    function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        width = canvas.width = window.innerWidth * dpr;
+        height = canvas.height = window.innerHeight * dpr;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+        ctx.scale(dpr, dpr);
+        config.bufferSize = Math.ceil(window.innerWidth / config.speed) + 50;
+    }
+
+    
+    window.addEventListener('resize', resize);
+    resize();
+
+    function generateECGPoint(time) {
+        const period = 60 / 72;
+        const t = time % period;
+        const normalizedT = t / period;
+        let value = 0;
+        
+        if (normalizedT > 0.1 && normalizedT < 0.2) {
+            value += Math.sin((normalizedT - 0.1) * 10 * Math.PI) * 0.15;
+        }
+        if (normalizedT > 0.35 && normalizedT < 0.45) {
+            if (normalizedT < 0.38) value -= 0.2;
+            else if (normalizedT < 0.42) value += 1.2;
+            else value -= 0.3;
+        }
+        if (normalizedT > 0.55 && normalizedT < 0.75) {
+            value += Math.sin((normalizedT - 0.55) * 5 * Math.PI) * 0.25;
+        }
+        return value + (Math.random() - 0.5) * 0.02;
+    }
+
+    function draw(timestamp) {
+        lastTime = timestamp;
+        
+        const cssWidth = width / dpr;
+        const cssHeight = height / dpr;
+        const centerY = cssHeight * config.baseline;
+
+        
+        buffer[writeIndex] = generateECGPoint(timestamp / 1000);
+        writeIndex = (writeIndex + 1) % config.bufferSize;
+        if (writeIndex === 0) isBufferFull = true;
+        
+        const pointsToDraw = isBufferFull ? config.bufferSize : writeIndex;
+        
+        ctx.clearRect(0, 0, cssWidth, cssHeight);
+        const currentColor = getComputedStyle(document.body).getPropertyValue('--ecg-line-color').trim();
+        
+        ctx.beginPath();
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = config.lineWidth;
+        ctx.lineJoin = 'round';
+        
+        for (let i = 0; i < pointsToDraw; i++) {
+            const idx = (writeIndex - pointsToDraw + i + config.bufferSize) % config.bufferSize;
+            const x = i * config.speed;
+            const y = centerY + buffer[idx] * cssHeight * config.amplitude;
+            
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        
+        if (timestamp - lastBPMUpdate > 2000 && Math.random() < 0.3) {
+            const displayBPM = 68 + Math.floor(Math.random() * 8);
+            document.getElementById('bpmValue').textContent = displayBPM;
+            lastBPMUpdate = timestamp;
+        }
+        
+        requestAnimationFrame(draw);
+    }
+    
+    requestAnimationFrame(draw);
+</script>

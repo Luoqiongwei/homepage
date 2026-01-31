@@ -2,6 +2,7 @@
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import BackToTop from "../components/BackToTop.astro";
+import CardiacMonitorDeco from "../components/CardiacMonitorDeco.astro";
 
 const BASE = import.meta.env.BASE_URL || '/';
 const { title = "洛穹偎的一家言", description = "番剧、电子音乐与理性思考爱好者的随笔", background = "" } = Astro.props;
@@ -24,6 +25,7 @@ const { title = "洛穹偎的一家言", description = "番剧、电子音乐与
   </head>
 
   <body>
+    <CardiacMonitorDeco />
     <Navbar />
     <slot />  <!-- 页面内容插入点 -->
     <BackToTop />
