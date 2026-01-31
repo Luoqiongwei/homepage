@@ -1,8 +1,8 @@
 <canvas id="bgCanvas"></canvas>
 
 <div class="vital-badge">
-    <div class="vital-value" id="bpmValue">72</div>
-    <div class="vital-label">BPM</div>
+    <div class="vital-value" id="Value">ONLINE</div>
+    <div class="vital-label">SYSTEM</div>
 </div>
 
 <script is:inline>
@@ -16,10 +16,31 @@
         lineWidth: 1.2, 
         baseline: 0.75
     };
+
+    let systemOn = localStorage.getItem('my-system') === '1';
+    document.querySelector('.vital-value').textContent = systemOn ? 'ONLINE' : 'OFFLINE';
+    document.querySelector('.vital-badge').onclick = () => {
+        localStorage.setItem('my-system', (systemOn = !systemOn) ? '1' : '0');
+        document.querySelector('.vital-value').textContent = systemOn ? 'ONLINE' : 'OFFLINE';
+    };
+
+    const badge = document.querySelector('.vital-badge');
+    const valueDisplay = document.querySelector('.vital-value');
+
+    let isActive = systemOn;
+
+    badge.addEventListener('click', () => {
+        isActive = !isActive;
+        valueDisplay.textContent = isActive ? 'ONLINE' : 'OFFLINE';
+        badge.classList.toggle('active', isActive);
+        badge.style.transform = 'translateY(-50%) scale(0.95)';
+        setTimeout(() => {
+            badge.style.transform = 'translateY(-50%) scale(1)';
+        }, 100);
+    });
     
     let width, height, dpr;
     let lastTime = 0;
-    let lastBPMUpdate = 0;
     
     const buffer = new Float32Array(config.bufferSize);
     let writeIndex = 0;
@@ -35,7 +56,6 @@
         config.bufferSize = Math.ceil(window.innerWidth / config.speed) + 50;
     }
 
-    
     window.addEventListener('resize', resize);
     resize();
 
@@ -60,13 +80,16 @@
     }
 
     function draw(timestamp) {
+        if (!isActive) {
+            requestAnimationFrame(draw);
+            return;
+        }
         lastTime = timestamp;
         
         const cssWidth = width / dpr;
         const cssHeight = height / dpr;
         const centerY = cssHeight * config.baseline;
 
-        
         buffer[writeIndex] = generateECGPoint(timestamp / 1000);
         writeIndex = (writeIndex + 1) % config.bufferSize;
         if (writeIndex === 0) isBufferFull = true;
@@ -90,12 +113,6 @@
             else ctx.lineTo(x, y);
         }
         ctx.stroke();
-        
-        if (timestamp - lastBPMUpdate > 2000 && Math.random() < 0.3) {
-            const displayBPM = 68 + Math.floor(Math.random() * 8);
-            document.getElementById('bpmValue').textContent = displayBPM;
-            lastBPMUpdate = timestamp;
-        }
         
         requestAnimationFrame(draw);
     }
