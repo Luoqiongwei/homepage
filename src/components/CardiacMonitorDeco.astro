@@ -28,14 +28,16 @@
     const valueDisplay = document.querySelector('.vital-value');
 
     let isActive = systemOn;
+    let isMobile = window.innerWidth <= 768;
+    let transform = isMobile ? 'translateX(-50%) scale(1)' : 'translateY(-50%) scale(1)';
 
     badge.addEventListener('click', () => {
         isActive = !isActive;
         valueDisplay.textContent = isActive ? 'ONLINE' : 'OFFLINE';
         badge.classList.toggle('active', isActive);
-        badge.style.transform = 'translateY(-50%) scale(0.95)';
+        badge.style.transform = transform.replace('scale(1)', 'scale(0.9)');
         setTimeout(() => {
-            badge.style.transform = 'translateY(-50%) scale(1)';
+            badge.style.transform = transform;
         }, 100);
     });
     

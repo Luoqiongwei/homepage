@@ -12639,14 +12639,14 @@ body {
 
 @media (max-width: 768px) {
     .vital-badge {
+        position: fixed;
         left: 50%;
-        top: 20px;
+        bottom: 20px;
         transform: translateX(-50%);
         width: auto;
-        height: auto;
+        height: 80px;
         min-width: 140px;
         padding: 16px 24px;
-        display: flex;
         align-items: center;
         gap: 12px;
         border-radius: 24px;
