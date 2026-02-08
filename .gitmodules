@@ -1,0 +1,3 @@
+[submodule "external/game"]
+	path = external/game
+	url = https://github.com/Luoqiongwei/furnace
