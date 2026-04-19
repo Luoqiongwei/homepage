@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>洛穹偎的一家言 — 个人主页</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --bg-0: #020617;
+      --bg-1: #0f172a;
+      --bg-2: #111827;
+      --surface: rgba(15, 23, 42, 0.6);
+      --border: rgba(148, 163, 184, 0.12);
+      --border-strong: rgba(148, 163, 184, 0.22);
+      --text-0: #f1f5f9;
+      --text-1: #cbd5e1;
+      --text-2: #94a3b8;
+      --accent: #22d3ee;
+      --accent-2: #818cf8;
+      --accent-glow: rgba(34, 211, 238, 0.25);
+      --accent-glow-2: rgba(129, 140, 248, 0.25);
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    [data-theme="light"] {
+      --bg-0: #f8fafc;
+      --bg-1: #ffffff;
+      --bg-2: #f1f5f9;
+      --surface: rgba(255, 255, 255, 0.7);
+      --border: rgba(100, 116, 139, 0.15);
+      --border-strong: rgba(100, 116, 139, 0.25);
+      --text-0: #0f172a;
+      --text-1: #334155;
+      --text-2: #64748b;
+      --accent: #0284c7;
+      --accent-2: #6366f1;
+      --accent-glow: rgba(2, 132, 199, 0.2);
+      --accent-glow-2: rgba(99, 102, 241, 0.2);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-0);
+      color: var(--text-1);
+      line-height: 1.65;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 网格背景 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+      pointer-events: none;
+    }
+
+    /* 扫描线 */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+    [data-theme="light"] body::after {
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.015) 2px,
+        rgba(0, 0, 0, 0.015) 4px
+      );
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    a:hover {
+      color: var(--accent-2);
+    }
+
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: linear-gradient(180deg, var(--bg-0) 60%, transparent);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+    }
+
+    .nav-brand {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-0);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-brand::before {
+      content: '>';
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-2);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .nav-links a:hover {
+      color: var(--text-0);
+      background: var(--surface);
+    }
+    .nav-links a.active {
+      color: var(--accent);
+      background: rgba(34, 211, 238, 0.08);
+    }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 14px;
+      right: 14px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: all 0.25s ease;
+      margin-left: 8px;
+    }
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Hero Terminal */
+    .hero {
+      padding-top: 120px;
+      padding-bottom: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .terminal {
+      width: min(900px, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 0 80px rgba(34, 211, 238, 0.06);
+    }
+    [data-theme="light"] .terminal {
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+        0 0 80px rgba(2, 132, 199, 0.05);
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid var(--border);
+    }
+    [data-theme="light"] .terminal-header {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .term-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: none;
+    }
+    .term-btn.red { background: #ff5f57; }
+    .term-btn.yellow { background: #febc2e; }
+    .term-btn.green { background: #28c840; }
+
+    .term-title {
+      margin-left: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-2);
+      opacity: 0.8;
+    }
+
+    .terminal-body {
+      padding: 40px 36px 48px;
+    }
+
+    .term-line {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-2);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .term-prompt { color: var(--accent); }
+    .term-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.1em;
+      background: var(--accent);
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+      margin-left: 2px;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-title {
+      font-family: var(--font-mono);
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 700;
+      color: var(--text-0);
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      text-wrap: balance;
+    }
+    .hero-title .accent-bar {
+      display: inline-block;
+      width: 6px;
+      height: 0.85em;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-right: 14px;
+      vertical-align: baseline;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-2);
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    .hero-meta {
+      margin-top: 28px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(34, 211, 238, 0.05);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-2);
+    }
+    .meta-chip i { font-size: 0.7rem; color: var(--accent); }
+
+    /* Section divider */
+    .section-header {
+      max-width: 900px;
+      margin: 0 auto 32px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-header h2 {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+    .section-header .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border-strong), transparent);
+    }
+
+    /* Post list */
+    .posts {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .post-card {
+      position: relative;
+      padding: 24px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .post-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-2));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .post-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    }
+    .post-card:hover::before { opacity: 1; }
+    [data-theme="light"] .post-card:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    }
+
+    .post-card a { color: inherit; display: block; }
+    .post-card a:hover { color: inherit; }
+
+    .post-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .post-id {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(34, 211, 238, 0.08);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(34, 211, 238, 0.15);
+    }
+
+    .post-date {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .post-date::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      opacity: 0.6;
+    }
+
+    .post-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-0);
+      line-height: 1.35;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+    .post-card:hover .post-title {
+      color: var(--accent);
+    }
+
+    .post-sub {
+      font-size: 0.95rem;
+      color: var(--text-2);
+      line-height: 1.5;
+    }
+
+    /* Actions */
+    .actions {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text-1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      border-color: transparent;
+    }
+    .btn-primary:hover {
+      color: #fff;
+      filter: brightness(1.1);
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+
+    .archive-link {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-2);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--border);
+      transition: all 0.2s ease;
+    }
+    .archive-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(34, 211, 238, 0.05);
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px 64px;
+      text-align: center;
+    }
+
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 24px;
+      list-style: none;
+    }
+    .socials a {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      font-size: 1.1rem;
+      transition: all 0.25s ease;
+    }
+    .socials a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
+    .copyright {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-2);
+      opacity: 0.7;
+    }
+
+    /* ECG Canvas (background) */
+    #ecgCanvas {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 160px;
+      z-index: -1;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    /* Vital badge */
+    .vital-badge {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      z-index: 90;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-2);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .vital-badge:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .vital-badge .dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #34d399;
+      margin-right: 8px;
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .vital-badge.offline .dot {
+      background: #f87171;
+      box-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+      animation: none;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Back to top */
+    #backToTop {
+      position: fixed;
+      right: 28px;
+      bottom: 90px;
+      z-index: 90;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(12px);
+    }
+    #backToTop.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    #backToTop:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .navbar { padding: 0 18px; height: 56px; }
+      .nav-links a { padding: 5px 10px; font-size: 0.8rem; }
+      .terminal-body { padding: 28px 22px 36px; }
+      .hero-meta { gap: 10px; }
+      .post-card { padding: 20px 22px; }
+      .actions { flex-direction: column; align-items: stretch; }
+      .btn, .archive-link { justify-content: center; }
+      .vital-badge { right: 16px; bottom: 16px; }
+      #backToTop { right: 16px; bottom: 78px; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="navbar">
+    <a href="#" class="nav-brand">洛穹偎的一家言</a>
+    <ul class="nav-links">
+      <li><a href="#" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="./about/"><i class="fa-solid fa-user"></i> About</a></li>
+      <li><a href="./articles/"><i class="fa-solid fa-file-lines"></i> Articles</a></li>
+      <li><a href="./tools/"><i class="fa-solid fa-screwdriver-wrench"></i> Tools</a></li>
+      <li><button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="terminal">
+      <div class="terminal-header">
+        <span class="term-btn red"></span>
+        <span class="term-btn yellow"></span>
+        <span class="term-btn green"></span>
+        <span class="term-title">user@luoqiongwei:~ — zsh — 80×24</span>
+      </div>
+      <div class="terminal-body">
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span>whoami</span>
+        </div>
+        <h1 class="hero-title"><span class="accent-bar"></span>洛穹偎的一家言</h1>
+        <p class="hero-sub">一位行者的随笔 —— 番剧、电子音乐与理性思考爱好者的数字花园。</p>
+        <div class="hero-meta">
+          <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> Earth</span>
+          <span class="meta-chip"><i class="fa-solid fa-code-branch"></i> v2025.1</span>
+          <span class="meta-chip"><i class="fa-solid fa-clock"></i> <span id="liveClock">--:--:--</span></span>
+        </div>
+        <div class="term-line" style="margin-top: 28px; margin-bottom: 0;">
+          <span class="term-prompt">$</span>
+          <span id="typewriter"></span><span class="term-cursor"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-header">
+    <h2><i class="fa-solid fa-database"></i> 最新日志</h2>
+    <div class="line"></div>
+  </div>
+
+  <main class="posts">
+    <article class="post-card" onclick="location.href='./post/Kill_My_World/'">
+      <a href="./post/Kill_My_World/">
+        <div class="post-top">
+          <span class="post-id">LOG_001</span>
+          <span class="post-date">2026-04-04</span>
+        </div>
+        <h3 class="post-title">预习死亡</h3>
+        <p class="post-sub">浮声集 1 —— 关于存在与终结的思考。</p>
+      </a>
+    </article>
+
+    <article class="post-card" onclick="location.href='./post/predict_future/'">
+      <a href="./post/predict_future/">
+        <div class="post-top">
+          <span class="post-id">LOG_002</span>
+          <span class="post-date">2026-02-28</span>
+        </div>
+        <h3 class="post-title">预测未来</h3>
+        <p class="post-sub">微尘另册 3 —— 对未来的推测与想象。</p>
+      </a>
+    </article>
+
+    <article class="post-card" onclick="location.href='./post/Xia/'">
+      <a href="./post/Xia/">
+        <div class="post-top">
+          <span class="post-id">LOG_003</span>
+          <span class="post-date">2026-01-18</span>
+        </div>
+        <h3 class="post-title">救人于戹，振人不赡，仁者有乎？</h3>
+        <p class="post-sub">跃迁协议 2 —— 古典文本的现代重读。</p>
+      </a>
+    </article>
+
+    <article class="post-card" onclick="location.href='./post/Thanatocide/'">
+      <a href="./post/Thanatocide/">
+        <div class="post-top">
+          <span class="post-id">LOG_004</span>
+          <span class="post-date">2025-11-22</span>
+        </div>
+        <h3 class="post-title">解构的解构</h3>
+        <p class="post-sub">微尘另册 2.i —— 思想实验的递归。</p>
+      </a>
+    </article>
+
+    <article class="post-card" onclick="location.href='./post/fall_of_a_city/'">
+      <a href="./post/fall_of_a_city/">
+        <div class="post-top">
+          <span class="post-id">LOG_005</span>
+          <span class="post-date">2025-07-08</span>
+        </div>
+        <h3 class="post-title">一座城之死</h3>
+        <p class="post-sub">微尘另册 1.2 —— 城市衰亡的叙事切片。</p>
+      </a>
+    </article>
+  </main>
+
+  <div class="actions">
+    <a href="./articles/" class="btn btn-primary">
+      <i class="fa-solid fa-arrow-right-long"></i> 查看更多日志
+    </a>
+    <a href="https://luoqiongwei.github.io/home/" class="archive-link" target="_blank" rel="noopener noreferrer">
+      <i class="fa-solid fa-box-archive"></i> 访问旧版主页 ↗
+    </a>
+  </div>
+
+  <footer class="footer">
+    <ul class="socials">
+      <li><a href="https://space.bilibili.com/436212651/dynamic" target="_blank" rel="noopener" title="Bilibili"><i class="fa-brands fa-bilibili"></i></a></li>
+      <li><a href="https://www.zhihu.com/people/50-52-74-35" target="_blank" rel="noopener" title="Zhihu"><i class="fa-brands fa-zhihu"></i></a></li>
+      <li><a href="https://github.com/Luoqiongwei" target="_blank" rel="noopener" title="GitHub"><i class="fa-brands fa-github"></i></a></li>
+    </ul>
+    <p class="copyright">© 2025-2026 洛穹偎 | Powered by GitHub Pages</p>
+  </footer>
+
+  <canvas id="ecgCanvas"></canvas>
+
+  <div class="vital-badge" id="vitalBadge">
+    <span class="dot"></span><span id="vitalText">ONLINE</span>
+  </div>
+
+  <button id="backToTop" title="回到顶部"><i class="fa-solid fa-arrow-up"></i></button>
+
+  <script>
+    (() => {
+      /* Theme toggle */
+      const KEY = 'theme-preference';
+      const root = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const apply = (mode) => {
+        document.body.setAttribute('data-theme', mode);
+        btn.textContent = mode === 'dark' ? '🌙' : '☀️';
+      };
+      const stored = localStorage.getItem(KEY);
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let mode = stored || (systemDark ? 'dark' : 'light');
+      apply(mode);
+      btn.addEventListener('click', () => {
+        mode = mode === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(KEY, mode);
+        apply(mode);
+      });
+
+      /* Live clock */
+      const clock = document.getElementById('liveClock');
+      const pad = (n) => String(n).padStart(2, '0');
+      setInterval(() => {
+        const now = new Date();
+        clock.textContent = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      }, 1000);
+
+      /* Typewriter */
+      const tw = document.getElementById('typewriter');
+      const phrases = [
+        'cat thought.log | grep "meaning"',
+        'echo "Hello, traveler."',
+        'git commit -m "another day"',
+        'npm run explore --world=mine'
+      ];
+      let pi = 0, ci = 0, deleting = false;
+      function typeLoop() {
+        const text = phrases[pi];
+        if (!deleting) {
+          tw.textContent = text.slice(0, ci + 1);
+          ci++;
+          if (ci === text.length) { deleting = true; setTimeout(typeLoop, 2200); return; }
+        } else {
+          tw.textContent = text.slice(0, ci - 1);
+          ci--;
+          if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; setTimeout(typeLoop, 400); return; }
+        }
+        setTimeout(typeLoop, deleting ? 40 : 90);
+      }
+      setTimeout(typeLoop, 800);
+
+      /* Back to top */
+      const btt = document.getElementById('backToTop');
+      window.addEventListener('scroll', () => {
+        btt.classList.toggle('show', window.scrollY > 500);
+      });
+      btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+      /* Vital badge toggle */
+      const badge = document.getElementById('vitalBadge');
+      const vitalText = document.getElementById('vitalText');
+      let online = true;
+      badge.addEventListener('click', () => {
+        online = !online;
+        badge.classList.toggle('offline', !online);
+        vitalText.textContent = online ? 'ONLINE' : 'OFFLINE';
+      });
+
+      /* ECG Canvas */
+      const canvas = document.getElementById('ecgCanvas');
+      const ctx = canvas.getContext('2d');
+      let width, height, dpr;
+      let buffer = new Float32Array(1200);
+      let writeIndex = 0;
+      let isBufferFull = false;
+      const config = { speed: 1.5, amplitude: 0.12, baseline: 0.5, lineWidth: 1.2 };
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = canvas.width = canvas.offsetWidth * dpr;
+        height = canvas.height = canvas.offsetHeight * dpr;
+        ctx.scale(dpr, dpr);
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      function ecgPoint(t) {
+        const period = 60 / 72;
+        const nt = (t % period) / period;
+        let v = 0;
+        if (nt > 0.1 && nt < 0.2) v += Math.sin((nt - 0.1) * 10 * Math.PI) * 0.15;
+        if (nt > 0.35 && nt < 0.45) {
+          if (nt < 0.38) v -= 0.2;
+          else if (nt < 0.42) v += 1.2;
+          else v -= 0.3;
+        }
+        if (nt > 0.55 && nt < 0.75) v += Math.sin((nt - 0.55) * 5 * Math.PI) * 0.25;
+        return v + (Math.random() - 0.5) * 0.02;
+      }
+
+      function draw(timestamp) {
+        const cssW = width / dpr;
+        const cssH = height / dpr;
+        const cy = cssH * config.baseline;
+        buffer[writeIndex] = ecgPoint(timestamp / 1000);
+        writeIndex = (writeIndex + 1) % buffer.length;
+        if (writeIndex === 0) isBufferFull = true;
+        const count = isBufferFull ? buffer.length : writeIndex;
+
+        ctx.clearRect(0, 0, cssW, cssH);
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        ctx.strokeStyle = isDark ? 'rgba(34,211,238,0.35)' : 'rgba(2,132,199,0.35)';
+        ctx.lineWidth = config.lineWidth;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        for (let i = 0; i < count; i++) {
+          const idx = (writeIndex - count + i + buffer.length) % buffer.length;
+          const x = i * config.speed;
+          const y = cy + buffer[idx] * cssH * config.amplitude;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        requestAnimationFrame(draw);
+      }
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>

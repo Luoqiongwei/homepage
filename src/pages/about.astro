@@ -1,46 +1,212 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import HeroHeader from "../components/HeroHeader.astro";
-import bg from "../assets/img/about-bg.jpg";
-
 const BASE = import.meta.env.BASE_URL || '/';
 ---
-<BaseLayout title="洛穹偎的一家言 - 关于" description="行者的随笔" background={bg}>
-  <HeroHeader
-    title="About Me"
-    subtitle="ὃ δὲ μὴ οἶδα, οὐδὲ οἴομαι εἰδέναι"
-    background={bg}
-  />
 
-  <main class="mb-4">
-    <div class="container px-4 px-lg-5">
+<BaseLayout title="洛穹偎的一家言 - 关于" description="行者的随笔">
+  <link rel="preconnect" href="https://fonts.googleapis.com" slot="head" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin slot="head" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" slot="head" />
+
+  <style is:global>
+    .about-terminal { font-family: 'JetBrains Mono', monospace; }
+    .about-terminal .cmd-line {
+      display: flex; align-items: baseline; gap: .6rem;
+      margin-bottom: .4rem; font-size: .95rem;
+    }
+    .about-terminal .cmd-text {
+      display: inline-block;
+      color: var(--bs-secondary-color);
+    }
+    .about-terminal .cmd-text::first-letter {
+      color: var(--bs-info);
+      font-weight: 600;
+    }
+    .about-terminal .cmd-block {
+      margin-bottom: 2.2rem; padding-left: 1rem;
+      border-left: 2px solid transparent; transition: border-color .4s ease;
+    }
+    .about-terminal .cmd-block.active { border-left-color: var(--bs-info); }
+    .about-terminal .cmd-body {
+      opacity: 0; transform: translateY(6px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .about-terminal .cmd-block.revealed .cmd-body { opacity: 1; transform: translateY(0); }
+    .about-terminal .cursor {
+      display: inline-block; width: 8px; height: 1.1em;
+      background: var(--bs-info); vertical-align: text-bottom;
+      animation: blink 1s step-end infinite; margin-left: 2px;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .about-terminal .tag-list { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+    .about-terminal .tag {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      padding: .25rem .6rem; border-radius: .375rem;
+      border: 1px solid var(--bs-border-color);
+      background: rgba(var(--bs-info-rgb), .06);
+      color: var(--bs-secondary-color);
+    }
+    .about-terminal .tag.accent {
+      border-color: rgba(var(--bs-info-rgb), .4);
+      color: var(--bs-info); background: rgba(var(--bs-info-rgb), .08);
+    }
+    .about-terminal .spoiler {
+      background: var(--bs-secondary-color); color: var(--bs-secondary-color);
+      padding: 1px 4px; border-radius: 4px; cursor: pointer; transition: all .3s ease;
+    }
+    .about-terminal .spoiler:hover, .about-terminal .spoiler.revealed {
+      background: transparent; color: var(--bs-info);
+    }
+  </style>
+
+  <br><br><br>
+
+  <main class="mb-5 about-terminal">
+    <div class="container px-4 px-lg-5 pt-5">
       <div class="row gx-4 gx-lg-5 justify-content-center">
         <div class="col-md-10 col-lg-8 col-xl-7">
-          <span class="caption text-muted">头图由豆包生成，有修改</span>
 
-          <p>你好，欢迎你的到来，我是洛穹偎。</p>
+          <!-- Hero prompt -->
+          <div class="cmd-line mb-4" style="font-size:1.05rem;">
+            <span class="cmd-text" id="hero-cmd" data-text="$ whoami"></span>
+            <span class="cursor" id="hero-cursor"></span>
+          </div>
+          <div id="hero-reply" style="opacity:0; transform:translateY(6px); transition:all .6s ease; margin-bottom:2.5rem;">
+            <h1 class="mb-2" style="font-family:'JetBrains Mono',monospace; font-size:clamp(1.5rem,4vw,2.2rem); font-weight:700;">洛穹偎</h1>
+            <div class="d-flex gap-2 flex-wrap">
+              <span class="badge bg-secondary bg-opacity-10 text-secondary border"><i class="fa-solid fa-location-dot me-1"></i> Earth</span>
+              <span class="badge bg-secondary bg-opacity-10 text-secondary border"><i class="fa-solid fa-clock me-1"></i> <span id="liveClock">--:--:--</span></span>
+            </div>
+          </div>
 
-          <p>这里是一个用来安放我的热爱与思考的角落。我将这里视为展示我的理性与感性的交汇的地点。</p>
+          <!-- Content blocks -->
+          <div class="cmd-block" id="block-identity">
+            <div class="cmd-line">
+              <span class="cmd-text" id="b1" data-text="$ cat identity.md"></span>
+            </div>
+            <div class="cmd-body">
+              <p>你好，欢迎你的到来，我是洛穹偎。</p>
+              <p>这里是一个用来安放我的热爱与思考的角落。我将这里视为展示我的理性与感性的交汇的地点。</p>
+            </div>
+          </div>
 
-          <p>一边，是我的思想的骨架。</p>
+          <div class="cmd-block" id="block-rational">
+            <div class="cmd-line">
+              <span class="cmd-text" id="b2" data-text="$ cat rational_side.md"></span>
+            </div>
+            <div class="cmd-body">
+              <p>一边，是我的思想的骨架。</p>
+              <p class="mb-0">我的思维常常沉浸于应用数学、统计学、计算机科学、计量经济学和运筹学构成的知识之海。在这里，世界被简化为优雅的模型与算法，我可以通过理想化的透镜，去窥探更复杂、更多变的世界。我追求逻辑的自洽、数据的印证与效率的最优解。</p>
+            </div>
+          </div>
 
-          <p>我的思维常常沉浸于应用数学、统计学、计算机科学、计量经济学和运筹学构成的知识之海。在这里，世界被简化为优雅的模型与算法，我可以通过理想化的透镜，去窥探更复杂、更多变的世界。我追求逻辑的自洽、数据的印证与效率的最优解。</p>
+          <div class="cmd-block" id="block-creative">
+            <div class="cmd-line">
+              <span class="cmd-text" id="b3" data-text="$ cat creative_side.md"></span>
+            </div>
+            <div class="cmd-body">
+              <p>另一边，是我的幻想的灵魂。</p>
+              <p>我会自公式和代码中隐遁到VOCALOID或者说更大的电子音乐的世界，从初音未来的未来感旋律到洛天依的韵味，从重音Teto的活力到星尘的空灵，都让我感受到电子音乐与人声合成的无限可能。我对音乐史、音乐理论与电子音色有持续的兴趣。</p>
+              <p>同样的，在虚构的叙事里，我尤其喜爱那些细腻的情感图谱。我钟情于百合题材的番剧——无论是轻百合中那如清风拂面般的温馨日常，还是真百合里深沉的情感羁绊。我喜爱那些幻梦中最柔软、最真挚的微光。<span class="spoiler" onclick="this.classList.add('revealed')" title="点击查看"><a href={`${BASE}tools/my_fptsc_yuri/`}>我看过的...从夯到拉</a></span></p>
+            </div>
+          </div>
 
-          <p>另一边，是我的幻想的灵魂。</p>
+          <div class="cmd-block" id="block-interests">
+            <div class="cmd-line">
+              <span class="cmd-text" id="b4" data-text="$ ls interests/"></span>
+            </div>
+            <div class="cmd-body">
+              <p>那么，也可以据此猜测我的游戏品味。我喜爱逻辑编程解谜游戏，以及在肉鸽、经营类游戏中寻找"更优解"，当然，我也十分喜爱音游。</p>
+              <div class="tag-list">
+                <span class="tag accent">应用数学</span>
+                <span class="tag accent">统计学</span>
+                <span class="tag accent">计算机科学</span>
+                <span class="tag accent">计量经济学</span>
+                <span class="tag accent">运筹学</span>
+                <span class="tag">VOCALOID</span>
+                <span class="tag">电子音乐</span>
+                <span class="tag">百合</span>
+                <span class="tag">番剧</span>
+                <span class="tag">逻辑解谜</span>
+                <span class="tag">Roguelike</span>
+                <span class="tag">经营模拟</span>
+                <span class="tag">音游</span>
+              </div>
+            </div>
+          </div>
 
-          <p>我会自公式和代码中隐遁到VOCALOID或者说更大的电子音乐的世界，从初音未来的未来感旋律到洛天依的韵味，从重音Teto的活力到星尘的空灵，都让我感受到电子音乐与人声合成的无限可能。我对音乐史、音乐理论与电子音色有持续的兴趣。</p>
+          <div class="cmd-block" id="block-closing">
+            <div class="cmd-line">
+              <span class="cmd-text" id="b5" data-text="$ cat closing.txt"></span>
+            </div>
+            <div class="cmd-body">
+              <p>那么，我想在这里与你分享：</p>
+              <p>我对音乐的品味，科学与哲学的思辨，对某款游戏的鉴赏，对番剧的体会和热忱。此外，也可能摘选我的游记，我对某本书的读后感，抑或是更广泛的一些思考。</p>
+              <p>感谢你阅读到这里。希望在这个思维交汇的十字路口，你能找到一些引发共鸣的碎片。期待通过任何方式与你相遇，一起聊聊你或我热爱的一切。</p>
+              <div class="cmd-line mt-3" style="opacity:.55;">
+                <span class="cmd-text" id="b6" data-text="$ exit"></span>
+                <span class="cursor"></span>
+              </div>
+            </div>
+          </div>
 
-          <p>同样的，在虚构的叙事里，我尤其喜爱那些细腻的情感图谱。我钟情于百合题材的番剧——无论是轻百合中那如清风拂面般的温馨日常，还是真百合里深沉的情感羁绊。我喜爱那些幻梦中最柔软、最真挚的微光。<span class="spoiler"><a href="../tools/my_fptsc_yuri/">我看过的...从夯到拉</a></span></p>
-
-          <p>那么，也可以据此猜测我的游戏品味。我喜爱逻辑编程解谜游戏，以及在肉鸽、经营类游戏中寻找“更优解”，当然，我也十分喜爱音游。</p>
-
-          <p>那么，我想在这里与你分享：</p>
-
-          <p>我对音乐的品味，科学与哲学的思辨，对某款游戏的鉴赏，对番剧的体会和热忱。此外，也可能摘选我的游记，我对某本书的读后感，抑或是更广泛的一些思考。</p>
-
-          <p>感谢你阅读到这里。希望在这个思维交汇的十字路口，你能找到一些引发共鸣的碎片。期待通过任何方式与你相遇，一起聊聊你或我热爱的一切。</p>
         </div>
       </div>
     </div>
   </main>
+
+  <script is:inline>
+    (() => {
+      /* Live clock */
+      const clock = document.getElementById('liveClock');
+      const pad = (n) => String(n).padStart(2, '0');
+      setInterval(() => {
+        const now = new Date();
+        clock.textContent = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      }, 1000);
+
+      /* Typewriter */
+      function typeTo(el, text, speed = 55) {
+        return new Promise(resolve => {
+          el.textContent = '';
+          let i = 0;
+          function step() {
+            if (i < text.length) {
+              el.textContent += text[i];
+              i++;
+              setTimeout(step, speed + (Math.random() * 30 - 15));
+            } else { resolve(); }
+          }
+          step();
+        });
+      }
+      function revealBlock(block) { block.classList.add('active', 'revealed'); }
+
+      /* Sequential reveal on load */
+      const blocks = [
+        { cmdEl: document.getElementById('hero-cmd'), replyEl: document.getElementById('hero-reply'), cursor: document.getElementById('hero-cursor'), delay: 400 },
+        { block: document.getElementById('block-identity'), cmdEl: document.getElementById('b1'), delay: 600 },
+        { block: document.getElementById('block-rational'), cmdEl: document.getElementById('b2'), delay: 600 },
+        { block: document.getElementById('block-creative'), cmdEl: document.getElementById('b3'), delay: 600 },
+        { block: document.getElementById('block-interests'), cmdEl: document.getElementById('b4'), delay: 400 },
+        { block: document.getElementById('block-closing'), cmdEl: document.getElementById('b5'), delay: 500 },
+        { cmdEl: document.getElementById('b6'), delay: 400 },
+      ];
+
+      async function runSequence() {
+        for (const item of blocks) {
+          await new Promise(r => setTimeout(r, item.delay || 300));
+          if (item.cmdEl) await typeTo(item.cmdEl, item.cmdEl.dataset.text, 50);
+          if (item.replyEl) {
+            item.replyEl.style.opacity = '1';
+            item.replyEl.style.transform = 'translateY(0)';
+            if (item.cursor) item.cursor.style.display = 'none';
+          }
+          if (item.block) revealBlock(item.block);
+        }
+      }
+      runSequence();
+    })();
+  </script>
 </BaseLayout>

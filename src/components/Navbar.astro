@@ -1,21 +1,32 @@
 ---
 const BASE = import.meta.env.BASE_URL || '/';
+const currentPath = Astro.url.pathname;
 ---
-<nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
-  <div class="container px-4 px-lg-5">
-    <a class="navbar-brand" href={BASE}>洛穹偎的一家言</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+
+<link rel="preconnect" href="https://fonts.googleapis.com" slot="head" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin slot="head" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" slot="head" />
+
+<nav class="tech-nav" id="mainNav">
+  <div class="nav-inner">
+    <a class="nav-brand" href={BASE}>
+      <span class="nav-prompt">&gt;</span>
+      <span>洛穹偎的一家言</span>
+    </a>
+
+    <button class="nav-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
       aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-      Menu <i class="fas fa-bars"></i>
+      <i class="fa-solid fa-bars"></i>
     </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ms-auto py-4 py-lg-0">
-        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href={BASE}>Home</a></li>
-        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href=`${BASE}about/`>About</a></li>
-        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href=`${BASE}articles/`>Articles</a></li>
-        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href=`${BASE}tools/`>Tools</a></li>
-        <li class="nav-item ms-lg-3 theme-toggle-item">
-          <button class="btn btn-sm theme-toggle" type="button" id="themeToggle" aria-pressed="false" title="Toggle theme">
+
+    <div class="collapse" id="navbarResponsive">
+      <ul class="nav-menu">
+        <li><a class={currentPath === BASE ? 'active' : ''} href={BASE}>Home</a></li>
+        <li><a class={currentPath === `${BASE}about/` ? 'active' : ''} href={`${BASE}about/`}>About</a></li>
+        <li><a class={currentPath === `${BASE}articles/` ? 'active' : ''} href={`${BASE}articles/`}>Articles</a></li>
+        <li><a class={currentPath === `${BASE}tools/` ? 'active' : ''} href={`${BASE}tools/`}>Tools</a></li>
+        <li class="theme-item">
+          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false" title="切换主题">
             🌙
           </button>
         </li>
@@ -36,7 +47,7 @@ const BASE = import.meta.env.BASE_URL || '/';
     const isDark = mode === 'dark';
     root.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
     btn.setAttribute('aria-pressed', String(isDark));
-    btn.textContent = isDark ? '☀️' : '🌙';
+    btn.textContent = isDark ? '🌙' : '☀️';
   };
 
   const stored = localStorage.getItem(KEY);
