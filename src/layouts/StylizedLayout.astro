@@ -23,7 +23,7 @@ const styles = Array.isArray(style) ? style : [style];
     {styles.map(s => (
       <link href={`${BASE}css/${s}`} rel="stylesheet" />
     ))}
-    <link href={`${BASE}css/styles.css`} rel="stylesheet" />
+    <link href={`${BASE}css/styles.purged.css`} rel="stylesheet" />
     <link href={`${BASE}css/clean-blog.css`} rel="stylesheet" />
     <link href={`${BASE}css/custom.css`} rel="stylesheet" />
     <slot name="head" />
