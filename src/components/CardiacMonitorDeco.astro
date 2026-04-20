@@ -1,10 +1,5 @@
 <canvas id="bgCanvas"></canvas>
 
-<div class="vital-badge">
-    <div class="vital-value" id="Value">ONLINE</div>
-    <div class="vital-label">SYSTEM</div>
-</div>
-
 <script is:inline>
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
@@ -18,27 +13,10 @@
     };
 
     let systemOn = localStorage.getItem('my-system') === '1';
-    document.querySelector('.vital-value').textContent = systemOn ? 'ONLINE' : 'OFFLINE';
-    document.querySelector('.vital-badge').onclick = () => {
-        localStorage.setItem('my-system', (systemOn = !systemOn) ? '1' : '0');
-        document.querySelector('.vital-value').textContent = systemOn ? 'ONLINE' : 'OFFLINE';
-    };
-
-    const badge = document.querySelector('.vital-badge');
-    const valueDisplay = document.querySelector('.vital-value');
-
     let isActive = systemOn;
-    let isMobile = window.innerWidth <= 768;
-    let transform = isMobile ? 'translateX(-50%) scale(1)' : 'translateY(-50%) scale(1)';
 
-    badge.addEventListener('click', () => {
-        isActive = !isActive;
-        valueDisplay.textContent = isActive ? 'ONLINE' : 'OFFLINE';
-        badge.classList.toggle('active', isActive);
-        badge.style.transform = transform.replace('scale(1)', 'scale(0.9)');
-        setTimeout(() => {
-            badge.style.transform = transform;
-        }, 100);
+    document.addEventListener('system-status-change', (e) => {
+        isActive = e.detail.on;
     });
     
     let width, height, dpr;

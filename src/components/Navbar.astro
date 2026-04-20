@@ -25,6 +25,12 @@ const currentPath = Astro.url.pathname;
         <li><a class={currentPath === `${BASE}about/` ? 'active' : ''} href={`${BASE}about/`}>About</a></li>
         <li><a class={currentPath === `${BASE}articles/` ? 'active' : ''} href={`${BASE}articles/`}>Articles</a></li>
         <li><a class={currentPath === `${BASE}tools/` ? 'active' : ''} href={`${BASE}tools/`}>Tools</a></li>
+        <li class="sys-status-item">
+          <button class="sys-status" type="button" id="sysStatusBtn" title="切换系统状态">
+            <span class="sys-dot"></span>
+            <span class="sys-text">SYS: ONLINE</span>
+          </button>
+        </li>
         <li class="theme-item">
           <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false" title="切换主题">
             🌙
@@ -38,27 +44,52 @@ const currentPath = Astro.url.pathname;
 <script is:inline>
 (() => {
   if (typeof window === 'undefined') return;
+
+  // Theme toggle
   const KEY = 'theme-preference';
   const root = document.documentElement;
   const btn = document.getElementById('themeToggle');
-  if (!btn) return;
+  if (btn) {
+    const apply = (mode) => {
+      const isDark = mode === 'dark';
+      root.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+      btn.setAttribute('aria-pressed', String(isDark));
+      btn.textContent = isDark ? '🌙' : '☀️';
+    };
 
-  const apply = (mode) => {
-    const isDark = mode === 'dark';
-    root.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
-    btn.setAttribute('aria-pressed', String(isDark));
-    btn.textContent = isDark ? '🌙' : '☀️';
-  };
-
-  const stored = localStorage.getItem(KEY);
-  const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  let mode = stored || (systemPrefersDark ? 'dark' : 'light');
-  apply(mode);
-
-  btn.addEventListener('click', () => {
-    mode = mode === 'dark' ? 'light' : 'dark';
-    localStorage.setItem(KEY, mode);
+    const stored = localStorage.getItem(KEY);
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let mode = stored || (systemPrefersDark ? 'dark' : 'light');
     apply(mode);
-  });
+
+    btn.addEventListener('click', () => {
+      mode = mode === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(KEY, mode);
+      apply(mode);
+    });
+  }
+
+  // System status toggle
+  const SYS_KEY = 'my-system';
+  const sysBtn = document.getElementById('sysStatusBtn');
+  const sysDot = sysBtn?.querySelector('.sys-dot');
+  const sysText = sysBtn?.querySelector('.sys-text');
+  if (sysBtn && sysDot && sysText) {
+    let systemOn = localStorage.getItem(SYS_KEY) === '1';
+
+    const updateSys = (on) => {
+      systemOn = on;
+      localStorage.setItem(SYS_KEY, systemOn ? '1' : '0');
+      sysDot.classList.toggle('offline', !systemOn);
+      sysText.textContent = systemOn ? 'SYS: ONLINE' : 'SYS: OFFLINE';
+      document.dispatchEvent(new CustomEvent('system-status-change', { detail: { on: systemOn } }));
+    };
+
+    updateSys(systemOn);
+
+    sysBtn.addEventListener('click', () => {
+      updateSys(!systemOn);
+    });
+  }
 })();
 </script>

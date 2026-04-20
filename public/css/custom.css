@@ -446,6 +446,66 @@
   box-shadow: 0 0 14px rgba(var(--bs-info-rgb), 0.3);
 }
 
+/* System status indicator */
+#mainNav.tech-nav .sys-status-item {
+  display: flex;
+  align-items: center;
+}
+
+#mainNav.tech-nav .sys-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--bs-border-color);
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--bs-secondary-color);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+#mainNav.tech-nav .sys-status:hover {
+  border-color: var(--bs-info);
+  color: var(--bs-body-color);
+  background: rgba(var(--bs-info-rgb), 0.06);
+  box-shadow: 0 0 12px rgba(var(--bs-info-rgb), 0.15);
+}
+
+#mainNav.tech-nav .sys-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  animation: sys-pulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+[data-bs-theme="dark"] #mainNav.tech-nav .sys-dot {
+  background: #00ffd5;
+  box-shadow: 0 0 8px rgba(0, 255, 213, 0.6);
+}
+
+#mainNav.tech-nav .sys-dot.offline {
+  background: #9ca3af !important;
+  box-shadow: none !important;
+  animation: none;
+}
+
+@keyframes sys-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+#mainNav.tech-nav .sys-text {
+  letter-spacing: 0.04em;
+}
+
 @media (max-width: 991px) {
   #mainNav.tech-nav .nav-toggler { display: flex; }
   #mainNav.tech-nav #navbarResponsive {
@@ -463,6 +523,13 @@
   #mainNav.tech-nav .nav-menu a { justify-content: flex-start; padding: 12px 18px; font-size: 0.95rem; }
   #mainNav.tech-nav .theme-item { margin-top: 6px; }
   #mainNav.tech-nav .theme-toggle { margin-left: 6px; }
+  #mainNav.tech-nav .sys-status-item { margin-top: 6px; }
+  #mainNav.tech-nav .sys-status {
+    justify-content: flex-start;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    width: 100%;
+  }
 }
 
 .copyright {
