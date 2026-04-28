@@ -1,0 +1,217 @@
+---
+export interface Props {
+  /** 要显示的内容（支持换行） */
+  content: string;
+  /** 隐藏效果类型: blur(模糊) | blackout(涂黑) | fade(透明) | mask(遮罩) */
+  effect?: 'blur' | 'blackout' | 'fade' | 'mask';
+  /** 交互触发方式: hover(悬停) | click(点击切换) */
+  trigger?: 'hover' | 'click';
+  /** 额外 class */
+  class?: string;
+}
+
+const {
+  content,
+  effect = 'blur',
+  trigger = 'hover',
+  class: className = '',
+} = Astro.props;
+
+// 生成唯一 ID，避免多个实例冲突
+const uid = Math.random().toString(36).slice(2, 8);
+---
+
+<div
+  class={`hidden-text-block hidden-text-block--${effect} ${trigger === 'click' ? 'hidden-text-block--click' : ''} ${className}`}
+  data-effect={effect}
+  data-trigger={trigger}
+  data-uid={uid}
+>
+
+  {/* 内容区域 */}
+  <div class="htb-body">
+    <pre class="htb-pre"><code class="htb-code" id={`htb-code-${uid}`} set:html={content}></code></pre>
+    {effect === 'mask' && <div class="htb-mask" id={`htb-mask-${uid}`}></div>}
+    {trigger === 'click' && (
+      <div class="htb-hint" id={`htb-hint-${uid}`}>
+        <span class="htb-hint-icon">👁</span>
+        <span class="htb-hint-text">点击显示</span>
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  /* ========== 基础容器 ========== */
+  .hidden-text-block {
+    --htb-header-bg: #2d2d2d;
+    --htb-text: #d4d4d4;
+    --htb-border: #3c3c3c;
+    --htb-radius: 10px;
+    --htb-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    --htb-transition: 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    max-width: 800px;
+    margin: 1.5rem auto;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--htb-text);
+    background: var(--htb-bg);
+    border-radius: var(--htb-radius);
+    box-shadow: var(--htb-shadow);
+    overflow: hidden;
+    border: 1px solid var(--htb-border);
+    user-select: none;
+  }
+
+  /* ========== 内容区域 ========== */
+  .htb-body {
+    position: relative;
+    padding: 1.2rem 1.4rem;
+    min-height: 80px;
+  }
+
+  .htb-pre {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .htb-code {
+    display: block;
+    color: var(--htb-text);
+    transition: var(--htb-transition);
+  }
+
+  /* ========== 效果 1: 模糊 blur ========== */
+  .hidden-text-block--blur .htb-code {
+    filter: blur(8px);
+    opacity: 0.35;
+  }
+  .hidden-text-block--blur:hover .htb-code,
+  .hidden-text-block--blur.is-revealed .htb-code {
+    filter: blur(0);
+    opacity: 1;
+  }
+
+  /* ========== 效果 2: 涂黑 blackout ========== */
+  .hidden-text-block--blackout .htb-code {
+    color: transparent;
+    text-shadow: 0 0 12px rgba(212, 212, 212, 0.6);
+    opacity: 0.5;
+  }
+  .hidden-text-block--blackout:hover .htb-code,
+  .hidden-text-block--blackout.is-revealed .htb-code {
+    color: var(--htb-text);
+    text-shadow: none;
+    opacity: 1;
+  }
+
+  /* ========== 效果 3: 透明 fade ========== */
+  .hidden-text-block--fade .htb-code {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .hidden-text-block--fade:hover .htb-code,
+  .hidden-text-block--fade.is-revealed .htb-code {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ========== 效果 4: 遮罩 mask ========== */
+  .htb-mask {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      #2a2a2a,
+      #2a2a2a 10px,
+      #333 10px,
+      #333 20px
+    );
+    transition: var(--htb-transition);
+    cursor: pointer;
+  }
+  .hidden-text-block--mask:hover .htb-mask,
+  .hidden-text-block--mask.is-revealed .htb-mask {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hidden-text-block--mask:hover .htb-code,
+  .hidden-text-block--mask.is-revealed .htb-code {
+    opacity: 1;
+  }
+
+  /* ========== 点击模式的提示 ========== */
+  .htb-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(2px);
+    transition: var(--htb-transition);
+    cursor: pointer;
+    z-index: 2;
+  }
+  .hidden-text-block--click.is-revealed .htb-hint {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .htb-hint-icon {
+    font-size: 1.4rem;
+    opacity: 0.6;
+  }
+  .htb-hint-text {
+    font-size: 0.75rem;
+    color: #888;
+  }
+
+  /* ========== 点击模式下的基础状态 ========== */
+  .hidden-text-block--click.hidden-text-block--blur .htb-code,
+  .hidden-text-block--click.hidden-text-block--blackout .htb-code,
+  .hidden-text-block--click.hidden-text-block--fade .htb-code {
+    filter: blur(8px);
+    opacity: 0.35;
+    color: transparent;
+    text-shadow: 0 0 12px rgba(212, 212, 212, 0.6);
+  }
+  .hidden-text-block--click.is-revealed.hidden-text-block--blur .htb-code {
+    filter: blur(0);
+    opacity: 1;
+    color: var(--htb-text);
+    text-shadow: none;
+  }
+  .hidden-text-block--click.is-revealed.hidden-text-block--blackout .htb-code {
+    filter: blur(0);
+    opacity: 1;
+    color: var(--htb-text);
+    text-shadow: none;
+  }
+  .hidden-text-block--click.is-revealed.hidden-text-block--fade .htb-code {
+    filter: blur(0);
+    opacity: 1;
+    color: var(--htb-text);
+    text-shadow: none;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  (function () {
+    const blocks = document.querySelectorAll('.hidden-text-block--click');
+    blocks.forEach((block) => {
+      block.addEventListener('click', () => {
+        block.classList.toggle('is-revealed');
+      });
+    });
+  })();
+</script>
