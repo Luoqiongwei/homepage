@@ -511,8 +511,8 @@ const BASE = import.meta.env.BASE_URL || '/';
                 const gap = 10; // 图片间距
                 const padding = 20; // 容器内边距
                 
-                const availableWidth = zoneWidth;
-                const imagesPerRow = Math.floor(availableWidth / (imageWidth));
+                const availableWidth = zoneWidth - padding * 2;
+                const imagesPerRow = Math.floor(availableWidth / (imageWidth + gap));
                 const actualImagesPerRow = Math.max(1, imagesPerRow);
                 
                 // 计算需要的行数
