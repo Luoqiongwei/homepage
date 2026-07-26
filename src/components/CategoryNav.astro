@@ -1,9 +1,37 @@
-<div class="container text-center my-5">
-  <div class="d-flex flex-wrap justify-content-center gap-3">
-    <a href="#travel" class="btn btn-outline-primary btn-sm">微尘另册</a>
-    <a href="#anime" class="btn btn-outline-primary btn-sm">虹幕小札</a>
-    <a href="#books" class="btn btn-outline-primary btn-sm">墨烬编</a>
-    <a href="#games" class="btn btn-outline-primary btn-sm">跃迁协议</a>
-    <a href="#music" class="btn btn-outline-primary btn-sm">浮声集</a>
-  </div>
-</div>
+---
+// 坐标彩蛋：每颗星标注的「坐标」同时是它的实际位置（百分比）
+// 和一段中文电码 —— 去掉小数点后每四位查中文电码表，可得该栏目的两字暗语。
+// word 字段只留在源码里，不会渲染到页面上。
+const categories = [
+  { id: 'travel', name: '微尘另册', word: '随笔', x: 71.51, y: 45.81 },
+  { id: 'anime',  name: '虹幕小札', word: '虹幕', x: 57.25, y: 16.12 },
+  { id: 'books',  name: '墨烬编',   word: '墨烬', x: 10.75, y: 36.12 },
+  { id: 'games',  name: '跃迁协议', word: '跃迁', x: 64.60, y: 66.92 },
+  { id: 'music',  name: '浮声集',   word: '浮声', x: 31.87, y: 51.16 },
+];
+---
+
+<nav class="cat-constellation" aria-label="文章分类">
+  <svg class="cat-wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    {categories.map((c) => (
+      <line class={`line-${c.id}`} x1="65" y1="50" x2={c.x+15} y2={c.y} vector-effect="non-scaling-stroke" />
+    ))}
+  </svg>
+
+  <span class="cat-hub" aria-hidden="true" style={`left: ${65}%; top: ${50}%;`}>
+    <span class="cat-star"></span>
+    <span class="cat-hub-name">星屑簿</span>
+  </span>
+
+  {categories.map((c) => (
+    <a
+      class={`cat-node node-${c.id}`}
+      href={`#${c.id}`}
+      style={`left: ${c.x+15}%; top: ${c.y}%;`}
+    >
+      <span class="cat-star"></span>
+      <span class="cat-name">{c.name}</span>
+      <span class="cat-coord">{c.x.toFixed(2)}&deg; / {c.y.toFixed(2)}&deg;</span>
+    </a>
+  ))}
+</nav>

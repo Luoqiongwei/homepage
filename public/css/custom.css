@@ -1,4 +1,4 @@
-﻿
+
 .archive-button {
   display: inline-block;
   margin: 3rem auto;
@@ -559,4 +559,153 @@
   font-size: 1rem;
   color: var(--text-2);
   opacity: 0.7;
+}
+
+/* ============================================================
+   Category constellation nav (articles page)
+   栏目星座图：五个栏目为五颗星，悬停点亮连线
+   ============================================================ */
+.cat-constellation {
+  --cat-star: #7c8698;
+  --cat-star-glow: rgba(124, 134, 152, 0.35);
+  --cat-line: var(--bs-border-color);
+  --cat-active: #0891b2;
+  --cat-active-rgb: 8, 145, 178;
+
+  position: relative;
+  width: min(720px, calc(100% - 48px));
+  margin: 3.5rem auto 4.5rem;
+  aspect-ratio: 16 / 9;
+  user-select: none;
+}
+
+:root[data-bs-theme="dark"] .cat-constellation {
+  --cat-star: #e8ecff;
+  --cat-star-glow: rgba(232, 236, 255, 0.45);
+  --cat-active: #facc15;
+  --cat-active-rgb: 250, 204, 21;
+}
+
+.cat-wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cat-wires line {
+  stroke: var(--cat-line);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  opacity: 0.8;
+  transition: stroke 0.35s ease, opacity 0.35s ease;
+}
+
+.cat-constellation:has(.node-travel:hover) .line-travel,
+.cat-constellation:has(.node-travel:focus-visible) .line-travel,
+.cat-constellation:has(.node-anime:hover) .line-anime,
+.cat-constellation:has(.node-anime:focus-visible) .line-anime,
+.cat-constellation:has(.node-books:hover) .line-books,
+.cat-constellation:has(.node-books:focus-visible) .line-books,
+.cat-constellation:has(.node-games:hover) .line-games,
+.cat-constellation:has(.node-games:focus-visible) .line-games,
+.cat-constellation:has(.node-music:hover) .line-music,
+.cat-constellation:has(.node-music:focus-visible) .line-music {
+  stroke: var(--cat-active);
+  stroke-dasharray: none;
+  opacity: 1;
+}
+
+.cat-node,
+.cat-hub {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-decoration: none;
+}
+
+.cat-hub { left: 50%; top: 50%; }
+/* 各 .cat-node 的位置由组件内联 style 给出 —— 位置即坐标、坐标即电文 */
+
+.cat-star {
+  display: block;
+  width: 9px;
+  height: 9px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: var(--cat-star);
+  box-shadow: 0 0 10px 2px var(--cat-star-glow);
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cat-hub .cat-star {
+  width: 13px;
+  height: 13px;
+  background: var(--cat-active);
+  box-shadow: 0 0 16px 4px rgba(var(--cat-active-rgb), 0.45);
+}
+
+.cat-hub-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--bs-secondary-color);
+}
+
+.cat-name {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--bs-body-color);
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.cat-coord {
+  display: block;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.cat-node:hover .cat-coord,
+.cat-node:focus-visible .cat-coord {
+  color: var(--cat-active);
+}
+
+.cat-node:hover .cat-star,
+.cat-node:focus-visible .cat-star {
+  background: var(--cat-active);
+  box-shadow: 0 0 18px 5px rgba(var(--cat-active-rgb), 0.5);
+  transform: scale(1.3);
+}
+
+.cat-node:hover .cat-name,
+.cat-node:focus-visible .cat-name {
+  color: var(--cat-active);
+}
+
+@media (max-width: 640px) {
+  .cat-constellation {
+    aspect-ratio: 4 / 5;
+    margin: 2.5rem auto 4rem;
+  }
+
+  .cat-name {
+    font-size: 0.88rem;
+    letter-spacing: 0.15em;
+    text-indent: 0.15em;
+  }
+
+  .cat-hub-name {
+    font-size: 0.75rem;
+  }
 }
