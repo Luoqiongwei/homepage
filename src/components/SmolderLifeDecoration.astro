@@ -1,0 +1,894 @@
+---
+interface Props {
+  class?: string;
+  density?: number;
+  speed?: number;
+  paused?: boolean;
+  interactive?: boolean;
+  respectReducedMotion?: boolean;
+  burnMemory?: boolean;
+  particles?: boolean;
+  seed?: number;
+  aspectRatio?: number;
+  ariaLabel?: string;
+}
+
+const {
+  class: className = "",
+  density = 23,
+  speed = 6,
+  paused = false,
+  interactive = false,
+  respectReducedMotion = true,
+  burnMemory = true,
+  particles = true,
+  seed,
+  aspectRatio = 74 / 48,
+  ariaLabel = "康威生命游戏余烬包络装饰",
+} = Astro.props;
+---
+
+<canvas
+  class:list={["smolder-life-decoration", className]}
+  data-smolder-life
+  data-density={Math.max(5, Math.min(90, density))}
+  data-speed={Math.max(1, Math.min(8, speed))}
+  data-paused={String(paused)}
+  data-interactive={String(interactive)}
+  data-reduced-motion={String(respectReducedMotion)}
+  data-burn-memory={String(burnMemory)}
+  data-particles={String(particles)}
+  data-seed={seed}
+  width="740"
+  height="480"
+  style={`--smolder-aspect-ratio: ${Math.max(0.5, Math.min(3, aspectRatio))}`}
+  aria-hidden={interactive ? undefined : "true"}
+  aria-label={interactive ? ariaLabel : undefined}
+  role={interactive ? "img" : undefined}
+  tabindex={interactive ? 0 : undefined}
+></canvas>
+
+<style>
+  .smolder-life-decoration {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: auto;
+    margin: 3.5rem auto;
+    aspect-ratio: var(--smolder-aspect-ratio, 1.5417);
+    overflow: hidden;
+    background: #d3c4a6;
+    border: 1px solid rgba(46, 38, 29, 0.18);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .smolder-life-decoration[data-interactive="true"] {
+    pointer-events: auto;
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+</style>
+
+<script>
+  const COLS = 74;
+  const ROWS = 48;
+  const COUNT = COLS * ROWS;
+  const INF = 9999;
+
+  type Point = { x: number; y: number };
+  type EdgeName = "t" | "r" | "b" | "l";
+  type Segment = [Point, Point];
+  type ContourFrame = Point[][];
+  type Particle = {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    life: number;
+    maxLife: number;
+    size: number;
+    phase: number;
+    kind: "spark" | "ash";
+  };
+  type Field = {
+    cells: Uint8Array;
+    ages: Uint16Array;
+    fromDistance: Float32Array;
+    toDistance: Float32Array;
+    morphStarted: number;
+    morphDuration: number;
+    generationStarted: number;
+    morphFrames: ContourFrame[];
+    morphId: number;
+    cellVersion: number;
+    generation: number;
+    arcCount: number;
+    seed: number;
+    clock: number;
+  };
+  type RenderCache = {
+    dpr: number;
+    cellVersion: number;
+    background: HTMLCanvasElement | null;
+    arcMorphId: number;
+    arcFrameIndex: number;
+    arcPath: Path2D | null;
+    burnLayer: HTMLCanvasElement | null;
+    lastBurnClock: number;
+    lastBurnMorphId: number;
+    lastBurnFrameIndex: number;
+    particles: Particle[];
+    nextBurstClock: number;
+    effectState: number;
+    frameTimeEma: number;
+  };
+
+  function mulberry32(seed: number) {
+    return () => {
+      let t = (seed += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function indexAt(x: number, y: number) {
+    return ((y + ROWS) % ROWS) * COLS + ((x + COLS) % COLS);
+  }
+
+  function distanceTo(cells: Uint8Array, target: 0 | 1) {
+    const distance = new Float32Array(COUNT);
+    const diagonal = Math.SQRT2;
+    for (let i = 0; i < COUNT; i++) distance[i] = cells[i] === target ? 0 : INF;
+
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const i = y * COLS + x;
+        let value = distance[i];
+        if (x > 0) value = Math.min(value, distance[i - 1] + 1);
+        if (y > 0) value = Math.min(value, distance[i - COLS] + 1);
+        if (x > 0 && y > 0) value = Math.min(value, distance[i - COLS - 1] + diagonal);
+        if (x < COLS - 1 && y > 0) value = Math.min(value, distance[i - COLS + 1] + diagonal);
+        distance[i] = value;
+      }
+    }
+
+    for (let y = ROWS - 1; y >= 0; y--) {
+      for (let x = COLS - 1; x >= 0; x--) {
+        const i = y * COLS + x;
+        let value = distance[i];
+        if (x < COLS - 1) value = Math.min(value, distance[i + 1] + 1);
+        if (y < ROWS - 1) value = Math.min(value, distance[i + COLS] + 1);
+        if (x < COLS - 1 && y < ROWS - 1) value = Math.min(value, distance[i + COLS + 1] + diagonal);
+        if (x > 0 && y < ROWS - 1) value = Math.min(value, distance[i + COLS - 1] + diagonal);
+        distance[i] = value;
+      }
+    }
+    return distance;
+  }
+
+  function signedDistance(cells: Uint8Array) {
+    const toAlive = distanceTo(cells, 1);
+    const toDead = distanceTo(cells, 0);
+    const result = new Float32Array(COUNT);
+    for (let i = 0; i < COUNT; i++) result[i] = toDead[i] - toAlive[i];
+    return result;
+  }
+
+  function morphLinear(field: Field) {
+    return Math.max(0, Math.min(1, (field.clock - field.morphStarted) / Math.max(1, field.morphDuration)));
+  }
+
+  function flowEase(linear: number) {
+    // 端点速度不归零，使相邻世代的轮廓始终保持流动。
+    return linear * (0.82 + 0.18 * (3 * linear - 2 * linear * linear));
+  }
+
+  function currentDistance(field: Field) {
+    const progress = flowEase(morphLinear(field));
+    const result = new Float32Array(COUNT);
+    for (let i = 0; i < COUNT; i++) {
+      result[i] = field.fromDistance[i] * (1 - progress) + field.toDistance[i] * progress;
+    }
+    return result;
+  }
+
+  function interpolateEdge(a: number, b: number) {
+    const denominator = a - b;
+    if (Math.abs(denominator) < 0.00001) return 0.5;
+    return Math.max(0.04, Math.min(0.96, a / denominator));
+  }
+
+  function marchingSegments(values: Float32Array): Segment[] {
+    const segments: Segment[] = [];
+    const cases: Record<number, [EdgeName, EdgeName][]> = {
+      1: [["l", "t"]], 2: [["t", "r"]], 3: [["l", "r"]], 4: [["r", "b"]],
+      5: [["t", "r"], ["b", "l"]], 6: [["t", "b"]], 7: [["l", "b"]],
+      8: [["b", "l"]], 9: [["t", "b"]], 10: [["l", "t"], ["r", "b"]],
+      11: [["r", "b"]], 12: [["l", "r"]], 13: [["t", "r"]], 14: [["l", "t"]],
+    };
+
+    for (let y = 0; y < ROWS - 1; y++) {
+      for (let x = 0; x < COLS - 1; x++) {
+        const tl = values[y * COLS + x];
+        const tr = values[y * COLS + x + 1];
+        const br = values[(y + 1) * COLS + x + 1];
+        const bl = values[(y + 1) * COLS + x];
+        const code = (tl > 0 ? 1 : 0) | (tr > 0 ? 2 : 0) | (br > 0 ? 4 : 0) | (bl > 0 ? 8 : 0);
+        const topology = cases[code];
+        if (!topology) continue;
+        const points: Record<EdgeName, Point> = {
+          t: { x: x + interpolateEdge(tl, tr), y },
+          r: { x: x + 1, y: y + interpolateEdge(tr, br) },
+          b: { x: x + interpolateEdge(bl, br), y: y + 1 },
+          l: { x, y: y + interpolateEdge(tl, bl) },
+        };
+        for (const [a, b] of topology) segments.push([points[a], points[b]]);
+      }
+    }
+    return segments;
+  }
+
+  function pointKey(point: Point) {
+    return `${Math.round(point.x * 10000)},${Math.round(point.y * 10000)}`;
+  }
+
+  function stitchSegments(segments: Segment[]) {
+    const attached = new Map<string, number[]>();
+    segments.forEach((segment, index) => {
+      for (const point of segment) {
+        const key = pointKey(point);
+        attached.set(key, [...(attached.get(key) ?? []), index]);
+      }
+    });
+
+    const visited = new Set<number>();
+    const paths: Point[][] = [];
+    for (let seed = 0; seed < segments.length; seed++) {
+      if (visited.has(seed)) continue;
+      const segment = segments[seed];
+      const start = (attached.get(pointKey(segment[0]))?.length ?? 0) === 1 ? segment[0] : segment[1];
+      const points = [start];
+      let cursor = pointKey(start);
+      let current = seed;
+      while (!visited.has(current)) {
+        visited.add(current);
+        const candidate = segments[current];
+        const next = pointKey(candidate[0]) === cursor ? candidate[1] : candidate[0];
+        points.push(next);
+        cursor = pointKey(next);
+        const onward = (attached.get(cursor) ?? []).find((index) => !visited.has(index));
+        if (onward === undefined) break;
+        current = onward;
+      }
+      if (points.length > 2) paths.push(points);
+    }
+    return paths;
+  }
+
+  function contours(values: Float32Array) {
+    return stitchSegments(marchingSegments(values));
+  }
+
+  function prepareMorphFrames(from: Float32Array, to: Float32Array, frameCount = 32) {
+    const frames: ContourFrame[] = [];
+    const values = new Float32Array(COUNT);
+    for (let frame = 0; frame < frameCount; frame++) {
+      const progress = flowEase(frame / Math.max(1, frameCount - 1));
+      for (let i = 0; i < COUNT; i++) values[i] = from[i] * (1 - progress) + to[i] * progress;
+      frames.push(contours(values));
+    }
+    return frames;
+  }
+
+  function makeField(density: number, seed = Math.floor(Math.random() * 999999)): Field {
+    const random = mulberry32(seed);
+    const cells = new Uint8Array(COUNT);
+    const ages = new Uint16Array(COUNT);
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const edge = Math.min(x, y, COLS - x - 1, ROWS - y - 1);
+        const grain = Math.sin(x * 0.31 + y * 0.13) * 0.035;
+        cells[y * COLS + x] = random() < density + grain - (edge < 2 ? 0.08 : 0) ? 1 : 0;
+      }
+    }
+    const distance = signedDistance(cells);
+    const initialContours = contours(distance);
+    return {
+      cells,
+      ages,
+      fromDistance: distance,
+      toDistance: new Float32Array(distance),
+      morphStarted: 0,
+      morphDuration: 900,
+      generationStarted: 0,
+      morphFrames: [initialContours],
+      morphId: 0,
+      cellVersion: 0,
+      generation: 0,
+      arcCount: initialContours.length,
+      seed,
+      clock: 0,
+    };
+  }
+
+  function livingNeighbors(cells: Uint8Array, x: number, y: number) {
+    let count = 0;
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (dx !== 0 || dy !== 0) count += cells[indexAt(x + dx, y + dy)];
+      }
+    }
+    return count;
+  }
+
+  function stepField(field: Field, duration: number) {
+    const next = new Uint8Array(COUNT);
+    const nextAges = new Uint16Array(COUNT);
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const i = y * COLS + x;
+        const neighbors = livingNeighbors(field.cells, x, y);
+        const alive = field.cells[i] === 1;
+        const nextAlive = (alive && (neighbors === 2 || neighbors === 3)) || (!alive && neighbors === 3);
+        next[i] = nextAlive ? 1 : 0;
+        nextAges[i] = nextAlive ? (alive ? Math.min(65535, field.ages[i] + 1) : 1) : 0;
+      }
+    }
+    field.fromDistance = currentDistance(field);
+    field.toDistance = signedDistance(next);
+    field.morphStarted = field.clock;
+    field.morphDuration = duration * 1.04;
+    field.generationStarted = field.clock;
+    field.cells = next;
+    field.ages = nextAges;
+    field.morphFrames = prepareMorphFrames(field.fromDistance, field.toDistance);
+    field.morphId += 1;
+    field.cellVersion += 1;
+    field.generation += 1;
+    field.arcCount = field.morphFrames[field.morphFrames.length - 1]?.length ?? 0;
+  }
+
+  function gridMetrics(canvas: HTMLCanvasElement) {
+    const rect = canvas.getBoundingClientRect();
+    const cell = Math.min(rect.width / COLS, rect.height / ROWS);
+    return { rect, cell, ox: (rect.width - cell * COLS) / 2, oy: (rect.height - cell * ROWS) / 2 };
+  }
+
+  function compileArcPath(paths: ContourFrame, cell: number, ox: number, oy: number) {
+    const result = new Path2D();
+    const locate = (points: Point[], index: number, pathIndex: number) => {
+      const safe = Math.max(0, Math.min(points.length - 1, index));
+      const point = points[safe];
+      const before = points[Math.max(0, safe - 1)];
+      const after = points[Math.min(points.length - 1, safe + 1)];
+      const tx = after.x - before.x;
+      const ty = after.y - before.y;
+      const length = Math.hypot(tx, ty) || 1;
+      const irregularity = Math.sin(safe * 0.61 + pathIndex * 1.79) * cell * 0.025;
+      return {
+        x: ox + (point.x + 0.5) * cell - (ty / length) * irregularity,
+        y: oy + (point.y + 0.5) * cell + (tx / length) * irregularity,
+      };
+    };
+
+    paths.forEach((points, pathIndex) => {
+      if (points.length < 2) return;
+      const start = locate(points, 0, pathIndex);
+      result.moveTo(start.x, start.y);
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = locate(points, i - 1, pathIndex);
+        const p1 = locate(points, i, pathIndex);
+        const p2 = locate(points, i + 1, pathIndex);
+        const p3 = locate(points, i + 2, pathIndex);
+        result.bezierCurveTo(
+          p1.x + (p2.x - p0.x) / 6,
+          p1.y + (p2.y - p0.y) / 6,
+          p2.x - (p3.x - p1.x) / 6,
+          p2.y - (p3.y - p1.y) / 6,
+          p2.x,
+          p2.y,
+        );
+      }
+    });
+    return result;
+  }
+
+  function createCache(seed: number): RenderCache {
+    return {
+      dpr: 0,
+      cellVersion: -1,
+      background: null,
+      arcMorphId: -1,
+      arcFrameIndex: -1,
+      arcPath: null,
+      burnLayer: null,
+      lastBurnClock: 0,
+      lastBurnMorphId: -1,
+      lastBurnFrameIndex: -1,
+      particles: [],
+      nextBurstClock: 0,
+      effectState: seed ^ 0x45d9f3b,
+      frameTimeEma: 16.7,
+    };
+  }
+
+  function effectRandom(cache: RenderCache) {
+    let state = cache.effectState || 0x6d2b79f5;
+    state ^= state << 13;
+    state ^= state >>> 17;
+    state ^= state << 5;
+    cache.effectState = state >>> 0;
+    return cache.effectState / 4294967296;
+  }
+
+  function ensureBurnLayer(cache: RenderCache, width: number, height: number, dpr: number, clock: number) {
+    if (!cache.burnLayer || cache.burnLayer.width !== width || cache.burnLayer.height !== height) {
+      const layer = document.createElement("canvas");
+      layer.width = width;
+      layer.height = height;
+      cache.burnLayer = layer;
+      cache.lastBurnClock = clock;
+    }
+    const context = cache.burnLayer.getContext("2d");
+    context?.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return context;
+  }
+
+  function updateBurnMemory(
+    cache: RenderCache,
+    path: Path2D,
+    paths: ContourFrame,
+    field: Field,
+    width: number,
+    height: number,
+    dpr: number,
+    cell: number,
+    ox: number,
+    oy: number,
+    frameIndex: number,
+  ) {
+    const context = ensureBurnLayer(cache, width, height, dpr, field.clock);
+    if (!context) return;
+    const elapsed = Math.max(0, field.clock - cache.lastBurnClock);
+    const interval = cache.frameTimeEma > 24 ? 112 : 72;
+    if (elapsed < interval) return;
+    cache.lastBurnClock = field.clock;
+    const cssWidth = width / dpr;
+    const cssHeight = height / dpr;
+
+    // 旧灼痕指数衰减，逐渐重新显露纸张底色。
+    context.save();
+    context.globalCompositeOperation = "destination-out";
+    context.fillStyle = `rgba(0, 0, 0, ${Math.min(0.055, 1 - Math.exp(-elapsed / 8200))})`;
+    context.fillRect(0, 0, cssWidth, cssHeight);
+    context.restore();
+
+    const repeatedFrame = cache.lastBurnMorphId === field.morphId && cache.lastBurnFrameIndex === frameIndex;
+    cache.lastBurnMorphId = field.morphId;
+    cache.lastBurnFrameIndex = frameIndex;
+    if (repeatedFrame) return;
+
+    context.save();
+    context.globalCompositeOperation = "source-over";
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.strokeStyle = "rgba(80, 35, 17, .032)";
+    context.lineWidth = Math.max(2.1, cell * 0.58);
+    context.shadowBlur = Math.min(4, cell * 0.24);
+    context.shadowColor = "rgba(104, 42, 16, .11)";
+    context.stroke(path);
+    context.shadowBlur = 0;
+    context.strokeStyle = "rgba(37, 24, 16, .038)";
+    context.lineWidth = Math.max(0.7, cell * 0.13);
+    context.stroke(path);
+
+    if (paths.length && effectRandom(cache) < 0.58) {
+      const candidates = paths.filter((points) => points.length > 8);
+      const selected = candidates[Math.floor(effectRandom(cache) * candidates.length)];
+      if (selected) {
+        const point = selected[Math.floor(effectRandom(cache) * selected.length)];
+        context.fillStyle = `rgba(44, 28, 18, ${0.035 + effectRandom(cache) * 0.045})`;
+        context.beginPath();
+        context.arc(
+          ox + (point.x + 0.5) * cell,
+          oy + (point.y + 0.5) * cell,
+          0.35 + effectRandom(cache) * Math.max(0.7, cell * 0.1),
+          0,
+          Math.PI * 2,
+        );
+        context.fill();
+      }
+    }
+    context.restore();
+  }
+
+  function spawnParticleBurst(
+    cache: RenderCache,
+    paths: ContourFrame,
+    field: Field,
+    cell: number,
+    ox: number,
+    oy: number,
+  ) {
+    if (field.clock < cache.nextBurstClock) return;
+    cache.nextBurstClock = field.clock + 620 + effectRandom(cache) * 880;
+    const candidates = paths.filter(
+      (points, index) => points.length > 11 && ((index * 7 + field.generation) % 5 < 2),
+    );
+    const selected = candidates[Math.floor(effectRandom(cache) * candidates.length)];
+    if (!selected) return;
+    const pointIndex = 1 + Math.floor(effectRandom(cache) * Math.max(1, selected.length - 2));
+    const point = selected[Math.min(selected.length - 1, pointIndex)];
+    const before = selected[Math.max(0, pointIndex - 1)];
+    const after = selected[Math.min(selected.length - 1, pointIndex + 1)];
+    const tx = after.x - before.x;
+    const ty = after.y - before.y;
+    const length = Math.hypot(tx, ty) || 1;
+    const nx = -ty / length;
+    const ny = tx / length;
+    const baseX = ox + (point.x + 0.5) * cell;
+    const baseY = oy + (point.y + 0.5) * cell;
+    const budget = cache.frameTimeEma > 28 ? 8 : cache.frameTimeEma > 22 ? 16 : 28;
+    const burstSize = 2 + Math.floor(effectRandom(cache) * 3);
+
+    for (let i = 0; i < burstSize && cache.particles.length < budget; i++) {
+      const kind = effectRandom(cache) < 0.7 ? "spark" : "ash";
+      const side = effectRandom(cache) < 0.5 ? -1 : 1;
+      const tangent = (effectRandom(cache) - 0.5) * (kind === "spark" ? 0.055 : 0.018) * cell;
+      const normal = side * (0.018 + effectRandom(cache) * 0.034) * cell;
+      const maxLife = kind === "spark" ? 360 + effectRandom(cache) * 420 : 900 + effectRandom(cache) * 900;
+      cache.particles.push({
+        x: baseX + nx * (effectRandom(cache) - 0.5) * cell * 0.35,
+        y: baseY + ny * (effectRandom(cache) - 0.5) * cell * 0.35,
+        vx: (tx / length) * tangent + nx * normal,
+        vy: (ty / length) * tangent + ny * normal - (kind === "spark" ? 0.025 : 0.008) * cell,
+        life: maxLife,
+        maxLife,
+        size: kind === "spark" ? 0.45 + effectRandom(cache) * 1.15 : 0.55 + effectRandom(cache) * 1.35,
+        phase: effectRandom(cache) * Math.PI * 2,
+        kind,
+      });
+    }
+  }
+
+  function drawParticles(
+    context: CanvasRenderingContext2D,
+    cache: RenderCache,
+    elapsed: number,
+    paths: ContourFrame,
+    field: Field,
+    cell: number,
+    ox: number,
+    oy: number,
+  ) {
+    if (elapsed > 0) spawnParticleBurst(cache, paths, field, cell, ox, oy);
+    const dt = Math.min(34, Math.max(0, elapsed));
+    const survivors: Particle[] = [];
+    for (const particle of cache.particles) {
+      if (dt > 0) {
+        particle.life -= dt;
+        particle.x += particle.vx * dt;
+        particle.y += particle.vy * dt;
+        particle.vy += (particle.kind === "spark" ? 0.00022 : 0.000035) * dt;
+        if (particle.kind === "ash") {
+          particle.vx += Math.sin(field.clock * 0.003 + particle.phase) * 0.000018 * dt;
+        }
+      }
+      if (particle.life <= 0) continue;
+      survivors.push(particle);
+      const progress = particle.life / particle.maxLife;
+      context.save();
+      if (particle.kind === "spark") {
+        context.globalCompositeOperation = "lighter";
+        context.globalAlpha = Math.min(1, progress * 1.65);
+        context.strokeStyle = progress > 0.55 ? "#ffe4a1" : "#ee6d25";
+        context.lineWidth = particle.size;
+        context.lineCap = "round";
+        context.beginPath();
+        context.moveTo(particle.x, particle.y);
+        context.lineTo(particle.x - particle.vx * 13, particle.y - particle.vy * 13);
+        context.stroke();
+      } else {
+        context.globalAlpha = Math.sin(Math.min(1, progress) * Math.PI) * 0.58;
+        context.fillStyle = "#493a2d";
+        context.beginPath();
+        context.arc(particle.x, particle.y, particle.size * (0.7 + (1 - progress) * 0.45), 0, Math.PI * 2);
+        context.fill();
+      }
+      context.restore();
+    }
+    cache.particles = survivors;
+  }
+
+  function rebuildBackground(
+    cache: RenderCache,
+    field: Field,
+    width: number,
+    height: number,
+    dpr: number,
+    cell: number,
+    ox: number,
+    oy: number,
+  ) {
+    const background = cache.background ?? document.createElement("canvas");
+    background.width = width;
+    background.height = height;
+    const context = background.getContext("2d");
+    if (!context) return;
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cssWidth = width / dpr;
+    const cssHeight = height / dpr;
+    const paper = context.createRadialGradient(
+      cssWidth * 0.46,
+      cssHeight * 0.4,
+      10,
+      cssWidth * 0.5,
+      cssHeight * 0.5,
+      cssWidth * 0.72,
+    );
+    paper.addColorStop(0, "#dfd1b1");
+    paper.addColorStop(0.68, "#d2c19f");
+    paper.addColorStop(1, "#bda984");
+    context.fillStyle = paper;
+    context.fillRect(0, 0, cssWidth, cssHeight);
+
+    context.strokeStyle = "rgba(70, 51, 33, .07)";
+    context.lineWidth = 0.48;
+    for (let n = 0; n < 62; n++) {
+      const y = (((n * 43 + field.seed) % 101) / 101) * cssHeight;
+      context.beginPath();
+      context.moveTo(0, y);
+      context.bezierCurveTo(
+        cssWidth * 0.28,
+        y + Math.sin(n * 1.7) * 2.4,
+        cssWidth * 0.72,
+        y - Math.cos(n * 2.2) * 2,
+        cssWidth,
+        y + Math.sin(n) * 1.2,
+      );
+      context.stroke();
+    }
+    context.fillStyle = "rgba(64, 47, 31, .055)";
+    for (let n = 0; n < 130; n++) {
+      const x = (((n * 67 + field.seed * 3) % 997) / 997) * cssWidth;
+      const y = (((n * 149 + field.seed) % 991) / 991) * cssHeight;
+      context.fillRect(x, y, 0.45 + (n % 3) * 0.18, 0.35);
+    }
+
+    const gap = cell > 7 ? 0.72 : 0.45;
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const i = y * COLS + x;
+        const px = ox + x * cell;
+        const py = oy + y * cell;
+        if (field.cells[i]) {
+          const ageTone = Math.min(10, field.ages[i]);
+          const base = 43 - ageTone;
+          context.fillStyle = `rgb(${base}, ${base}, ${Math.max(28, base - 5)})`;
+        } else {
+          context.fillStyle = (x + y) % 2 === 0 ? "#d8c9aa" : "#d4c5a7";
+        }
+        context.fillRect(
+          px + gap * 0.5,
+          py + gap * 0.5,
+          Math.max(0.5, cell - gap),
+          Math.max(0.5, cell - gap),
+        );
+      }
+    }
+
+    const vignette = context.createRadialGradient(
+      cssWidth / 2,
+      cssHeight / 2,
+      cssHeight * 0.28,
+      cssWidth / 2,
+      cssHeight / 2,
+      Math.max(cssWidth, cssHeight) * 0.69,
+    );
+    vignette.addColorStop(0, "rgba(45, 31, 19, 0)");
+    vignette.addColorStop(1, "rgba(45, 31, 19, .16)");
+    context.fillStyle = vignette;
+    context.fillRect(0, 0, cssWidth, cssHeight);
+
+    cache.background = background;
+    cache.cellVersion = field.cellVersion;
+  }
+
+  function drawField(
+    canvas: HTMLCanvasElement,
+    field: Field,
+    cache: RenderCache,
+    burnMemory: boolean,
+    particles: boolean,
+    elapsed: number,
+  ) {
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const { rect, cell, ox, oy } = gridMetrics(canvas);
+    if (rect.width < 1 || rect.height < 1) return;
+    const pixelArea = rect.width * rect.height;
+    const dpr = Math.min(window.devicePixelRatio || 1, pixelArea > 900000 ? 1.25 : 1.6);
+    const width = Math.max(1, Math.floor(rect.width * dpr));
+    const height = Math.max(1, Math.floor(rect.height * dpr));
+    const resized = canvas.width !== width || canvas.height !== height || cache.dpr !== dpr;
+    if (resized) {
+      canvas.width = width;
+      canvas.height = height;
+      cache.dpr = dpr;
+      cache.background = null;
+      cache.arcPath = null;
+      cache.burnLayer = null;
+    }
+
+    if (resized || !cache.background || cache.cellVersion !== field.cellVersion) {
+      rebuildBackground(cache, field, width, height, dpr, cell, ox, oy);
+    }
+
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.clearRect(0, 0, width, height);
+    if (cache.background) context.drawImage(cache.background, 0, 0);
+
+    const frameIndex = Math.min(
+      field.morphFrames.length - 1,
+      Math.max(0, Math.round(morphLinear(field) * Math.max(0, field.morphFrames.length - 1))),
+    );
+    if (!cache.arcPath || cache.arcMorphId !== field.morphId || cache.arcFrameIndex !== frameIndex) {
+      cache.arcPath = compileArcPath(field.morphFrames[frameIndex] ?? [], cell, ox, oy);
+      cache.arcMorphId = field.morphId;
+      cache.arcFrameIndex = frameIndex;
+    }
+
+    const path = cache.arcPath;
+    const paths = field.morphFrames[frameIndex] ?? [];
+    cache.frameTimeEma += (elapsed - cache.frameTimeEma) * 0.045;
+    if (path && burnMemory) {
+      updateBurnMemory(cache, path, paths, field, width, height, dpr, cell, ox, oy, frameIndex);
+    }
+    if (burnMemory && cache.burnLayer) {
+      context.save();
+      context.globalCompositeOperation = "multiply";
+      context.globalAlpha = 0.9;
+      context.drawImage(cache.burnLayer, 0, 0);
+      context.restore();
+    }
+
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (path) {
+      const flicker = 0.94 + Math.sin(field.clock * 0.0067) * 0.045 + Math.sin(field.clock * 0.0021) * 0.025;
+      context.save();
+      context.globalCompositeOperation = "lighter";
+      context.globalAlpha = flicker;
+      context.lineCap = "round";
+      context.lineJoin = "round";
+
+      context.setLineDash([]);
+      context.strokeStyle = "rgba(116, 25, 14, .58)";
+      context.lineWidth = Math.max(1.2, cell * 0.235);
+      context.shadowBlur = 3.4;
+      context.shadowColor = "rgba(205, 44, 17, .5)";
+      context.stroke(path);
+
+      const flame = context.createLinearGradient(ox, oy + cell * ROWS, ox + cell * COLS, oy);
+      flame.addColorStop(0, "rgba(188, 48, 23, .82)");
+      flame.addColorStop(0.42, "rgba(248, 105, 33, .9)");
+      flame.addColorStop(0.72, "rgba(224, 64, 22, .86)");
+      flame.addColorStop(1, "rgba(162, 35, 19, .78)");
+      context.strokeStyle = flame;
+      context.lineWidth = Math.max(0.62, cell * 0.095);
+      context.shadowBlur = 1.5;
+      context.stroke(path);
+
+      context.strokeStyle = "rgba(255, 206, 116, .76)";
+      context.lineWidth = Math.max(0.34, cell * 0.035);
+      context.shadowBlur = 0.7;
+      context.stroke(path);
+
+      context.setLineDash([cell * 2.2, cell * 1.15]);
+      context.lineDashOffset = -field.clock * 0.012;
+      context.strokeStyle = "rgba(255, 239, 185, .52)";
+      context.lineWidth = Math.max(0.3, cell * 0.028);
+      context.shadowBlur = 0.4;
+      context.stroke(path);
+      context.restore();
+    }
+
+    if (particles) drawParticles(context, cache, elapsed, paths, field, cell, ox, oy);
+
+    context.setLineDash([]);
+    context.shadowBlur = 0;
+    context.strokeStyle = "rgba(50, 41, 31, .28)";
+    context.lineWidth = 1;
+    context.strokeRect(ox - 0.5, oy - 0.5, cell * COLS + 1, cell * ROWS + 1);
+  }
+
+  function initialize(canvas: HTMLCanvasElement) {
+    if (canvas.dataset.smolderReady === "true") return;
+    canvas.dataset.smolderReady = "true";
+
+    const density = Math.max(0.05, Math.min(0.9, Number(canvas.dataset.density ?? 43) / 100));
+    const speed = Math.max(1, Math.min(8, Number(canvas.dataset.speed ?? 6)));
+    const paused = canvas.dataset.paused === "true";
+    const interactive = canvas.dataset.interactive === "true";
+    const respectReducedMotion = canvas.dataset.reducedMotion !== "false";
+    const burnMemory = canvas.dataset.burnMemory === "true";
+    const particles = canvas.dataset.particles === "true";
+    const parsedSeed = Number(canvas.dataset.seed);
+    const seed = Number.isFinite(parsedSeed) && canvas.dataset.seed !== "" ? parsedSeed : Math.floor(Math.random() * 999999);
+    const field = makeField(density, seed);
+    const cache = createCache(seed);
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let raf = 0;
+    let needsDraw = true;
+    let visible = true;
+    let lastFrame = performance.now();
+
+    const loop = (now: number) => {
+      const elapsed = Math.min(50, Math.max(0, now - lastFrame));
+      lastFrame = now;
+      const active = visible && !paused && !document.hidden && !(respectReducedMotion && motionQuery.matches);
+      if (active) {
+        field.clock += elapsed;
+        const interval = 1720 - speed * 135;
+        if (field.clock - field.generationStarted >= interval) stepField(field, interval);
+        needsDraw = true;
+      }
+      if (visible && needsDraw) {
+        drawField(canvas, field, cache, burnMemory, particles, active ? elapsed : 0);
+        needsDraw = active;
+      }
+      raf = window.requestAnimationFrame(loop);
+    };
+
+    const requestDraw = () => {
+      cache.background = null;
+      cache.arcPath = null;
+      needsDraw = true;
+    };
+    window.addEventListener("resize", requestDraw, { passive: true });
+    document.addEventListener("visibilitychange", requestDraw);
+    motionQuery.addEventListener?.("change", requestDraw);
+    const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(requestDraw);
+    resizeObserver?.observe(canvas);
+    const intersectionObserver = typeof IntersectionObserver === "undefined"
+      ? null
+      : new IntersectionObserver(([entry]) => {
+          visible = entry.isIntersecting;
+          if (visible) needsDraw = true;
+        }, { rootMargin: "120px" });
+    intersectionObserver?.observe(canvas);
+
+    if (interactive) {
+      canvas.addEventListener("pointerdown", (event) => {
+        const { rect, cell, ox, oy } = gridMetrics(canvas);
+        const x = Math.floor((event.clientX - rect.left - ox) / cell);
+        const y = Math.floor((event.clientY - rect.top - oy) / cell);
+        if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
+        field.fromDistance = currentDistance(field);
+        const index = y * COLS + x;
+        field.cells[index] = field.cells[index] ? 0 : 1;
+        field.ages[index] = field.cells[index] ? 1 : 0;
+        field.toDistance = signedDistance(field.cells);
+        field.morphStarted = field.clock;
+        field.morphDuration = 420;
+        field.morphFrames = prepareMorphFrames(field.fromDistance, field.toDistance, 18);
+        field.morphId += 1;
+        field.cellVersion += 1;
+        field.arcCount = field.morphFrames[field.morphFrames.length - 1]?.length ?? 0;
+        needsDraw = true;
+      });
+    }
+
+    raf = window.requestAnimationFrame(loop);
+    window.addEventListener("pagehide", () => {
+      window.cancelAnimationFrame(raf);
+      resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
+    }, { once: true });
+  }
+
+  document.querySelectorAll<HTMLCanvasElement>("canvas[data-smolder-life]").forEach(initialize);
+</script>
