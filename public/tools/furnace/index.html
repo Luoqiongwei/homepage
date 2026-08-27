@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#15191c">
+  <meta name="description" content="在有限的熔炉中，建立从采集、实验、混炼到资源回收的工业循环。熔炉 v0.3 可玩原型。">
+  <title>熔炉 · 边界站</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">跳到生产区域</a>
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">F</span><span>熔炉 <small>FURNACE</small></span></a>
+    <div class="station"><span class="signal"></span> 边界站 07 <span class="slash">/</span> 第一章 · 重新点火</div>
+    <div class="header-actions"><span class="version">PROTOTYPE 0.3.2</span><button id="task-toggle" class="small-button" aria-label="任务栏开关" aria-controls="task-panel" aria-expanded="true">任务</button><button id="help-button" class="text-button">操作手册</button><button id="pause-button" class="small-button">暂停模拟</button></div>
+  </header>
+
+  <section class="telemetry" aria-label="工厂状态">
+    <div class="metric"><div class="metric-label"><span class="metric-dot power"></span>电力缓冲 <span id="energy-note">光能供电</span></div><div class="metric-value"><b id="energy-value">70</b><span id="energy-max">/ 100</span><small>EU</small></div><div class="track"><span id="energy-bar"></span></div><div class="metric-foot" id="power-rate"></div></div>
+    <div class="metric"><div class="metric-label"><span class="metric-dot heat"></span>废热负荷 <span id="heat-status">稳定</span></div><div class="metric-value"><b id="heat-value">12</b><span>/ 90</span><small>HU</small></div><div class="track heat-track"><span id="heat-bar"></span></div><div class="metric-foot">90 热保护 · 降至 65 自动恢复</div></div>
+    <div class="metric"><div class="metric-label"><span class="metric-dot active"></span>设备运行 <span>限额工位</span></div><div class="metric-value"><b id="active-value">0</b><span id="machine-max">/ 2</span><small>台</small></div><div class="metric-foot wide" id="cycles-value">尚未完成批次</div></div>
+    <div class="metric"><div class="metric-label"><span class="metric-dot void"></span>反应认知 <span>发现驱动</span></div><div class="metric-value"><b id="discovery-value">0</b><span>/ 11</span><small>反应</small></div><div class="metric-foot wide" id="time-value">驻站 00:00</div></div>
+  </section>
+
+  <div id="offline-notice" class="notice" hidden></div>
+  <div class="workspace">
+    <aside class="inventory-panel panel" aria-label="仓储与采集">
+      <div class="section-heading"><h2>仓储</h2><span>BUFFER / 01</span></div>
+      <div class="inventory-note"><span class="signal"></span><span id="extraction-status">采集臂持续运转</span><span id="extraction-level">基础速率</span></div>
+      <div id="inventory-list"></div>
+      <div class="utility-box"><div class="section-heading"><h3>维护回路</h3><span>UTILITY</span></div><p>仓满停产，不会吞掉投入。先回收副产物，也可安全排气腾出空间。</p><button id="vent-button" class="secondary full">释放 15 尾气</button><label class="switch-label"><input type="checkbox" id="cooling-toggle" checked> 启用水冷 <span id="cooling-level">未安装</span></label></div>
+      <div class="save-box"><span id="save-status">本机自动存档</span><div><button id="export-button" class="text-button">导出</button><button id="import-button" class="text-button">导入</button><button id="reset-button" class="text-button danger">重开</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></div>
+    </aside>
+
+    <main id="main" tabindex="-1">
+      <h1 class="sr-only">熔炉 · 边界站</h1>
+      <nav class="tabs" aria-label="工厂视图"><button class="tab active" data-tab="production" aria-pressed="true">生产工位 <span>01</span></button><button class="tab" data-tab="notebook" aria-pressed="false">实验笔记 <span id="notebook-count">0</span></button><button class="tab" data-tab="catalog" aria-pressed="false">材料图鉴 <span id="catalog-count"></span></button><button class="tab" data-tab="logs" aria-pressed="false">运行日志 <span>03</span></button></nav>
+      <section id="production-view"><div class="view-heading"><div><h2>反应阵列</h2><p>装载进料 → 观察候选 → 实验 → 稳定生产</p></div><span class="small-label">每批真实扣料</span></div><div id="machine-grid" class="machine-grid"></div><div class="rule-note"><span>↳</span><p><strong>混炼来自反应，不来自填满槽位。</strong> 两条有效路线在升级后可同批处理，共享加热降低能耗，各自的原料仍会分别扣除。</p></div></section>
+      <section id="notebook-view" hidden><div class="view-heading"><div><h2>实验笔记</h2><p>未知反应只提供线索；实际产出后记录完整路线。</p></div></div><div id="recipe-list" class="recipe-list"></div></section>
+      <section id="catalog-view" hidden aria-label="材料与工艺图鉴"></section>
+      <section id="logs-view" hidden><div class="view-heading"><div><h2>边界站记录</h2><p>记录发现、工程进展与维护事件。</p></div></div><ol id="log-list" class="log-list panel"></ol></section>
+      <footer class="main-footer"><span>精密工业 × 虚境探索</span><span>本机存档 · 离线结算上限 30 分钟</span></footer>
+    </main>
+
+    <aside class="progress-panel" aria-label="设施升级"><section class="upgrades-panel panel"><div class="section-heading"><h2>设施改造</h2><span>UPGRADES</span></div><p class="section-note">扩大产能之前，先照顾电力与散热。</p><div id="upgrade-list"></div></section><div class="field-note"><span>调和师手记 / 001</span><p>“没有无用的产物，<br>只有尚未接通的回路。”</p></div></aside>
+  </div>
+  <button id="task-launcher" class="task-launcher small-button" aria-label="打开任务栏" aria-controls="task-panel" hidden>◎ 任务</button>
+  <aside id="task-panel" class="task-panel" aria-label="悬浮任务栏" data-dock="right">
+    <header class="task-head"><strong>任务追踪 <span id="task-summary"></span></strong><div><button id="task-dock" class="text-button" aria-label="将任务栏移到左侧">⇄</button><button id="task-minimize" class="text-button" aria-label="最小化任务栏" aria-expanded="true">−</button><button id="task-close" class="text-button" aria-label="关闭任务栏">×</button></div></header>
+    <div id="task-body">
+      <nav class="task-tabs" aria-label="任务分类"><button data-task-tab="guide" aria-pressed="true">入门 <span id="task-guide-count"></span></button><button data-task-tab="project" aria-pressed="false">主线 <span id="task-project-count"></span></button></nav>
+      <section id="task-view-guide" class="guide-panel" aria-labelledby="guide-title">
+        <span id="guide-kicker" class="eyebrow"></span>
+        <h2 id="guide-title" aria-live="polite"></h2>
+        <div id="guide-requirements" class="guide-requirements"></div>
+        <div class="guide-next"><p id="guide-next"></p><div class="guide-actions"><button class="primary" id="guide-action"></button><button class="text-button" id="guide-locate">定位操作 ↗</button></div></div>
+        <details class="guide-explanation"><summary>任务说明与原理</summary><p id="guide-text"></p><p id="guide-why"></p></details>
+        <details class="task-history"><summary>入门进度</summary><ol class="guide-steps" id="guide-steps" aria-label="入门学习进度"></ol></details>
+      </section>
+      <section id="task-view-project" class="project-panel" aria-label="主线重建计划" hidden><div class="chapter-steps" id="chapter-steps" aria-label="章节进度"></div><div id="project-content"></div><details class="guide-explanation"><summary>工程线索</summary><p id="current-guidance"></p></details></section>
+      <p class="task-foot">任务不占生产布局 · 定位时自动最小化</p>
+    </div>
+  </aside>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="help-dialog"><div class="dialog-head"><span class="eyebrow">边界站操作手册</span><button data-close="help-dialog" class="text-button" aria-label="关闭操作手册">关闭 ×</button></div><h2>先点火，再让工厂自己运转。</h2><p class="help-intro">顶部“任务”开关控制悬浮任务栏。“入门”追踪当前教学，“主线”统一显示阶段工程与材料缺口。可最小化、关闭或换边，不占生产区空间；定位设备后自动最小化。材料图鉴可查看规划路径，不解锁生产能力。</p><a class="secondary practice-link" href="?practice=1" target="_blank" rel="noopener">重新练习入门 · 不覆盖正式存档 ↗</a><ol class="help-list"><li><strong>从两次实验开始。</strong> 两台熔炼釜已装好铁矿 / 铜矿与煤炭，点击“实验一批”。左侧原料会自动采集，无需反复点击。</li><li><strong>重启控制总线。</strong> 凑齐 6 生铁、4 精炼铜，并发现两条反应，在任务栏“主线”中提交工程。随后可打开每台设备的连续生产。</li><li><strong>调配进料与温度。</strong> 煤炭和焦炭都具有还原剂标签，焦炭能减少杂质损失。实际发现的反应可在笔记里选择目标设备后装载。先停止该设备连续生产并等本批完成。设备卡片的“调整进料与参数”可以随时展开。注意按线索切换温度。</li><li><strong>照顾电力、热量和仓储。</strong> 每批预付能量与原料；不足就等待。90 废热触发停机，低于 65 恢复。水冷耗水，尾气可回收，也可释放。</li><li><strong>混炼两个有效反应。</strong> “双路混炼”升级后，铁矿＋铜矿＋还原剂可同批产铁和铜；两条反应的还原剂都会扣除。单纯增加无关材料不会增产。</li><li><strong>完成首章。</strong> 钢材 → 循环工坊 → 硅与电路 / 炉渣再生 → 虚境稳定剂 → 第一枚现实锚点。随机只影响额外收率，基础产出有保障。</li></ol><p class="dialog-note">v0.3 是游戏规则原型；材料数值不代表现实化学。存档留在本浏览器中，建议定期导出。暂停时离线也不生产；关闭自动运行会完成当前批次后停止。</p></dialog>
+  <dialog id="reset-dialog"><h2>重新点火？</h2><p>将清除当前本机进度。建议先导出存档。</p><div class="dialog-actions"><button data-close="reset-dialog" class="secondary">保留进度</button><button id="confirm-reset" class="primary">确认重新开始</button></div></dialog>
+  <dialog id="import-dialog"><h2>替换当前进度？</h2><p>导入存档会替换当前本机进度。请先导出当前存档，或继续选择文件。</p><div class="dialog-actions"><button data-close="import-dialog" class="secondary">取消</button><button id="confirm-import" class="primary">选择存档</button></div></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

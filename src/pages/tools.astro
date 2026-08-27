@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import HeroHeader from "../components/HeroHeader.astro";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
@@ -30,7 +29,9 @@ const BASE = import.meta.env.BASE_URL || '/';
           <h2 class="mb-4">已上线的实验</h2>
 
           <div class="tool-item">
-            <h3 class="mb-2">从夯到拉</h3>
+            <div class="tool-heading">
+              <h3 class="mb-2">从夯到拉</h3>
+            </div>
             <p class="tool-meta">
               类型：交互式工具
             </p>
@@ -43,28 +44,35 @@ const BASE = import.meta.env.BASE_URL || '/';
           </div>
 
           <div class="tool-item">
-            <h3 class="mb-2">我在整一个活儿...敬请期待？</h3>
-            <p class="tool-meta">
-              类型：游戏
+            <div class="tool-heading">
+              <h3 class="mb-2">熔炉 · 边界站</h3>
+              <span class="tool-status">PROTOTYPE 0.3.2</span>
+            </div>
+            <p class="tool-meta">类型：资源循环与工业自动化游戏原型</p>
+            <p class="tool-desc">
+              从铁铜实验起步，管理电力、废热、库存与副产物，逐步建立连续生产线并完成第一枚锚点。
+              当前版本包含初步引导、离线存档与材料图鉴。
             </p>
-            <a
-              class="btn btn-outline-primary btn-sm"
-              href={`${BASE}tools/furnace_aidraft_v02/`}
-            >
-              机制介绍
-            </a>
-            <a
-              class="btn btn-outline-primary btn-sm"
-              href={`${BASE}tools/materialsandsynthesisroutes_aidraft_v01/`}
-            >
-              合成表
-            </a>
-            <a
-              class="btn btn-outline-secondary btn-sm"
-              href="https://luoqiongwei.github.io/furnace/"
-            >
-              DEMO 进入 →
-            </a>
+            <div class="tool-actions">
+              <a
+                class="btn btn-primary btn-sm"
+                href={`${BASE}tools/furnace/index.html`}
+                target="_blank"
+                rel="noopener"
+              >
+                进入边界站 →
+              </a>
+              <a class="btn btn-outline-primary btn-sm" href={`${BASE}tools/furnace-roadmap-v0-3/`}>
+                开发路线图
+              </a>
+              <a class="btn btn-outline-primary btn-sm" href={`${BASE}tools/furnace-task-catalog-v0-3-2/`}>
+                任务与图鉴
+              </a>
+              <a class="btn btn-outline-primary btn-sm" href={`${BASE}tools/furnace-materials-routes/`}>
+                材料与合成路线
+              </a>
+
+            </div>
           </div>
         </section>
 
@@ -93,7 +101,7 @@ const BASE = import.meta.env.BASE_URL || '/';
 }
 
 .tool-desc {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   color: #555;
 }
 
@@ -101,5 +109,38 @@ const BASE = import.meta.env.BASE_URL || '/';
   font-size: 0.9rem;
   color: #888;
   margin-bottom: 0.75rem;
+}
+
+.furnace-item {
+  padding: 1.5rem;
+  border: 1px solid rgba(108, 117, 125, 0.25);
+  border-radius: 0.75rem;
+  background: rgba(108, 117, 125, 0.05);
+}
+
+.tool-heading,
+.tool-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tool-heading {
+  justify-content: space-between;
+}
+
+.tool-status {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: #8a5a24;
+  font-family: monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+:global([data-bs-theme="dark"]) .tool-desc {
+  color: #c7c7c7;
 }
 </style>

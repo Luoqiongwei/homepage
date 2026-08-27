@@ -1,0 +1,60 @@
+﻿配方ID,配方名称,输入材料,输出材料,主产物,副产物,合成釜,温度,压力,虚境共鸣,停留时间,最小并行度,描述
+r001_pig_iron,高炉炼铁,铁矿石(iron_ore) | 焦炭(coke),生铁(pig_iron) | 炉渣(slag),生铁(pig_iron),炉渣(slag),基础熔炼釜,高,高,关闭,中,1,铁矿石在高炉中被焦炭还原，得到生铁和炉渣。
+r002_pig_iron_parallel,高炉炼铁（鼓风）,铁矿石(iron_ore) | 焦炭(coke) | 空气(air),生铁(pig_iron) | 炉渣(slag),生铁(pig_iron),炉渣(slag),高压合成釜,高,高,关闭,中,2,鼓入空气的高炉炼铁，效率更高，炉渣更多。
+r003_blister_copper,火法炼铜,铜矿石(copper_ore) | 空气(air),粗铜(blister_copper) | 二氧化硫(sulfur_dioxide),粗铜(blister_copper),二氧化硫(sulfur_dioxide),基础熔炼釜,高,中,关闭,中,1,硫化铜矿石在空气中煅烧，得到粗铜和二氧化硫。
+r004_alumina,拜耳法提铝,铝土矿(bauxite),氧化铝(alumina),氧化铝(alumina),无,高压合成釜,中,高,关闭,长,1,在高温高压下用碱液溶解铝土矿，提取氧化铝。
+r005_crude_tin,还原炼锡,锡矿石(tin_ore) | 焦炭(coke),粗锡(crude_tin),粗锡(crude_tin),无,基础熔炼釜,高,中,关闭,中,1,氧化锡被焦炭还原，得到粗锡。
+r006_crude_lead,还原炼铅,铅矿石(lead_ore) | 焦炭(coke),粗铅(crude_lead),粗铅(crude_lead),无,基础熔炼釜,高,中,关闭,中,1,硫化铅被焦炭还原，得到粗铅。
+r007_crude_zinc,还原炼锌,锌矿石(zinc_ore) | 焦炭(coke),粗锌(crude_zinc),粗锌(crude_zinc),无,基础熔炼釜,高,中,关闭,中,1,硫化锌被焦炭还原蒸馏，得到粗锌。
+r008_crude_gold,金矿提取,金矿石(gold_ore),粗金(crude_gold),粗金(crude_gold),无,电解分离釜,中,中,关闭,长,1,通过电解法从含金矿石中提取粗金。
+r009_crude_silver,铅银共炼,银矿石(silver_ore) | 铅矿石(lead_ore),粗银(crude_silver) | 粗铅(crude_lead),粗银(crude_silver),粗铅(crude_lead),基础熔炼釜,高,中,关闭,中,1,银铅矿石共炼，银富集在铅中，需后续电解分离。
+r010_sulfur_dioxide,硫磺燃烧,硫磺矿(sulfur_ore) | 空气(air),二氧化硫(sulfur_dioxide),二氧化硫(sulfur_dioxide),无,气相反应釜,高,低,关闭,短,1,硫磺在空气中燃烧生成二氧化硫。
+r011_pyrite_roast,黄铁矿焙烧,黄铁矿(pyrite) | 空气(air),二氧化硫(sulfur_dioxide) | 炉渣(slag),二氧化硫(sulfur_dioxide),炉渣(slag),基础熔炼釜,高,中,关闭,中,1,黄铁矿焙烧脱硫，得到二氧化硫和氧化铁炉渣。
+r012_quicklime,石灰煅烧,石灰石(limestone),生石灰(quicklime) | 二氧化碳(carbon_dioxide),生石灰(quicklime),二氧化碳(carbon_dioxide),基础熔炼釜,高,低,关闭,中,1,石灰石高温分解，得到生石灰和二氧化碳。
+r013_coke,煤干馏,煤炭(coal),焦炭(coke),焦炭(coke),无,基础熔炼釜,高,低,关闭,长,1,煤炭在隔绝空气条件下高温干馏，得到焦炭。
+r014_steel,转炉炼钢,生铁(pig_iron) | 空气(air),钢(steel),钢(steel),无,基础熔炼釜,高,中,关闭,中,1,生铁在转炉中被空气氧化脱碳，得到钢。
+r015_refined_copper,电解精炼铜,粗铜(blister_copper),精炼铜(refined_copper),精炼铜(refined_copper),无,电解分离釜,中,中,关闭,长,1,粗铜在电解槽中精炼，得到高纯度精炼铜。
+r016_pure_aluminum,电解铝,氧化铝(alumina),纯铝(pure_aluminum),纯铝(pure_aluminum),无,电解分离釜,高,高,关闭,长,1,氧化铝在电解槽中熔融电解，得到纯铝。
+r017_pure_tin,锡精炼,粗锡(crude_tin),纯锡(pure_tin),纯锡(pure_tin),无,基础熔炼釜,中,低,关闭,中,1,粗锡经过火法精炼去除杂质，得到纯锡。
+r018_pure_lead,铅精炼,粗铅(crude_lead),纯铅(pure_lead),纯铅(pure_lead),无,基础熔炼釜,中,低,关闭,中,1,粗铅经过火法精炼去除杂质，得到纯铅。
+r019_pure_zinc,锌精炼,粗锌(crude_zinc),纯锌(pure_zinc),纯锌(pure_zinc),无,基础熔炼釜,中,低,关闭,中,1,粗锌经过蒸馏精炼去除杂质，得到纯锌。
+r020_pure_gold,金电解精炼,粗金(crude_gold),纯金(pure_gold),纯金(pure_gold),无,电解分离釜,中,中,关闭,长,1,粗金在电解槽中精炼，得到极高纯度的金。
+r021_pure_silver,银电解精炼,粗银(crude_silver),纯银(pure_silver),纯银(pure_silver),无,电解分离釜,中,中,关闭,长,1,粗银在电解槽中精炼，得到高纯度的银。
+r022_sulfuric_acid,接触法制硫酸,二氧化硫(sulfur_dioxide) | 空气(air),硫酸(sulfuric_acid),硫酸(sulfuric_acid),无,高压合成釜,高,高,关闭,中,1,二氧化硫在催化剂作用下被空气氧化，吸收后得到硫酸。
+r023_metallurgical_silicon,碳热还原硅,石英砂(quartz_sand) | 焦炭(coke),冶金硅(metallurgical_silicon) | 二氧化碳(carbon_dioxide),冶金硅(metallurgical_silicon),二氧化碳(carbon_dioxide),基础熔炼釜,高,高,关闭,中,1,石英砂被焦炭高温还原，得到冶金硅。
+r024_syngas_from_coal,煤气化,煤炭(coal) | 空气(air),合成气(syngas) | 二氧化碳(carbon_dioxide),合成气(syngas),二氧化碳(carbon_dioxide),气相反应釜,高,高,关闭,中,1,煤炭在高温下气化，得到一氧化碳和氢气的混合气。
+r025_syngas_from_gas,天然气重整,天然气(natural_gas) | 空气(air),合成气(syngas) | 二氧化碳(carbon_dioxide),合成气(syngas),二氧化碳(carbon_dioxide),气相反应釜,高,高,关闭,中,1,天然气在高温下重整，得到合成气。
+r026_sponge_iron,直接还原铁,铁矿石(iron_ore) | 天然气(natural_gas),海绵铁(sponge_iron),海绵铁(sponge_iron),无,气相反应釜,中,中,关闭,长,1,铁矿石在天然气气氛中被直接还原，得到多孔海绵铁。
+r027_alloy_steel,铝强化钢,钢(steel) | 纯铝(pure_aluminum),合金钢(alloy_steel),合金钢(alloy_steel),无,基础熔炼釜,高,高,关闭,中,1,在钢中加入铝，提高强度和耐热性。
+r028_brass,黄铜熔炼,精炼铜(refined_copper) | 纯锌(pure_zinc),黄铜(brass),黄铜(brass),无,基础熔炼釜,高,中,关闭,中,1,铜锌合金熔炼，得到金黄色的黄铜。
+r029_bronze,青铜熔炼,精炼铜(refined_copper) | 纯锡(pure_tin),青铜(bronze),青铜(bronze),无,基础熔炼釜,高,中,关闭,中,1,铜锡合金熔炼，得到坚硬的青铜。
+r030_aluminum_alloy,铝合金熔炼,纯铝(pure_aluminum) | 精炼铜(refined_copper),铝合金(aluminum_alloy),铝合金(aluminum_alloy),无,基础熔炼釜,高,中,关闭,中,1,铝铜合金熔炼，得到轻质高强度的铝合金。
+r031_solder,焊料熔炼,纯锡(pure_tin) | 纯铅(pure_lead),焊料(solder),焊料(solder),无,基础熔炼釜,中,低,关闭,短,1,锡铅合金熔炼，得到低熔点焊料。
+r032_stainless_steel,虚境不锈钢,钢(steel) | 虚境稳定剂(void_stabilizer),不锈钢(stainless_steel),不锈钢(stainless_steel),无,虚境调和釜,高,高,中,中,1,用虚境稳定剂强化钢，使其获得超凡的耐腐蚀性。
+r033_ammonia,哈伯法合成氨,合成气(syngas) | 空气(air),氨(ammonia) | 二氧化碳(carbon_dioxide),氨(ammonia),二氧化碳(carbon_dioxide),高压合成釜,高,高,关闭,中,1,合成气在高温高压下合成氨，二氧化碳为副产物。
+r034_nitric_acid,奥斯特瓦尔德法,氨(ammonia) | 空气(air),硝酸(nitric_acid),硝酸(nitric_acid),无,高压合成釜,高,高,关闭,中,1,氨在催化剂作用下氧化为硝酸。
+r035_sodium_hydroxide,石灰-硫酸法,生石灰(quicklime) | 硫酸(sulfuric_acid),氢氧化钠(sodium_hydroxide) | 二氧化碳(carbon_dioxide),氢氧化钠(sodium_hydroxide),二氧化碳(carbon_dioxide),高压合成釜,中,中,关闭,中,1,生石灰与硫酸反应，得到氢氧化钠。
+r036_urea,尿素合成,氨(ammonia) | 二氧化碳(carbon_dioxide),尿素(urea),尿素(urea),无,高压合成釜,中,高,关闭,中,1,氨与二氧化碳在高温高压下合成尿素。
+r037_trichlorosilane,三氯氢硅合成,冶金硅(metallurgical_silicon) | 盐酸(hydrochloric_acid),三氯氢硅(trichlorosilane) | 氢气(hydrogen),三氯氢硅(trichlorosilane),氢气(hydrogen),气相反应釜,高,中,关闭,中,1,冶金硅与盐酸反应，得到三氯氢硅和氢气。
+r038_electronic_silicon,西门子法,三氯氢硅(trichlorosilane),电子级硅(electronic_silicon) | 盐酸(hydrochloric_acid),电子级硅(electronic_silicon),盐酸(hydrochloric_acid),电解分离釜,高,低,关闭,长,1,三氯氢硅在高温下分解，沉积出高纯度电子级硅。
+r039_void_stabilizer,虚境调和,虚境粉尘(void_dust) | 空气(air),虚境稳定剂(void_stabilizer),虚境稳定剂(void_stabilizer),无,虚境调和釜,中,中,中,长,1,用空气调和虚境粉尘，使其性质稳定可控。
+r040_co2_from_coke,焦炭燃烧,焦炭(coke) | 空气(air),二氧化碳(carbon_dioxide),二氧化碳(carbon_dioxide),无,气相反应釜,高,中,关闭,短,1,焦炭完全燃烧生成二氧化碳。
+r041_hydrogen_from_syngas,合成气分离,合成气(syngas),氢气(hydrogen) | 二氧化碳(carbon_dioxide),氢气(hydrogen),二氧化碳(carbon_dioxide),气相反应釜,中,中,关闭,中,1,分离合成气中的氢气，副产二氧化碳。
+r042_oxygen_from_air,空气分离,空气(air),氧气(oxygen),氧气(oxygen),无,气相反应釜,低,低,关闭,中,1,低温分离空气，提取氧气。
+r043_polycrystalline_silicon,多晶硅生长,电子级硅(electronic_silicon),多晶硅(polycrystalline_silicon),多晶硅(polycrystalline_silicon),无,基础熔炼釜,高,低,关闭,长,1,电子级硅在高温下熔融结晶，得到多晶硅。
+r044_monocrystalline_silicon,直拉单晶硅,多晶硅(polycrystalline_silicon),单晶硅(monocrystalline_silicon),单晶硅(monocrystalline_silicon),无,等离子体釜,极高,高,关闭,长,1,在等离子体环境中用直拉法生长单晶硅。
+r045_semiconductor_silicon,虚境掺杂硅,单晶硅(monocrystalline_silicon) | 虚境粉尘(void_dust),半导体硅(semiconductor_silicon),半导体硅(semiconductor_silicon),无,虚境调和釜,中,中,高,长,1,用虚境物质对单晶硅进行特殊掺杂，获得半导体硅。
+r046_void_alloy,虚境合金化,合金钢(alloy_steel) | 虚境粉尘(void_dust),虚境合金(void_alloy),虚境合金(void_alloy),无,虚境调和釜,高,高,高,长,1,将虚境物质融入合金钢，创造出具有超自然性质的虚境合金。
+r047_void_semiconductor,虚境半导体合成,电子级硅(electronic_silicon) | 虚境粉尘(void_dust),虚境半导体(void_semiconductor),虚境半导体(void_semiconductor),无,虚境调和釜,中,中,高,长,1,将虚境物质与电子级硅融合，创造出虚境半导体。
+r048_compound_fertilizer,复合肥调配,尿素(urea) | 硝酸(nitric_acid),复合肥(compound_fertilizer),复合肥(compound_fertilizer),无,高压合成釜,中,中,关闭,中,1,尿素与硝酸调配，得到高效复合肥。
+r049_ammonium_nitrate,硝酸铵合成,氨(ammonia) | 硝酸(nitric_acid),硝酸铵(ammonium_nitrate),硝酸铵(ammonium_nitrate),无,高压合成釜,中,中,关闭,短,1,氨与硝酸中和，得到硝酸铵。
+r050_phosphoric_acid,湿法磷酸,硫酸(sulfuric_acid) | 石灰石(limestone),磷酸(phosphoric_acid) | 二氧化碳(carbon_dioxide),磷酸(phosphoric_acid),二氧化碳(carbon_dioxide),高压合成釜,高,高,关闭,中,1,硫酸与石灰石反应，得到磷酸。
+r051_hydrogen_peroxide,过氧化物合成,硫酸(sulfuric_acid) | 氢气(hydrogen),过氧化氢(hydrogen_peroxide) | 二氧化硫(sulfur_dioxide),过氧化氢(hydrogen_peroxide),二氧化硫(sulfur_dioxide),高压合成釜,中,高,关闭,中,1,硫酸与氢气在特殊条件下合成过氧化氢。
+r052_chlorine,氯气制备,盐酸(hydrochloric_acid) | 氧气(oxygen),氯气(chlorine),氯气(chlorine),无,气相反应釜,高,中,关闭,中,1,盐酸被氧气氧化，得到氯气。
+r053_hydrogen_from_zinc,锌制氢,纯锌(pure_zinc) | 盐酸(hydrochloric_acid),氢气(hydrogen),氢气(hydrogen),无,气相反应釜,中,低,关闭,短,1,锌与盐酸反应，置换出氢气。
+r054_philosophers_stone,哲人石合成,纯金(pure_gold) | 硫酸(sulfuric_acid) | 虚境粉尘(void_dust),哲人石(philosophers_stone),哲人石(philosophers_stone),无,等离子体釜,极高,高,极高,长,1,在极端虚境条件下，金、硫酸与虚境粉尘融合，诞生传说中的哲人石。
+r055_world_repair,世界修复组件,虚境合金(void_alloy) | 半导体硅(semiconductor_silicon) | 虚境稳定剂(void_stabilizer),世界修复组件(world_repair_component),世界修复组件(world_repair_component),无,等离子体釜,极高,超高压,高,长,1,将虚境合金、半导体硅与虚境稳定剂在等离子体中融合，创造出能修复世界裂缝的组件。
+r056_void_core,虚境核心凝聚,虚境粉尘(void_dust) | 虚境稳定剂(void_stabilizer) | 电子级硅(electronic_silicon),虚境核心(void_core),虚境核心(void_core),无,等离子体釜,极高,超高压,极高,长,1,在极高虚境共鸣下，三种材料凝聚成蕴含无穷能量的虚境核心。
+r057_eternal_alloy,永恒合金锻造,合金钢(alloy_steel) | 虚境合金(void_alloy) | 虚境稳定剂(void_stabilizer),永恒合金(eternal_alloy),永恒合金(eternal_alloy),无,等离子体釜,极高,超高压,高,长,1,三种金属的终极融合，锻造出永不磨损的永恒合金。
+r058_perfect_semiconductor,完美半导体合成,半导体硅(semiconductor_silicon) | 虚境半导体(void_semiconductor) | 电子级硅(electronic_silicon),完美半导体(perfect_semiconductor),完美半导体(perfect_semiconductor),无,等离子体釜,极高,超高压,高,长,1,三种硅材料的完美调和，创造出零缺陷的完美半导体。
+r059_harmony_crystal,调和结晶,虚境稳定剂(void_stabilizer) | 世界修复组件(world_repair_component) | 虚境粉尘(void_dust),调和结晶(harmony_crystal),调和结晶(harmony_crystal),无,虚境调和釜,中,高,极高,长,1,用虚境稳定剂调和世界修复组件与虚境粉尘，诞生出稳定世界裂缝的调和结晶。

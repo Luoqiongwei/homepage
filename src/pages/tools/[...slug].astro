@@ -12,15 +12,69 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await entry.render();
+const BASE = import.meta.env.BASE_URL || '/';
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>
     <div class="container px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="col-md-11 col-lg-9 col-xl-8">
                 <br><br><br><br><br>
-                <Content />
+                <nav class="doc-nav" aria-label="Furnace 文档导航">
+                    <a href={`${BASE}tools/`}>← 工具与实验</a>
+                    <span>Furnace 文档</span>
+                    <a href={`${BASE}tools/furnace/index.html`} target="_blank" rel="noopener">进入边界站 ↗</a>
+                </nav>
+                <article class="game-doc">
+                    <Content />
+                </article>
             </div>
         </div>
     </div>
 </BaseLayout>
+
+<style>
+  .doc-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(108, 117, 125, 0.3);
+    font-size: 0.9rem;
+  }
+
+  .doc-nav span {
+    color: #777;
+  }
+
+  .game-doc {
+    padding-bottom: 4rem;
+  }
+
+  .game-doc :global(h1),
+  .game-doc :global(h2),
+  .game-doc :global(h3) {
+    scroll-margin-top: 6rem;
+  }
+
+  .game-doc :global(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .game-doc :global(pre) {
+    padding: 1rem;
+    overflow-x: auto;
+    border-radius: 0.5rem;
+  }
+
+  @media (max-width: 576px) {
+    .doc-nav {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
