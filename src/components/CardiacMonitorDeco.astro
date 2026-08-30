@@ -1,101 +1,259 @@
-<canvas id="bgCanvas"></canvas>
+<div class="cardiac-deco" data-cardiac-deco aria-hidden="true">
+  <canvas class="cardiac-deco__canvas"></canvas>
+</div>
 
 <script is:inline>
-    const canvas = document.getElementById('bgCanvas');
+  (() => {
+    const host = document.querySelector('[data-cardiac-deco]');
+    const canvas = host?.querySelector('.cardiac-deco__canvas');
+    if (!(host instanceof HTMLElement) || !(canvas instanceof HTMLCanvasElement)) return;
+
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const STORAGE_KEY = 'my-system';
+    const desktopQuery = window.matchMedia('(min-width: 992px)');
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const config = {
-        maxFPS: 90,
-        bufferSize: 1200,
-        amplitude: 0.16, 
-        speed: 1.5,
-        lineWidth: 1.2, 
-        baseline: 0.75
+      renderFPS: 30,
+      flowSpeed: 90,
+      wavelength: 120,
+      pathStep: 1,
+      minAmplitude: 0.4,
+      maxAmplitude: 32,
+      envelopeSpread: 12,
+      maxDpr: 1.5,
     };
 
-    let systemOn = localStorage.getItem('my-system') === '1';
-    let isActive = systemOn;
+    let cssWidth = 0;
+    let cssHeight = 0;
+    let dpr = 1;
+    let signalOffset = 0;
+    let lastTimestamp = 0;
+    let lastRenderTime = 0;
+    let animationFrame = 0;
+    let resizeFrame = 0;
+    let targetProgress = 0;
+    let displayedProgress = 0;
+    let colors = readColors();
 
-    document.addEventListener('system-status-change', (e) => {
-        isActive = e.detail.on;
-    });
-    
-    let width, height, dpr;
-    let lastTime = 0;
-    
-    const buffer = new Float32Array(config.bufferSize);
-    let writeIndex = 0;
-    let isBufferFull = false;
+    const storedPreference = safeStorageGet(STORAGE_KEY);
+    let isEnabled = storedPreference === null ? true : storedPreference === '1';
+
+    function safeStorageGet(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    }
+
+    function readColors() {
+      const style = getComputedStyle(host);
+      return {
+        core: style.getPropertyValue('--signal-core').trim() || 'rgba(71, 85, 105, 0.32)',
+        glow: style.getPropertyValue('--signal-glow').trim() || 'rgba(71, 85, 105, 0.12)',
+        rail: style.getPropertyValue('--signal-rail').trim() || 'rgba(71, 85, 105, 0.12)',
+        node: style.getPropertyValue('--signal-node').trim() || 'rgba(71, 85, 105, 0.5)',
+      };
+    }
+
+    function gaussian(value, center, width, amplitude) {
+      const distance = (value - center) / width;
+      return amplitude * Math.exp(-0.5 * distance * distance);
+    }
+
+    function generatePulse(phase) {
+      // 连续函数叠加出柔和的 P-QRS-T 波，避免原先的阶梯跳变。
+      const pulse =
+        gaussian(phase, 0.18, 0.035, 0.12) +
+        gaussian(phase, 0.355, 0.012, -0.16) +
+        gaussian(phase, 0.39, 0.010, 1.0) +
+        gaussian(phase, 0.425, 0.016, -0.28) +
+        gaussian(phase, 0.67, 0.070, 0.22);
+
+      // 确定性的细微扰动只为消除过于机械的直线感，不产生随机闪烁。
+      return pulse + Math.sin(phase * Math.PI * 2) * 0.003;
+    }
+
+    function positiveModulo(value, divisor) {
+      return ((value % divisor) + divisor) % divisor;
+    }
+
+    function updateScrollProgress() {
+      const scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      targetProgress = Math.min(1, Math.max(0, window.scrollY / scrollRange));
+    }
 
     function resize() {
-        dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-        width = canvas.width = window.innerWidth * dpr;
-        height = canvas.height = window.innerHeight * dpr;
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
-        ctx.scale(dpr, dpr);
-        config.bufferSize = Math.ceil(window.innerWidth / config.speed) + 50;
+      const bounds = host.getBoundingClientRect();
+      cssWidth = Math.max(1, Math.round(bounds.width));
+      cssHeight = Math.max(1, Math.round(bounds.height));
+      dpr = Math.min(window.devicePixelRatio || 1, config.maxDpr);
+
+      canvas.width = Math.round(cssWidth * dpr);
+      canvas.height = Math.round(cssHeight * dpr);
+      canvas.style.width = `${cssWidth}px`;
+      canvas.style.height = `${cssHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      lastTimestamp = 0;
+      updateScrollProgress();
+      displayedProgress = targetProgress;
+      colors = readColors();
+      draw(motionQuery.matches);
     }
 
-    window.addEventListener('resize', resize);
+    function scheduleResize() {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(resize);
+    }
+
+    function drawGuide(railX, top, bottom) {
+      const railGradient = ctx.createLinearGradient(0, top, 0, bottom);
+      railGradient.addColorStop(0, 'transparent');
+      railGradient.addColorStop(0.05, colors.rail);
+      railGradient.addColorStop(0.95, colors.rail);
+      railGradient.addColorStop(1, 'transparent');
+
+      ctx.beginPath();
+      ctx.moveTo(railX, top);
+      ctx.lineTo(railX, bottom);
+      ctx.strokeStyle = railGradient;
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+    }
+
+    function waveXAt(y, focusY, railX) {
+      const phase = positiveModulo(y - signalOffset, config.wavelength) / config.wavelength;
+      const distance = (y - focusY) / config.envelopeSpread;
+      const focusWeight = Math.exp(-0.5 * distance * distance);
+      const amplitude = config.minAmplitude +
+        (config.maxAmplitude - config.minAmplitude) * focusWeight;
+      return railX + generatePulse(phase) * amplitude;
+    }
+
+    function traceWave(top, bottom, focusY, railX, strokeStyle, lineWidth) {
+      const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+      gradient.addColorStop(0, 'transparent');
+      gradient.addColorStop(0.14, strokeStyle);
+      gradient.addColorStop(0.86, strokeStyle);
+      gradient.addColorStop(1, 'transparent');
+
+      ctx.beginPath();
+      for (let y = top; y <= bottom; y += config.pathStep) {
+        const x = waveXAt(y, focusY, railX);
+        if (y === top) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = lineWidth;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+
+    function draw(staticOnly = false) {
+      ctx.clearRect(0, 0, cssWidth, cssHeight);
+      if (!isEnabled || !desktopQuery.matches) return;
+
+      const top = cssHeight * 0.16;
+      const bottom = cssHeight * 0.84;
+      const railX = cssWidth * 0.58;
+      const focusY = top + (bottom - top) * displayedProgress;
+      const nodeX = waveXAt(focusY, focusY, railX);
+
+      drawGuide(railX, top, bottom);
+      traceWave(top, bottom, focusY, railX, colors.glow, staticOnly ? 3.5 : 5);
+      traceWave(top, bottom, focusY, railX, colors.core, 1.15);
+
+      ctx.beginPath();
+      ctx.arc(nodeX, focusY, staticOnly ? 2.1 : 2.6, 0, Math.PI * 2);
+      ctx.fillStyle = colors.node;
+      ctx.fill();
+    }
+
+    function shouldAnimate() {
+      return isEnabled && desktopQuery.matches && !motionQuery.matches && !document.hidden;
+    }
+
+    function frame(timestamp) {
+      if (!shouldAnimate()) {
+        animationFrame = 0;
+        return;
+      }
+
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const elapsed = Math.min(timestamp - lastTimestamp, 100);
+      lastTimestamp = timestamp;
+      signalOffset = (signalOffset + config.flowSpeed * elapsed / 1000) % config.wavelength;
+
+      if (timestamp - lastRenderTime >= 1000 / config.renderFPS) {
+        displayedProgress += (targetProgress - displayedProgress) * 0.12;
+        draw(false);
+        lastRenderTime = timestamp;
+      }
+
+      animationFrame = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (!shouldAnimate() || animationFrame) return;
+      lastTimestamp = 0;
+      animationFrame = requestAnimationFrame(frame);
+    }
+
+    function stop({ clear = false } = {}) {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+      lastTimestamp = 0;
+      if (clear) ctx.clearRect(0, 0, cssWidth, cssHeight);
+    }
+
+    function applyState(enabled) {
+      isEnabled = Boolean(enabled);
+      host.classList.toggle('is-off', !isEnabled);
+
+      if (shouldAnimate()) {
+        start();
+      } else {
+        stop({ clear: !isEnabled || !desktopQuery.matches });
+        if (isEnabled && desktopQuery.matches) draw(true);
+      }
+    }
+
+    document.addEventListener('system-status-change', (event) => {
+      applyState(Boolean(event.detail?.on));
+    });
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === STORAGE_KEY) applyState(event.newValue === '1');
+    });
+
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+    window.addEventListener('resize', scheduleResize, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    desktopQuery.addEventListener('change', () => {
+      scheduleResize();
+      applyState(isEnabled);
+    });
+
+    motionQuery.addEventListener('change', () => {
+      stop();
+      draw(motionQuery.matches);
+      start();
+    });
+
+    new MutationObserver(() => {
+      colors = readColors();
+      draw(motionQuery.matches);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+
     resize();
-
-    function generateECGPoint(time) {
-        const period = 60 / 72;
-        const t = time % period;
-        const normalizedT = t / period;
-        let value = 0;
-        
-        if (normalizedT > 0.1 && normalizedT < 0.2) {
-            value += Math.sin((normalizedT - 0.1) * 10 * Math.PI) * 0.15;
-        }
-        if (normalizedT > 0.35 && normalizedT < 0.45) {
-            if (normalizedT < 0.38) value -= 0.2;
-            else if (normalizedT < 0.42) value += 1.2;
-            else value -= 0.3;
-        }
-        if (normalizedT > 0.55 && normalizedT < 0.75) {
-            value += Math.sin((normalizedT - 0.55) * 5 * Math.PI) * 0.25;
-        }
-        return value + (Math.random() - 0.5) * 0.02;
-    }
-
-    function draw(timestamp) {
-        if (!isActive) {
-            requestAnimationFrame(draw);
-            return;
-        }
-        lastTime = timestamp;
-        
-        const cssWidth = width / dpr;
-        const cssHeight = height / dpr;
-        const centerY = cssHeight * config.baseline;
-
-        buffer[writeIndex] = generateECGPoint(timestamp / 1000);
-        writeIndex = (writeIndex + 1) % config.bufferSize;
-        if (writeIndex === 0) isBufferFull = true;
-        
-        const pointsToDraw = isBufferFull ? config.bufferSize : writeIndex;
-        
-        ctx.clearRect(0, 0, cssWidth, cssHeight);
-        const currentColor = getComputedStyle(document.body).getPropertyValue('--ecg-line-color').trim();
-        
-        ctx.beginPath();
-        ctx.strokeStyle = currentColor;
-        ctx.lineWidth = config.lineWidth;
-        ctx.lineJoin = 'round';
-        
-        for (let i = 0; i < pointsToDraw; i++) {
-            const idx = (writeIndex - pointsToDraw + i + config.bufferSize) % config.bufferSize;
-            const x = i * config.speed;
-            const y = centerY + buffer[idx] * cssHeight * config.amplitude;
-            
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-        
-        requestAnimationFrame(draw);
-    }
-    
-    requestAnimationFrame(draw);
+    applyState(isEnabled);
+  })();
 </script>

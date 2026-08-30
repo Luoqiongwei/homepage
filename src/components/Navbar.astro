@@ -1,6 +1,7 @@
 ---
 const BASE = import.meta.env.BASE_URL || '/';
 const currentPath = Astro.url.pathname;
+const { showDecorationToggle = true } = Astro.props;
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com" slot="head" />
@@ -25,12 +26,21 @@ const currentPath = Astro.url.pathname;
         <li><a class={currentPath === `${BASE}about/` ? 'active' : ''} href={`${BASE}about/`}>About</a></li>
         <li><a class={currentPath === `${BASE}articles/` ? 'active' : ''} href={`${BASE}articles/`}>Articles</a></li>
         <li><a class={currentPath === `${BASE}tools/` ? 'active' : ''} href={`${BASE}tools/`}>Tools</a></li>
-        <li class="sys-status-item">
-          <button class="sys-status" type="button" id="sysStatusBtn" title="切换系统状态">
-            <span class="sys-dot"></span>
-            <span class="sys-text">SYS: ONLINE</span>
-          </button>
-        </li>
+        {showDecorationToggle && (
+          <li class="sys-status-item">
+            <button
+              class="sys-status"
+              type="button"
+              id="sysStatusBtn"
+              aria-pressed="true"
+              aria-label="关闭边缘脉冲装饰"
+              title="切换边缘脉冲装饰"
+            >
+              <span class="sys-dot" aria-hidden="true"></span>
+              <span class="sys-text">PULSE: ON</span>
+            </button>
+          </li>
+        )}
         <li class="theme-item">
           <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false" title="切换主题">
             🌙
@@ -75,13 +85,27 @@ const currentPath = Astro.url.pathname;
   const sysDot = sysBtn?.querySelector('.sys-dot');
   const sysText = sysBtn?.querySelector('.sys-text');
   if (sysBtn && sysDot && sysText) {
-    let systemOn = localStorage.getItem(SYS_KEY) === '1';
+    let storedSystemState = null;
+    try {
+      storedSystemState = localStorage.getItem(SYS_KEY);
+    } catch {
+      // 隐私模式下存储可能不可用，此时仍保留本次页面内的开关能力。
+    }
+    let systemOn = storedSystemState === null ? true : storedSystemState === '1';
 
-    const updateSys = (on) => {
+    const updateSys = (on, persist = true) => {
       systemOn = on;
-      localStorage.setItem(SYS_KEY, systemOn ? '1' : '0');
+      if (persist) {
+        try {
+          localStorage.setItem(SYS_KEY, systemOn ? '1' : '0');
+        } catch {
+          // 存储失败不影响当前页面的装饰状态。
+        }
+      }
       sysDot.classList.toggle('offline', !systemOn);
-      sysText.textContent = systemOn ? 'SYS: ONLINE' : 'SYS: OFFLINE';
+      sysText.textContent = systemOn ? 'PULSE: ON' : 'PULSE: OFF';
+      sysBtn.setAttribute('aria-pressed', String(systemOn));
+      sysBtn.setAttribute('aria-label', systemOn ? '关闭边缘脉冲装饰' : '开启边缘脉冲装饰');
       document.dispatchEvent(new CustomEvent('system-status-change', { detail: { on: systemOn } }));
     };
 
@@ -89,6 +113,10 @@ const currentPath = Astro.url.pathname;
 
     sysBtn.addEventListener('click', () => {
       updateSys(!systemOn);
+    });
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === SYS_KEY) updateSys(event.newValue === '1', false);
     });
   }
 })();

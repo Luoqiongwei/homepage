@@ -166,9 +166,6 @@
 }
 
 [data-bs-theme="light"] {
-    --ecg-line-color: rgba(71, 85, 105, 0.12);
-    --ecg-blur: 1px;
-    
     --panel-bg: rgba(255, 255, 255, 0.7);
     --panel-border: rgba(0, 0, 0, 0.05);
     --panel-shadow: rgba(0, 0, 0, 0.08);
@@ -178,9 +175,6 @@
 }
 
 :root[data-bs-theme="dark"] {
-    --ecg-line-color: rgba(0, 255, 213, 0.25);
-    --ecg-blur: 0.5px;
-
     --panel-bg: rgba(255, 255, 255, 0.07);
     --panel-border: rgba(255, 255, 255, 0.1);
     --panel-shadow: rgba(0, 0, 0, 0.2);
@@ -190,15 +184,52 @@
 }
 
 
-#bgCanvas {
-    position: fixed; 
+.cardiac-deco {
+    --signal-core: rgba(71, 85, 105, 0.28);
+    --signal-glow: rgba(71, 85, 105, 0.09);
+    --signal-rail: rgba(71, 85, 105, 0.11);
+    --signal-node: rgba(71, 85, 105, 0.48);
+    position: fixed;
     top: 0;
-    left: 0;
+    right: clamp(8px, 2vw, 28px);
+    width: clamp(132px, 12vw, 224px);
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.58;
+    transition: opacity 0.35s ease;
+}
+
+:root[data-bs-theme="dark"] .cardiac-deco {
+    --signal-core: rgba(93, 210, 203, 0.34);
+    --signal-glow: rgba(54, 196, 188, 0.10);
+    --signal-rail: rgba(129, 165, 181, 0.12);
+    --signal-node: rgba(102, 226, 217, 0.58);
+    opacity: 0.52;
+}
+
+:root .cardiac-deco.is-off {
+    opacity: 0;
+}
+
+.cardiac-deco__canvas {
+    display: block;
     width: 100%;
     height: 100%;
-    z-index: -1; 
-    opacity: 0.55; 
-    filter: blur(var(--ecg-blur)); 
+}
+
+@media (max-width: 991.98px) {
+    .cardiac-deco,
+    #mainNav.tech-nav .nav-menu .sys-status-item {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cardiac-deco {
+        transition: none;
+        opacity: 0.34;
+    }
 }
 
 .vital-badge {
