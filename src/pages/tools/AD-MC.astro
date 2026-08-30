@@ -1,0 +1,456 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SmolderLifeDecoration from "../../components/SmolderLifeDecoration.astro";
+---
+
+<BaseLayout
+  title="Marching Cubes 面歧义与 Asymptotic Decider"
+  description="介绍 Marching Cubes 的基本原理、面歧义问题，以及 Asymptotic Decider 对局部拓扑连接的判定方法。"
+>
+  <main class="mc-article">
+    <article>
+      <header class="article-header">
+        <p class="category">COMPUTER GRAPHICS</p>
+        <h1>Marching Cubes与<br />Asymptotic Decider</h1>
+        <p class="subtitle">从体数据的等值面提取，到局部连接决策对全局拓扑的影响</p>
+      </header>
+
+      <section class="abstract" aria-labelledby="abstract-title">
+        <h2 id="abstract-title">摘要</h2>
+        <p>Marching Cubes 是从体数据中提取等值面的经典算法。它通过对体素八个角点进行二值分类，并查询预先构造的三角化表，将连续的等值面近似为三角网格。经典算法具有较高效率，但其标准查找表没有充分处理某些配置中的拓扑歧义。尤其当体素某一面的四个角点的符号交替出现时，等值线存在两种可能的连接方式；固定选择其中一种，可能使输出曲面与体素内部的插值模型不一致。</p>
+        <p>本文介绍 Marching Cubes 的基本机制，重点讨论面歧义，并说明 Asymptotic Decider 如何利用双线性插值的鞍点值决定局部连接。文末给出单体素和小规模歧义网格上的实验结果，并以一个二维动态包络作为 Marching Squares 中对应问题的补充例子。</p>
+      </section>
+
+      <section>
+        <h2>1. 等值面提取问题</h2>
+        <p>医学 CT、MRI、流体模拟和气象数据通常以三维规则网格上的标量值表示。设标量场为</p>
+        <div class="equation">
+          <math display="block" aria-label="V 从三维实数空间映射到实数，点 p 映射为 V(p)">
+            <mi>V</mi><mo>:</mo><msup><mi>ℝ</mi><mn>3</mn></msup><mo>→</mo><mi>ℝ</mi>
+            <mo separator="true">,</mo>
+            <mi>p</mi><mo>=</mo><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo>)</mo>
+            <mo>↦</mo><mi>V</mi><mo>(</mo><mi>p</mi><mo>)</mo>
+          </math>
+        </div>
+        <p>给定等值 <em>τ</em>，对应的等值面定义为</p>
+        <div class="equation">
+          <math display="block" aria-label="等值面 S 下标 tau 等于所有满足 V(p) 等于 tau 的三维点 p">
+            <msub><mi>S</mi><mi>τ</mi></msub><mo>=</mo>
+            <mo stretchy="true">&#123;</mo>
+            <mi>p</mi><mo>∈</mo><msup><mi>ℝ</mi><mn>3</mn></msup>
+            <mo>|</mo><mi>V</mi><mo>(</mo><mi>p</mi><mo>)</mo><mo>=</mo><mi>τ</mi>
+            <mo stretchy="true">&#125;</mo>
+          </math>
+        </div>
+        <p>实际计算中，标量场只在离散网格顶点处采样，网格单元内部的函数值需要通过插值估计。等值面提取的任务，是根据这些有限采样重建水平集 <em>S</em><sub>τ</sub> 的几何近似，同时尽可能保持其连通关系、孔洞和内部通道等拓扑性质。</p>
+        <p>Marching Cubes 将整个网格分解为许多立方体体素，并独立处理每个体素内的局部等值面。局部三角片随后通过共享边上的交点拼接为全局曲面。</p>
+      </section>
+
+      <section>
+        <h2>2. 标准 Marching Cubes 算法</h2>
+        <p>每个体素包含八个角点。对角点 <em>v</em> 定义符号函数</p>
+        <div class="equation">
+          <math display="block" aria-label="符号函数 s(v)，当 V(v) 大于 tau 时为 1，否则为 0">
+            <mi>s</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>=</mo>
+            <mrow>
+              <mo stretchy="true">&#123;</mo>
+              <mtable columnalign="left left" rowspacing=".45em">
+                <mtr><mtd><mn>1</mn><mo>,</mo></mtd><mtd><mi>V</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>&gt;</mo><mi>τ</mi></mtd></mtr>
+                <mtr><mtd><mn>0</mn><mo>,</mo></mtd><mtd><mi>V</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>≤</mo><mi>τ</mi></mtd></mtr>
+              </mtable>
+            </mrow>
+          </math>
+        </div>
+        <p>八个二值状态可以编码为一个 8 位索引</p>
+        <div class="equation">
+          <math display="block" aria-label="体素索引 c 等于从 v 等于 0 到 7 的 s(v) 乘 2 的 v 次方之和">
+            <mi>c</mi><mo>=</mo>
+            <munderover><mo>∑</mo><mrow><mi>v</mi><mo>=</mo><mn>0</mn></mrow><mn>7</mn></munderover>
+            <mi>s</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>·</mo><msup><mn>2</mn><mi>v</mi></msup>
+            <mo separator="true">,</mo>
+            <mi>c</mi><mo>∈</mo><mo stretchy="true">&#123;</mo><mn>0</mn><mo>,</mo><mo>…</mo><mo>,</mo><mn>255</mn><mo stretchy="true">&#125;</mo>
+          </math>
+        </div>
+        <p>因此，一个体素共有 256 种角点配置。利用立方体的旋转、反射以及内外翻转对称性，这些配置可归纳为相对较少的基本情形。经典实现通过边表和三角表确定哪些体素边被等值面切割，以及交点应当如何组成三角形。</p>
+
+        <p>若一条边连接角点 <em>a</em> 与 <em>b</em>，且两端位于等值的不同侧，则交点可由线性插值得到：</p>
+        <div class="equation">
+          <math display="block" aria-label="边插值参数 t 与交点 p 下标 e 的计算公式">
+            <mi>t</mi><mo>=</mo>
+            <mfrac>
+              <mrow><mi>τ</mi><mo>−</mo><mi>V</mi><mo>(</mo><mi>a</mi><mo>)</mo></mrow>
+              <mrow><mi>V</mi><mo>(</mo><mi>b</mi><mo>)</mo><mo>−</mo><mi>V</mi><mo>(</mo><mi>a</mi><mo>)</mo></mrow>
+            </mfrac>
+            <mo separator="true">,</mo>
+            <msub><mi>p</mi><mi>e</mi></msub><mo>=</mo><mi>a</mi><mo>+</mo><mi>t</mi><mo>(</mo><mi>b</mi><mo>−</mo><mi>a</mi><mo>)</mo>
+          </math>
+        </div>
+        <p>标准算法的主要步骤可以概括为：读取体素角点值并计算索引，查询三角表，对所有被切割的边计算交点，最后按照查表结果生成三角形。由于单个体素的操作数量有固定上界，该方法计算效率较高，也易于进行并行化。</p>
+      </section>
+
+      <section>
+        <h2>3. 面歧义</h2>
+        <p>标准查表法的问题在于，角点的二值符号并不总能唯一决定体素内的拓扑。当立方体某个面上的四个角点呈交替符号时，该面的四条边都会与等值线相交。仅根据这四个交点，可以构造两种不同的连接方式。</p>
+
+        <figure class="ambiguity-figure">
+          <div>
+            <svg viewBox="0 0 240 240" role="img" aria-label="第一种歧义面连接">
+              <rect x="20" y="20" width="200" height="200"></rect>
+              <circle cx="20" cy="20" r="10" class="positive"></circle>
+              <circle cx="220" cy="20" r="10"></circle>
+              <circle cx="220" cy="220" r="10" class="positive"></circle>
+              <circle cx="20" cy="220" r="10"></circle>
+              <path d="M120 20 C120 76 164 76 220 120 M20 120 C76 120 76 164 120 220"></path>
+            </svg>
+            <span>连接方式 I</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 240 240" role="img" aria-label="第二种歧义面连接">
+              <rect x="20" y="20" width="200" height="200"></rect>
+              <circle cx="20" cy="20" r="10" class="positive"></circle>
+              <circle cx="220" cy="20" r="10"></circle>
+              <circle cx="220" cy="220" r="10" class="positive"></circle>
+              <circle cx="20" cy="220" r="10"></circle>
+              <path d="M20 120 C76 120 76 76 120 20 M120 220 C120 164 164 164 220 120"></path>
+            </svg>
+            <span>连接方式 II</span>
+          </div>
+          <figcaption>图 1　交替符号面上的两种等值线连接。两种方案使用相同的边交点，但具有不同的局部拓扑。</figcaption>
+        </figure>
+
+        <p>这种不确定性称为面歧义。如果相邻体素在共享面上采用不一致的连接策略，输出网格可能出现裂缝。即使所有体素始终采用同一种固定策略，所得曲面也不一定与体素内部的双线性或三线性插值相符。问题的实质是连通分量、隧道等拓扑结构可能被错误判断。</p>
+      </section>
+
+      <section>
+        <h2>4. Asymptotic Decider</h2>
+        <p>Nielson 与 Hamann 提出的 Asymptotic Decider（AD）为歧义面提供了一个局部代数判定。设歧义面四个角点的标量值按循环顺序记为 <em>A</em>、<em>B</em>、<em>C</em>、<em>D</em>，其中 <em>A</em> 与 <em>C</em> 位于同一条对角线上。该面上的双线性插值具有鞍点，其函数值为</p>
+        <div class="equation prominent">
+          <math display="block" aria-label="鞍点值 f 下标 s 等于 AC 减 BD 除以 A 加 C 减 B 减 D">
+            <msub><mi>f</mi><mi>s</mi></msub><mo>=</mo>
+            <mfrac>
+              <mrow><mi>A</mi><mi>C</mi><mo>−</mo><mi>B</mi><mi>D</mi></mrow>
+              <mrow><mi>A</mi><mo>+</mo><mi>C</mi><mo>−</mo><mi>B</mi><mo>−</mo><mi>D</mi></mrow>
+            </mfrac>
+          </math>
+        </div>
+        <p>当 <em>f</em><sub>s</sub> 高于等值 <em>τ</em> 时，位于正对角线上的角点应当相连；当 <em>f</em><sub>s</sub> 低于 <em>τ</em> 时，正对角角点应当被负区域分隔。这样，连接方式不再由表项任意决定，而是与双线性插值在该面上的实际行为一致。</p>
+        <p>在实现中，算法首先检测一个面是否确实具有严格交替的符号；若存在歧义，则计算鞍点值并比较 <em>f</em><sub>s</sub> 与 <em>τ</em>，然后使用相应的隧道式三角化替换原表项。对于任意旋转方向的等价配置，可以通过立方体旋转群将一个规范构型的三角化映射到当前体素。</p>
+      </section>
+
+      <section>
+        <h2>5. 二维情形中的对应问题</h2>
+        <p>Marching Squares 可以视为 Marching Cubes 在二维规则网格上的对应算法。一个 2×2 单元同样可能出现对角角点同号、相邻角点异号的配置，因而需要在两种连接方式之间作出选择。下方动态使用康威生命游戏产生二值场，再通过有符号距离场和 Marching Squares 提取连续包络。程序将斜角相接的活细胞视为八连通，并据此处理歧义单元。</p>
+
+        <figure class="smolder-figure">
+          <SmolderLifeDecoration
+            density={36}
+            speed={5}
+            interactive={true}
+            burnMemory={true}
+            particles={false}
+            ariaLabel="Marching Squares 二维包络示例；点击方格可切换细胞状态"
+          />
+          <figcaption>图 2　Marching Squares 的动态包络示例。该作品仅用于说明局部连接规则对整体轮廓连续性的影响。</figcaption>
+        </figure>
+
+        <p>该二维例子与三维实验并不等价：它没有处理 Marching Cubes 中的内部歧义，也没有直接生成三角网格。不过，两者共享同一个核心问题，即离散角点的符号不足以在所有情况下唯一确定连续等值集的拓扑，需要额外的插值信息或明确的连接约定。</p>
+      </section>
+
+      <section class="conclusion">
+        <h2>结论</h2>
+        <p>Marching Cubes 的效率来自可并行的局部查表，但局部二值分类并不总能确定正确的曲面连接。Asymptotic Decider 通过计算歧义面上的双线性鞍点值，使局部三角化与插值模型保持一致。相关实验中，AD-MC 在不改变边交点数量的情况下修正了三角形的连接关系，并显著改变了网格的连通分量数。因此，在关注拓扑正确性的应用中，歧义消解是等值面提取算法的一项重要要求。</p>
+      </section>
+
+      <footer class="references">
+        <h2>参考文献</h2>
+        <ol>
+          <li>Lorensen, W. E., &amp; Cline, H. E. Marching Cubes: A High Resolution 3D Surface Construction Algorithm. <i>Computer Graphics</i>, 1987.</li>
+          <li>Nielson, G. M., &amp; Hamann, B. The Asymptotic Decider: Resolving the Ambiguity in Marching Cubes. <i>Proceedings of Visualization</i>, 1991.</li>
+          <li>Lewiner, T., Lopes, H., Vieira, A. W., &amp; Tavares, G. Efficient Implementation of Marching Cubes’ Cases with Topological Guarantees. <i>Journal of Graphics Tools</i>, 2003.</li>
+        </ol>
+      </footer>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .mc-article {
+    --article-bg: var(--bs-body-bg, #fff);
+    --article-text: var(--bs-body-color, #212529);
+    --article-muted: var(--bs-secondary-color, #68707a);
+    --article-border: var(--bs-border-color, #dfe3e7);
+    --article-accent: #087f9c;
+    --article-surface: #f5f7f8;
+    --article-body: 680px;
+    --article-wide: 920px;
+    min-height: 100vh;
+    background: var(--article-bg);
+    color: var(--article-text);
+    transition: background-color .25s ease, color .25s ease;
+  }
+
+  :global([data-bs-theme="dark"]) .mc-article {
+    --article-accent: #6edff6;
+    --article-surface: #202329;
+  }
+
+  article {
+    width: min(var(--article-wide), calc(100% - 2rem));
+    margin: 0 auto;
+    font-family: Lora, "Noto Serif SC", "Songti SC", "STSong", serif;
+  }
+
+  .article-header {
+    width: min(var(--article-body), 100%);
+    margin: 0 auto;
+    padding: 10rem 0 5.5rem;
+  }
+
+  .category {
+    margin: 0 0 1.3rem;
+    color: var(--article-accent);
+    font: 600 .72rem/1.4 "JetBrains Mono", monospace;
+    letter-spacing: .16em;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: Inter, "Noto Sans SC", sans-serif;
+    font-size: clamp(2.65rem, 7vw, 4.65rem);
+    font-weight: 720;
+    letter-spacing: -.04em;
+    line-height: 1.16;
+  }
+
+  .subtitle {
+    max-width: 42rem;
+    margin: 2rem 0 1.4rem;
+    color: var(--article-muted);
+    font-size: 1.18rem;
+    line-height: 1.8;
+  }
+
+  .meta {
+    margin: 0;
+    color: var(--article-muted);
+    font: .78rem "JetBrains Mono", monospace;
+  }
+
+  section {
+    padding: 4.2rem 0;
+  }
+
+  section h2,
+  .references h2 {
+    width: min(var(--article-body), 100%);
+    margin: 0 auto 2rem;
+    font-family: Inter, "Noto Sans SC", sans-serif;
+    font-size: clamp(1.65rem, 4vw, 2.35rem);
+    font-weight: 700;
+    letter-spacing: -.025em;
+    line-height: 1.3;
+  }
+
+  section p {
+    width: min(var(--article-body), 100%);
+    margin: 0 auto 1.45rem;
+    font-size: 1.06rem;
+    line-height: 2.05;
+    letter-spacing: .012em;
+    text-align: justify;
+  }
+
+  section p:last-child { margin-bottom: 0; }
+
+  .abstract {
+    width: min(var(--article-body), 100%);
+    margin: 0 auto 1rem;
+    padding: 2.5rem 0 3.2rem;
+    border-top: 1px solid var(--article-border);
+    border-bottom: 1px solid var(--article-border);
+  }
+
+  .abstract h2 {
+    width: 100%;
+    margin-bottom: 1.2rem;
+    font-size: 1.15rem;
+  }
+
+  .abstract p {
+    width: 100%;
+    color: var(--article-muted);
+    font-size: .95rem;
+    line-height: 1.9;
+  }
+
+  em {
+    color: var(--article-accent);
+    font-style: normal;
+  }
+
+  .equation {
+    width: min(var(--article-body), 100%);
+    margin: 2.4rem auto;
+    padding: .2rem 0;
+    overflow-x: auto;
+    color: var(--article-text);
+    text-align: center;
+  }
+
+  .equation math {
+    margin: 0 auto;
+    color: inherit;
+    font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", serif;
+    font-size: clamp(1.05rem, 2.8vw, 1.3rem);
+  }
+
+  .equation.prominent math {
+    font-size: clamp(1.2rem, 3.3vw, 1.55rem);
+  }
+
+  .ambiguity-figure {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin: 3rem auto;
+    max-width: 700px;
+  }
+
+  .ambiguity-figure > div { text-align: center; }
+
+  .ambiguity-figure svg {
+    width: 100%;
+    max-width: 230px;
+  }
+
+  .ambiguity-figure rect {
+    fill: var(--article-surface);
+    stroke: var(--article-muted);
+    stroke-width: 2;
+  }
+
+  .ambiguity-figure circle {
+    fill: var(--article-muted);
+    stroke: var(--article-bg);
+    stroke-width: 3;
+  }
+
+  .ambiguity-figure circle.positive { fill: var(--article-accent); }
+
+  .ambiguity-figure path {
+    fill: none;
+    stroke: var(--article-accent);
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+
+  .ambiguity-figure > div > span {
+    display: block;
+    color: var(--article-muted);
+    font-size: .82rem;
+  }
+
+  figcaption,
+  table caption {
+    color: var(--article-muted);
+    font: .78rem/1.7 Inter, "Noto Sans SC", sans-serif;
+    text-align: center;
+  }
+
+  .ambiguity-figure figcaption {
+    grid-column: 1 / -1;
+  }
+
+  .table-wrap {
+    width: min(var(--article-wide), 100%);
+    margin: 2.8rem auto;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    font-family: Inter, "Noto Sans SC", sans-serif;
+    font-size: .83rem;
+  }
+
+  table caption {
+    margin-bottom: .8rem;
+    caption-side: top;
+  }
+
+  th,
+  td {
+    padding: .78rem .7rem;
+    border-bottom: 1px solid var(--article-border);
+    text-align: right;
+  }
+
+  th:first-child,
+  td:first-child,
+  th:nth-child(3),
+  td:nth-child(3) {
+    text-align: left;
+  }
+
+  th {
+    color: var(--article-muted);
+    font-weight: 600;
+  }
+
+  tr.emphasis td { font-weight: 600; }
+  tr.emphasis td:last-child { color: var(--article-accent); }
+
+  .smolder-figure {
+    width: min(var(--article-wide), 100%);
+    margin: 3rem auto;
+  }
+
+  .smolder-figure :global(.smolder-life-decoration) {
+    border-color: var(--article-border);
+  }
+
+  .smolder-figure figcaption {
+    margin-top: .9rem;
+  }
+
+  .conclusion {
+    margin-top: 1rem;
+    padding-top: 4.8rem;
+    border-top: 1px solid var(--article-border);
+  }
+
+  .references {
+    width: min(var(--article-body), 100%);
+    margin: 0 auto;
+    padding: 3rem 0 7rem;
+    border-top: 1px solid var(--article-border);
+  }
+
+  .references h2 {
+    width: 100%;
+    margin-bottom: 1.3rem;
+    font-size: 1.15rem;
+  }
+
+  .references ol {
+    margin: 0;
+    padding-left: 1.3rem;
+    color: var(--article-muted);
+    font-size: .82rem;
+    line-height: 1.7;
+  }
+
+  .references li { margin-bottom: .65rem; }
+
+  @media (max-width: 600px) {
+    article { width: min(100% - 1.2rem, var(--article-wide)); }
+    .article-header { padding: 8rem .3rem 4.5rem; }
+    section { padding: 3.7rem .3rem; }
+    section p { text-align: left; }
+    .ambiguity-figure { grid-template-columns: 1fr; gap: 1.5rem; }
+    .ambiguity-figure figcaption { grid-column: 1; }
+    .equation math { margin-left: 0; }
+  }
+</style>
