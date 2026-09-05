@@ -1,0 +1,118 @@
+---
+export type SentenceLanguage = "zh" | "en";
+export type SentenceRevealMode = "single" | "cumulative";
+export type SentenceDriveMode = "auto" | "local" | "page";
+
+interface Props {
+  text: string;
+  lineBreakMarker?: string;
+  fixedSentenceIndexes?: number[];
+  language?: SentenceLanguage;
+  revealMode?: SentenceRevealMode;
+  drive?: SentenceDriveMode;
+  playing?: boolean;
+  speed?: number;
+  density?: number;
+  rows?: number;
+  columns?: number;
+  foreground?: string;
+  aspectRatio?: number;
+  respectReducedMotion?: boolean;
+  decorative?: boolean;
+  ariaLabel?: string;
+  class?: string;
+}
+
+const {
+  text,
+  lineBreakMarker = "||",
+  fixedSentenceIndexes,
+  language = "zh",
+  revealMode = "single",
+  drive = "auto",
+  playing = true,
+  speed = 1,
+  density = 8,
+  rows = 40,
+  columns = 68,
+  foreground,
+  aspectRatio = 16 / 9,
+  respectReducedMotion = true,
+  decorative = true,
+  ariaLabel = "在随机字符中依次显现句子的动态文本阵列",
+  class: className = "",
+} = Astro.props;
+
+const safeSpeed = Math.max(0.05, Math.min(8, speed));
+const safeDensity = Math.max(2, Math.min(12, density));
+const safeRows = Math.max(1, Math.floor(rows));
+const safeColumns = Math.max(1, Math.floor(columns));
+const safeAspectRatio = Math.max(0.5, Math.min(4, aspectRatio));
+---
+
+<div
+  class:list={["dynamic-sentence-field", className]}
+  data-dynamic-sentence-field
+  data-text={text}
+  data-line-break-marker={lineBreakMarker}
+  data-fixed-sentence-indexes={fixedSentenceIndexes ? JSON.stringify(fixedSentenceIndexes) : undefined}
+  data-language={language}
+  data-reveal-mode={revealMode}
+  data-drive={drive}
+  data-playing={String(playing)}
+  data-speed={safeSpeed}
+  data-density={safeDensity}
+  data-rows={safeRows}
+  data-columns={safeColumns}
+  data-respect-reduced-motion={String(respectReducedMotion)}
+  style={`--sentence-field-aspect-ratio: ${safeAspectRatio};${foreground ? ` color: ${foreground};` : ""}`}
+  tabindex={drive === "local" ? 0 : undefined}
+  aria-hidden={decorative ? "true" : undefined}
+>
+  <canvas
+    class="dynamic-sentence-field__canvas"
+    width="1360"
+    height="765"
+    role={decorative ? undefined : "img"}
+    aria-label={decorative ? undefined : ariaLabel}
+  ></canvas>
+</div>
+
+<style>
+  .dynamic-sentence-field {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--sentence-field-aspect-ratio, 1.7778);
+    overflow: hidden;
+    color: rgba(15, 23, 42, 0.78);
+    background: transparent;
+    contain: layout paint style;
+    user-select: none;
+  }
+
+  :global(:root[data-bs-theme="dark"]) .dynamic-sentence-field {
+    color: rgba(229, 231, 235, 0.82);
+  }
+
+  .dynamic-sentence-field[data-drive="local"] {
+    cursor: ns-resize;
+    touch-action: pan-x;
+  }
+
+  .dynamic-sentence-field:focus-visible {
+    outline: 1px solid #c8ff32;
+    outline-offset: 3px;
+  }
+
+  .dynamic-sentence-field__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<script>
+  import "../scripts/DynamicSentenceFieldRuntime";
+</script>

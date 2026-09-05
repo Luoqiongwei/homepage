@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DynamicSentenceField from "../../components/DynamicSentenceField.astro";
+---
+
+<BaseLayout
+  title="动态句子场演示"
+  description="DynamicSentenceField Astro 装饰组件的最小测试页面。"
+>
+  <main class="sentence-field-demo container px-4 px-lg-5">
+    <header>
+      <p>DYNAMIC SENTENCE FIELD</p>
+      <h1>动态句子场</h1>
+    </header>
+
+    <DynamicSentenceField
+      text="人的生命大概是短暂的||脆弱的||毫无意义的||但即便如此||我也会举起我的骑枪||向那些大众习以为常的观念刺去||以彰显我荒诞的独特性"
+      fixedSentenceIndexes={[0, 1, 2, 3, 4, 5, 6]}
+      language="zh"
+      revealMode="single"
+      drive="page"
+      speed={1.2}
+      rows={31}
+      columns={45}
+      decorative={false}
+    />
+  </main>
+</BaseLayout>
+
+<style>
+  .sentence-field-demo {
+    max-width: 960px;
+    padding-top: 8rem;
+    padding-bottom: 5rem;
+  }
+
+  header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  header p {
+    margin-bottom: 0.45rem;
+    color: #6c757d;
+    font-family: monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+  }
+</style>
