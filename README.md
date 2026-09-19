@@ -1,141 +1,108 @@
 # 洛穹偎的一家言
 
 ![Node.js](https://img.shields.io/badge/node.js-%3E%3D20.x-brightgreen?logo=node.js&logoColor=white)
-![npm](https://img.shields.io/badge/npm-%3E%3D9.x-red?logo=npm&logoColor=white)
 ![Astro](https://img.shields.io/badge/astro-5.14.1-orange?logo=astro&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-5.9.3-blue?logo=typescript&logoColor=white)
 
-这是一个基于 Astro 的个人静态博客模板。仓库包含站点源码、组件与样式，适合用于写个人文章、展示作品或搭建简洁的静态博客。
+「洛穹偎的一家言」是洛穹偎的个人静态站点，收录随笔、番剧与游戏评论，也承载一些交互实验和游戏原型。项目使用 Astro 5 构建，不依赖 React、Vue 等前端框架。
 
-## 目录（快速导航）
+- 站点：<https://luoqiongwei.github.io/homepage/>
+- 作者：[洛穹偎](https://github.com/Luoqiongwei)
 
-- [特性](#特性)
-- [技术栈](#技术栈)
-- [项目结构](#项目结构)
-- [快速开始](#快速开始)
-- [常用操作示例](#常用操作示例)
-- [部署](#部署)
-- [许可](#许可)
+## 主要内容
 
-## 特性
-
-- 布局在Bootstrap 5基础上进行了一些修改
-- 支持亮/暗主题切换
-- 组件：导航、页首 Hero、文章预览、图片/视频嵌入组件
-- 使用 Astro 进行静态页面生成，构建速度快，兼容 Markdown 页面
+- 文章目录与近期文章：首页展示近期内容，文章页按主题分类维护。
+- 亮色/暗色主题：主题偏好保存在浏览器本地。
+- 系统装饰：可选开关的心电图效果，以及 Canvas 动态句子场、余烬生命游戏等计算艺术视觉实验。
+- 工具与实验：包括「从夯到拉」、Marching Cubes 技术页和「熔炉 · 边界站」原型。
+- Markdown 文档：通过 Astro Content Collections 生成游戏设计文档页面。
+- Live2D 展示：站内角色「疏燕 · 偎红」。
 
 ## 技术栈
 
-- 框架：Astro
-- 打包/运行：Node.js + npm
+- Astro 5 + TypeScript
+- `@astrojs/sitemap`
+- `sharp` / Astro Images
+- Bootstrap 5、Font Awesome、Google Fonts（CDN）
+- 原生 JavaScript、Canvas、Web Worker 与 Live2D Cubism Web 运行时
+
+站点采用纯静态输出，部署目标固定为 GitHub Pages 的 `/homepage/` 子路径。
 
 ## 项目结构
 
-```
+```text
 /
-├── .astro/                
-├── .github/               # workflows
-├── public/                # 静态资源
-│   ├── assets/
-│   ├── css/
-│   └── js/
+├── .github/workflows/        # GitHub Pages 部署流程
+├── public/
+│   ├── assets/               # favicon 与文章插图
+│   ├── css/                  # 全站及特殊页面样式
+│   ├── js/                   # 全站脚本
+│   ├── live2d/               # Live2D 查看器、模型与许可声明
+│   └── tools/furnace/        # 独立游戏原型
 ├── src/
-│   ├── components/
-│   ├── layouts/
-│   └── pages/
-├── package.json
+│   ├── assets/img/           # 由 Astro 优化的页面头图
+│   ├── components/           # 页面与交互组件
+│   ├── config/               # Live2D 等功能配置
+│   ├── content/game-docs/    # 游戏文档 Markdown
+│   ├── layouts/              # 通用、文章与特殊样式布局
+│   ├── pages/                # 文件路由、文章与工具页面
+│   └── scripts/              # Canvas 组件运行时与 Worker
 ├── astro.config.mjs
-└── README.md
+├── package.json
+└── tsconfig.json
 ```
 
-组件说明（位于 `src/components/`）
+## 本地开发
 
-- `Navbar.astro`：站点导航条，包含主题切换按钮
-- `HeroHeader.astro`：页面顶部大图与标题区域，使用内置的 `<Image />` Astro 组件进行优化
-- `IllustrationEmbed.astro`：在文章中嵌入图片，支持多行 caption、align、宽度和可选lightbox行为
-- `VideoEmbed.astro`：嵌入视频
-- `PostPreview.astro`：文章列表项的预览样式
-
-## 快速开始
-
-先确保已安装 Node.js。
-
-安装依赖：
+需要 Node.js 20.x 或更高版本，以及 npm 9.x 或更高版本。
 
 ```bash
-npm install
-```
-
-本地开发：
-
-```bash
+git clone https://github.com/Luoqiongwei/homepage.git
+cd homepage
+npm ci
 npm run dev
 ```
 
-默认 `package.json` 中 `dev` 脚本使用了 `--base /homepage/`，运行后可在浏览器访问：
+开发站点地址为 <http://localhost:4321/homepage/>。由于生产环境部署在子路径，开发时也应从 `/homepage/` 访问，而不是站点根路径。
 
-```
-http://localhost:4321/homepage/
-```
+### 可用脚本
 
-若希望在根路径运行，编辑 `package.json` 中的 `dev` 脚本或在 `astro.config.mjs` 中修改 `base`。
+| 命令 | 用途 |
+| --- | --- |
+| `npm run dev` | 启动 Astro 开发服务器 |
+| `npm run build` | 构建静态站点到 `dist/` |
+| `npm run preview` | 预览已构建的站点 |
 
-## 常用操作示例
+## 内容维护
 
-1) 新增一篇文章（`.astro`）：
-
-在 `src/pages/post/` 新建文件，比如 `my-first-post.astro`，示例：
+文章使用 Astro 页面。先在 `src/pages/post/` 新建文件：
 
 ```astro
 ---
-import PostLayout from '../../layouts/PostLayout.astro';
+import PostLayout from "../../layouts/PostLayout.astro";
+import bg from "../../assets/img/post-bg.jpg";
 ---
-<PostLayout title="示例文章" subtitle="副标题" meta="2025-04-15">
+
+<PostLayout
+  title="示例文章"
+  subtitle="副标题"
+  date="September 20, 2026"
+  upload="September 20, 2026"
+  background={bg}
+>
   <p>这里是文章正文。</p>
 </PostLayout>
 ```
 
-2) 在文章中嵌入图像（多行 caption 示例）：
+## 构建与部署
 
-```astro
----
-import IllustrationEmbed from '../../components/IllustrationEmbed.astro';
----
-<IllustrationEmbed src="/assets/img/post-bg.jpg" alt="示例图" caption="第一行说明|第二行说明" width="80%" />
-```
+`astro.config.mjs` 已配置静态输出、sitemap、末尾斜杠和 `/homepage/` base。执行 `npm run build` 后，产物位于 `dist/`。
 
-3) 暗色模式说明：
-
-- 在页面右上角的导航栏有主题切换按钮，会将偏好保存到 `localStorage`。
-- 整合了Bootstrap自带的与手动实现的暗色变量
-
-
-
-## 部署
-
-推荐使用 GitHub Pages、Netlify、Vercel 等静态托管服务。主要步骤：
-
-1. 在 `astro.config.mjs` 中确认 `base` 与 `site` 设置（若部署到子路径，需设置 `base`）。
-2. 运行 `npm run build`。
-3. 将 `dist/` 目录的内容上传到静态主机。
-
-若使用 GitHub Actions 自动部署，可参考 Astro 官方和你的托管平台的示例工作流。
+推送到 `main` 分支会触发 GitHub Actions：`withastro/action@v3` 负责安装与构建，`actions/deploy-pages@v4` 发布到 GitHub Pages。工作流也支持在 Actions 页面手动触发。
 
 ## 许可
 
-### Code License
-本项目的所有代码（包括 /src, /public 中的脚本、组件、样式等）均采用 MIT License 授权。  
-详见根目录下的 LICENSE 文件。
-
-### Content License
-所有原创文章内容（包括随笔、评论、图像等），除另行注明外，均采用 CC BY-NC 4.0 协议授权。  
-允许非商业转载，但必须注明作者“洛穹偎”及原文链接。  
-不得将内容用于任何商业用途。
-
-协议全文：
-https://creativecommons.org/licenses/by-nc/4.0/
-
----
-
-作者：洛穹偎
-仓库：[https://github.com/Luoqiongwei/homepage](https://github.com/Luoqiongwei/homepage)
+- 代码采用 [MIT License](LICENSE)。
+- 原创文章、评论与一般图像内容采用 [CC BY-NC 4.0](CONTENT-LICENSE)，转载须署名“洛穹偎”并附原文链接，且不得商用。
+- `public/live2d/model/` 下的角色模型、纹理与动作资产不适用上述两项许可；详情见 `public/live2d/rights.html`。
+- `public/live2d/vendor/` 中的第三方运行库遵循各自许可。

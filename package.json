@@ -6,7 +6,9 @@
     "dev": "astro dev --base /homepage/",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "live2d:workbench": "node tools/live2d-workbench/server.mjs",
+    "live2d:check": "node --test tools/live2d-workbench/server.test.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",

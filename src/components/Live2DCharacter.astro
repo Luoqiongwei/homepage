@@ -1,0 +1,13 @@
+---
+import defaults from '../config/live2d.json';
+interface Props {id?:string; title?:string; height?:number; settings?:Record<string,unknown>;}
+const {id='site-character',title='疏燕 · 站内伙伴',height=defaults.presentation.height,settings={}}=Astro.props;
+const BASE=import.meta.env.BASE_URL||'/';
+const config={...defaults,...settings};
+---
+<div class="live2d-character">
+  <iframe id={id} title={title} src={`${BASE}live2d/viewer.html`} data-live2d-config={JSON.stringify(config)} loading="lazy" referrerpolicy="same-origin" style={`height:${height}px`} allow="autoplay 'none'"></iframe>
+  <noscript>角色互动需要启用 JavaScript；你仍然可以正常阅读本站。</noscript>
+</div>
+<script is:inline type="module" src={`${BASE}live2d/embed.mjs`}></script>
+<style>.live2d-character{width:100%;max-width:520px;margin-inline:auto;border-radius:18px;background:linear-gradient(145deg,#e8eff7,#fbf2f7);overflow:hidden}.live2d-character iframe{display:block;border:0;width:100%;background:transparent;color-scheme:only light}</style>

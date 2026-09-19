@@ -1,0 +1,22 @@
+{
+  "dynamics": {
+    "gaze": 0.8,
+    "head": 0.65,
+    "hair": 0.75,
+    "breath": 0.6,
+    "breathRate": 14
+  },
+  "presentation": {
+    "height": 420,
+    "zoom": 0.96,
+    "fps": 30,
+    "resolution": 1.5
+  },
+  "behavior": {
+    "idle": true,
+    "follow": true,
+    "interactive": true
+  },
+  "expression": "neutral",
+  "parameters": {}
+}

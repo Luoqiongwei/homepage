@@ -1,0 +1,345 @@
+{
+  "parameters": [
+    {
+      "Id": "ParamAngleX",
+      "Name": "角度 X",
+      "Min": -30,
+      "Max": 30,
+      "Default": 0
+    },
+    {
+      "Id": "ParamAngleY",
+      "Name": "角度 Y",
+      "Min": -30,
+      "Max": 30,
+      "Default": 0
+    },
+    {
+      "Id": "ParamAngleZ",
+      "Name": "角度 Z",
+      "Min": -30,
+      "Max": 30,
+      "Default": 0
+    },
+    {
+      "Id": "ParamEyeLOpen",
+      "Name": "左眼 开闭",
+      "Min": 0,
+      "Max": 1,
+      "Default": 1
+    },
+    {
+      "Id": "ParamEyeLSmile",
+      "Name": "左眼 微笑",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamEyeROpen",
+      "Name": "右眼 开闭",
+      "Min": 0,
+      "Max": 1,
+      "Default": 1
+    },
+    {
+      "Id": "ParamEyeRSmile",
+      "Name": "右眼 微笑",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamEyeBallX",
+      "Name": "眼珠 X",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamEyeBallY",
+      "Name": "眼珠 Y",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowLY",
+      "Name": "左眉 上下",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowRY",
+      "Name": "右眉 上下",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowLX",
+      "Name": "左眉 左右",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowRX",
+      "Name": "右眉 左右",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowLAngle",
+      "Name": "左眉 角度",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowRAngle",
+      "Name": "右眉 角度",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowLForm",
+      "Name": "左眉 変形",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBrowRForm",
+      "Name": "右眉 変形",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamMouthForm",
+      "Name": "嘴 变形",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamMouthOpenY",
+      "Name": "嘴 开闭",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamCheek",
+      "Name": "脸颊泛红",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBodyAngleX",
+      "Name": "身体旋转 X",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBodyAngleY",
+      "Name": "身体旋转 Y",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBodyAngleZ",
+      "Name": "身体旋转 Z",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    },
+    {
+      "Id": "ParamBreath",
+      "Name": "呼吸",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamHairFront",
+      "Name": "ParamHairFront",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    },
+    {
+      "Id": "ParamHairSide",
+      "Name": "ParamHairSide",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    },
+    {
+      "Id": "ParamHairBack",
+      "Name": "摇动 后发",
+      "Min": -1,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamSwEyeBase",
+      "Name": "ParamSwEyeBase",
+      "Min": 0,
+      "Max": 1,
+      "Default": 1
+    },
+    {
+      "Id": "ParamSwBrowBase",
+      "Name": "ParamSwBrowBase",
+      "Min": 0,
+      "Max": 1,
+      "Default": 1
+    },
+    {
+      "Id": "ParamSwMouthBase",
+      "Name": "ParamSwMouthBase",
+      "Min": 0,
+      "Max": 1,
+      "Default": 1
+    },
+    {
+      "Id": "ParamExprSmile",
+      "Name": "ParamExprSmile",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamExprSad",
+      "Name": "ParamExprSad",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamExprAngry",
+      "Name": "ParamExprAngry",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamExprSurprised",
+      "Name": "ParamExprSurprised",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamExprClosedeyes",
+      "Name": "ParamExprClosedeyes",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamExprCrying",
+      "Name": "ParamExprCrying",
+      "Min": 0,
+      "Max": 1,
+      "Default": 0
+    },
+    {
+      "Id": "ParamHairTail",
+      "Name": "ParamHairTail",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    },
+    {
+      "Id": "ParamHairStrand",
+      "Name": "ParamHairStrand",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    },
+    {
+      "Id": "ParamRibbon",
+      "Name": "ParamRibbon",
+      "Min": -10,
+      "Max": 10,
+      "Default": 0
+    }
+  ],
+  "motions": [
+    {
+      "name": "idle",
+      "file": "motions/idle.motion3.json",
+      "duration": 12,
+      "loop": true,
+      "parameters": [
+        "ParamBreath",
+        "ParamAngleZ",
+        "ParamAngleX",
+        "ParamAngleY",
+        "ParamBodyAngleZ",
+        "ParamEyeLOpen",
+        "ParamEyeROpen",
+        "ParamHairFront",
+        "ParamRibbon"
+      ]
+    },
+    {
+      "name": "nod",
+      "file": "motions/nod.motion3.json",
+      "duration": 4,
+      "loop": false,
+      "parameters": [
+        "ParamAngleY",
+        "ParamHairFront"
+      ]
+    },
+    {
+      "name": "tilt",
+      "file": "motions/tilt.motion3.json",
+      "duration": 6,
+      "loop": false,
+      "parameters": [
+        "ParamAngleZ",
+        "ParamHairFront"
+      ]
+    },
+    {
+      "name": "talk",
+      "file": "motions/talk.motion3.json",
+      "duration": 6,
+      "loop": false,
+      "parameters": [
+        "ParamMouthOpenY",
+        "ParamAngleZ",
+        "ParamEyeLOpen",
+        "ParamEyeROpen"
+      ]
+    },
+    {
+      "name": "wink",
+      "file": "motions/wink.motion3.json",
+      "duration": 2,
+      "loop": false,
+      "parameters": [
+        "ParamEyeLOpen",
+        "ParamAngleZ"
+      ]
+    }
+  ],
+  "dynamics": {
+    "gaze": 0.8,
+    "head": 0.65,
+    "hair": 0.75,
+    "breath": 0.6,
+    "breathRate": 14
+  }
+}
