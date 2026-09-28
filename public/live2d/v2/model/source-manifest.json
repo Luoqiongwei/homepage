@@ -1,0 +1,20 @@
+{
+  "source": "cubism/second_stage/export",
+  "files": [
+    "shuyan_stage2.moc3",
+    "shuyan_stage2.4096/texture_00.png",
+    "shuyan_stage2.cdi3.json",
+    "expressions/neutral.exp3.json",
+    "expressions/smile.exp3.json",
+    "expressions/relaxed.exp3.json",
+    "expressions/shy.exp3.json",
+    "expressions/annoyed.exp3.json",
+    "expressions/surprised.exp3.json",
+    "expressions/sleepy.exp3.json",
+    "motions/idle.motion3.json",
+    "motions/nod.motion3.json",
+    "motions/tilt.motion3.json",
+    "motions/wink.motion3.json",
+    "motions/talk.motion3.json"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "pixi": "6.5.10",
+  "pixiLive2dDisplay": "0.4.0",
+  "coreSource": "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
+}

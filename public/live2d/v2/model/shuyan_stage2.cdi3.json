@@ -1,0 +1,113 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamEyeBallX",
+			"GroupId": "",
+			"Name": "眼珠 X"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"GroupId": "",
+			"Name": "眼珠 Y"
+		},
+		{
+			"Id": "ParamHairBack",
+			"GroupId": "",
+			"Name": "发梢轻摆"
+		},
+		{
+			"Id": "ParamBreath",
+			"GroupId": "",
+			"Name": "呼吸"
+		},
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "",
+			"Name": "左眼 开闭"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "",
+			"Name": "右眼 开闭"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "嘴型开合（两态）"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "",
+			"Name": "身体旋转 Z"
+		},
+		{
+			"Id": "ParamExpression",
+			"GroupId": "",
+			"Name": "表情 0平静 1微笑 2安心 3害羞 4不悦 5惊讶 6困倦"
+		},
+		{
+			"Id": "ParamRibbon",
+			"GroupId": "",
+			"Name": "蝴蝶结轻摆"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "PartHair",
+			"Name": "完整狼尾与前发"
+		},
+		{
+			"Id": "PartClothes",
+			"Name": "服装与立领"
+		},
+		{
+			"Id": "PartNeck",
+			"Name": "脖子与颈部阴影"
+		},
+		{
+			"Id": "PartFace",
+			"Name": "脸部与中性五官"
+		},
+		{
+			"Id": "PartExpression_smile",
+			"Name": "表情 smile"
+		},
+		{
+			"Id": "PartExpression_relaxed",
+			"Name": "表情 relaxed"
+		},
+		{
+			"Id": "PartExpression_shy",
+			"Name": "表情 shy"
+		},
+		{
+			"Id": "PartExpression_annoyed",
+			"Name": "表情 annoyed"
+		},
+		{
+			"Id": "PartExpression_surprised",
+			"Name": "表情 surprised"
+		},
+		{
+			"Id": "PartExpression_sleepy",
+			"Name": "表情 sleepy"
+		}
+	]
+}

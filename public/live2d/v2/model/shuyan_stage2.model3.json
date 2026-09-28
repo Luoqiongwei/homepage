@@ -1,0 +1,88 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "shuyan_stage2.moc3",
+    "Textures": [
+      "shuyan_stage2.4096/texture_00.png"
+    ],
+    "DisplayInfo": "shuyan_stage2.cdi3.json",
+    "Expressions": [
+      {
+        "Name": "neutral",
+        "File": "expressions/neutral.exp3.json"
+      },
+      {
+        "Name": "smile",
+        "File": "expressions/smile.exp3.json"
+      },
+      {
+        "Name": "relaxed",
+        "File": "expressions/relaxed.exp3.json"
+      },
+      {
+        "Name": "shy",
+        "File": "expressions/shy.exp3.json"
+      },
+      {
+        "Name": "annoyed",
+        "File": "expressions/annoyed.exp3.json"
+      },
+      {
+        "Name": "surprised",
+        "File": "expressions/surprised.exp3.json"
+      },
+      {
+        "Name": "sleepy",
+        "File": "expressions/sleepy.exp3.json"
+      }
+    ],
+    "Motions": {
+      "Idle": [
+        {
+          "File": "motions/idle.motion3.json",
+          "FadeInTime": 0.35,
+          "FadeOutTime": 0.35
+        }
+      ],
+      "Action": [
+        {
+          "File": "motions/nod.motion3.json",
+          "FadeInTime": 0.2,
+          "FadeOutTime": 0.2
+        },
+        {
+          "File": "motions/tilt.motion3.json",
+          "FadeInTime": 0.2,
+          "FadeOutTime": 0.2
+        },
+        {
+          "File": "motions/wink.motion3.json",
+          "FadeInTime": 0.2,
+          "FadeOutTime": 0.2
+        },
+        {
+          "File": "motions/talk.motion3.json",
+          "FadeInTime": 0.2,
+          "FadeOutTime": 0.2
+        }
+      ]
+    }
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "ParamEyeLOpen",
+        "ParamEyeROpen"
+      ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "LipSync",
+      "Ids": [
+        "ParamMouthOpenY"
+      ]
+    }
+  ]
+}

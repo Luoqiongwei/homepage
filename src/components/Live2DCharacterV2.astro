@@ -1,0 +1,34 @@
+---
+import settingsFile from '../config/live2d.json';
+interface Settings {
+  dynamics?: Partial<typeof settingsFile.secondStage.dynamics>;
+  presentation?: Partial<typeof settingsFile.secondStage.presentation>;
+  behavior?: Partial<typeof settingsFile.secondStage.behavior>;
+  expression?: string;
+  parameters?: Record<string, number>;
+}
+interface Props {id?: string; title?: string; height?: number; settings?: Settings;}
+const defaults = settingsFile.secondStage;
+const {id='site-character', title='疏燕 · 第二阶段 Live2D', settings={}} = Astro.props;
+const config = {
+  ...defaults, ...settings,
+  dynamics: {...defaults.dynamics, ...settings.dynamics},
+  presentation: {...defaults.presentation, ...settings.presentation},
+  behavior: {...defaults.behavior, ...settings.behavior},
+  parameters: {...defaults.parameters, ...settings.parameters},
+};
+const height = Astro.props.height ?? config.presentation.height;
+const BASE = import.meta.env.BASE_URL || '/';
+---
+<div class="live2d-character-v2">
+  <iframe id={id} title={title} src={`${BASE}live2d/v2/index.html?embed=1`}
+    data-live2d-config={JSON.stringify(config)} data-live2d-version="2"
+    loading="lazy" referrerpolicy="same-origin" style={`height:${height}px`} allow="autoplay 'none'"></iframe>
+  <noscript>角色互动需要启用 JavaScript；你仍然可以正常阅读本站。</noscript>
+</div>
+<script is:inline type="module" src={`${BASE}live2d/v2/embed.mjs`}></script>
+<style>
+  .live2d-character-v2{width:100%;max-width:520px;margin-inline:auto;border-radius:18px;background:linear-gradient(145deg,#eeeaf3,#fbf1f5);overflow:hidden}
+  .live2d-character-v2 iframe{display:block;border:0;width:100%;background:transparent;color-scheme:only light}
+  :global([data-bs-theme="dark"]) .live2d-character-v2{background:linear-gradient(145deg,#302e3e,#24232e)}
+</style>

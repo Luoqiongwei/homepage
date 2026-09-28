@@ -1,0 +1,21 @@
+.model-rights{text-align:center;font-size:10px;line-height:1.8;padding:4px 12px 16px;color:#8e7e8a}.model-rights a{color:inherit}.model-rights small{font-size:9px}
+html[data-embedded],html[data-embedded] body{height:100%;width:100%;margin:0;overflow:hidden;background:transparent;color-scheme:only light}
+html[data-embedded] body{display:grid;grid-template-rows:minmax(0,1fr) auto auto}
+html[data-embedded] main,html[data-embedded] .portrait-card{display:contents}
+html[data-embedded] .site-header,html[data-embedded] .portrait-heading,html[data-embedded] .portrait-toolbar,html[data-embedded] .portrait-caption,html[data-embedded] .stage-decoration{display:none}
+html[data-embedded] .stage{grid-row:1;min-height:0;height:auto;max-height:none;border:0;border-radius:0;background:transparent!important}
+html[data-embedded] .control-panel{display:none}
+html[data-embedded] .control-panel .panel-heading,html[data-embedded] .control-panel .panel-footer,html[data-embedded] #controls>section:not(.embed-actions),html[data-embedded] #controls>details,html[data-embedded] .embed-actions>.section-title,html[data-embedded] .embed-actions>.hint{display:none}
+html[data-embedded] .embed-actions{padding:6px 10px;border:0}
+html[data-embedded] .companionship{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}
+html[data-embedded] .companionship button{padding:7px 11px;border-radius:18px;font-size:11px;background:#fffc;border-color:#d9cddd;color:#725c6e}
+html[data-embedded] #embedded-actions{grid-row:2;display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;padding:6px 10px}
+html[data-embedded] #embedded-actions button{padding:7px 11px;border-radius:18px;font-size:11px;background:#fffc;border-color:#d9cddd;color:#725c6e}
+html[data-embedded] #pause{width:31px;height:31px;font-size:15px;padding:0}
+html[data-embedded] .model-rights{grid-row:3;padding:3px 10px 7px;font-size:9px;color:#887785}
+html[data-embedded] .model-rights small{font-size:8px}
+html[data-embedded] .speech{font-size:11px;bottom:7px;padding:7px 13px}
+html[data-embedded][data-theme=dark] #embedded-actions button{background:#49404edb;border-color:#6c5c70;color:#eee2ee}
+html[data-embedded][data-theme=dark] .model-rights{color:#bfafc0}
+html[data-embedded][data-theme=dark] .speech{background:#382d40ed;border-color:#75647b;color:#f0e4f1}
+html[data-embedded][data-theme=dark] .loading{background:#302c3a;color:#d3c5d1}

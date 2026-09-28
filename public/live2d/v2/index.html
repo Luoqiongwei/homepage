@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#f6f2f3"><meta name="application-name" content="SHUYAN LIVE2D V2">
+ <title>疏燕</title><script src="mode.js"></script><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="embed.css">
+</head>
+<body>
+ <header class="site-header">
+  <a class="brand" href="./" aria-label="疏燕首页"><span class="brand-seal">燕</span><span><strong>疏燕</strong><small>LIVE2D</small></span></a>
+  <div class="header-right"><span id="status" class="status" role="status">加载中</span><button id="quiet" class="quiet-button" aria-pressed="false">隐藏面板<span></span></button></div>
+ </header>
+ <main>
+  <section class="portrait-card" aria-label="Live2D 角色互动区">
+   <div class="portrait-heading"><div><p class="eyebrow">LIVE PORTRAIT</p><h1>疏燕 · 偎红</h1></div><button id="pause" class="round-button" disabled aria-pressed="false" aria-label="暂停">停</button></div>
+   <div id="stage" class="stage" data-background="mist">
+    <div class="stage-decoration" aria-hidden="true"><span>SHUYAN</span><i></i></div>
+    <div id="canvas-host"></div>
+    <div id="loading" class="loading"><span class="loader" aria-hidden="true"></span><p>加载中</p><button id="retry" hidden>重新加载</button></div>
+    <div id="speech" class="speech" hidden role="status"></div>
+   </div>
+   <div class="portrait-toolbar">
+    <div class="backgrounds" role="group" aria-label="画面背景">
+     <button data-bg="mist" aria-label="柔雾背景" aria-pressed="true" title="柔雾" class="selected"></button><button data-bg="white" aria-label="纯白背景" aria-pressed="false" title="纯白"></button><button data-bg="dark" aria-label="夜色背景" aria-pressed="false" title="夜色"></button><button data-bg="transparent" aria-label="透明棋盘背景" aria-pressed="false" title="透明棋盘"></button><button data-bg="green" aria-label="绿幕背景" aria-pressed="false" title="绿幕"></button>
+    </div>
+    <label class="zoom">大小 <input id="zoom" type="range" min="0.78" max="1.22" step="0.01" value="1" aria-label="角色大小"></label>
+    <button id="capture" class="text-button" disabled>保存图片 <span>↓</span></button>
+   </div>
+   <div class="portrait-caption"><span id="now-playing">正在准备</span><span>点击或长按角色</span></div>
+  </section>
+  <aside class="control-panel" aria-label="角色设置">
+   <div class="panel-heading"><div><p class="eyebrow">CONTROLS</p><h2>表情</h2></div><button id="reset" class="text-button" disabled>重置 ↺</button></div>
+   <fieldset id="controls" disabled>
+    <section class="control-section mood-section"><div class="expressions" aria-label="表情选择">
+     <button data-expression="neutral" aria-pressed="true" class="selected"><span>◡</span>平静</button><button data-expression="smile" aria-pressed="false"><span>⌣</span>微笑</button><button data-expression="relaxed" aria-pressed="false"><span>⌒</span>安心</button><button data-expression="shy" aria-pressed="false"><span>˘</span>害羞</button><button data-expression="annoyed" aria-pressed="false"><span>−</span>不悦</button><button data-expression="surprised" aria-pressed="false"><span>°</span>惊讶</button><button data-expression="sleepy" aria-pressed="false"><span>⋯</span>困倦</button>
+    </div></section>
+    <section class="control-section"><div class="section-title"><h3>动作</h3></div><div class="motions"><button data-motion="nod">↕ <span>点头</span></button><button data-motion="tilt">⌁ <span>侧头</span></button><button data-motion="wink">⌒ <span>眨单眼</span></button><button data-motion="talk">≋ <span>嘴型</span></button></div></section>
+    <section class="control-section"><div class="section-title"><h3>互动</h3><label class="switch-label compact"><input id="interactive" type="checkbox" checked><span>触碰回应</span></label></div><div class="companionship"><button data-interact="pat">摸头</button><button data-interact="greet">打招呼</button><button data-interact="sleep">休息</button><button data-interact="wake" disabled>唤醒</button></div><p id="interaction-hint" class="hint" role="status">长按头顶，或点击角色。</p></section>
+    <section class="control-section preferences"><label class="switch-label"><span><b>鼠标跟随</b><small>视线、头部与上身联动</small></span><input id="follow" type="checkbox" checked></label><label class="switch-label"><span><b>自然待机</b><small>呼吸、眨眼与轻微的发梢摆动</small></span><input id="idle" type="checkbox" checked></label><label class="switch-label"><span><b>省电模式</b><small>降低帧率</small></span><input id="low-power" type="checkbox"></label></section>
+    <details class="control-section fine-controls"><summary>动作与姿态 <span>＋</span></summary>
+     <div class="slider-group"><h4>跟随与呼吸</h4><label class="slider-row"><span>跟随幅度</span><input data-setting="head" type="range" min="0" max="1" step="0.01" value="0.62"><output>62%</output></label><label class="slider-row"><span>发梢摆动</span><input data-setting="hair" type="range" min="0" max="1" step="0.01" value="0.55"><output>55%</output></label><label class="slider-row"><span>呼吸起伏</span><input data-setting="breath" type="range" min="0" max="1" step="0.01" value="0.48"><output>48%</output></label></div>
+     <div class="slider-group"><div class="section-title"><h4>头与身体</h4><button class="text-button" data-release="pose">恢复自动</button></div><label class="slider-row"><span>左右转头</span><input data-param="ParamAngleX" type="range" min="-12" max="12" step="0.1" value="0"><output>0.0</output></label><label class="slider-row"><span>抬头低头</span><input data-param="ParamAngleY" type="range" min="-8" max="8" step="0.1" value="0"><output>0.0</output></label><label class="slider-row"><span>侧头</span><input data-param="ParamAngleZ" type="range" min="-18" max="18" step="0.1" value="0"><output>0.0</output></label><label class="slider-row"><span>身体轻摆</span><input data-param="ParamBodyAngleZ" type="range" min="-5" max="5" step="0.1" value="0"><output>0.0</output></label></div>
+     <div class="slider-group"><div class="section-title"><h4>眼睛与嘴</h4><button class="text-button" data-release="face">恢复自动</button></div><label class="slider-row"><span>画面左眼</span><input data-param="ParamEyeROpen" type="range" min="0" max="1" step="0.01" value="1"><output>1.00</output></label><label class="slider-row"><span>画面右眼</span><input data-param="ParamEyeLOpen" type="range" min="0" max="1" step="0.01" value="1"><output>1.00</output></label><label class="slider-row"><span>嘴部开合</span><input data-param="ParamMouthOpenY" type="range" min="0" max="1" step="0.01" value="0"><output>0.00</output></label></div>
+    </details>
+   </fieldset>
+   <footer class="panel-footer"><span>✦</span><p>第二阶段 Live2D</p></footer>
+  </aside>
+ </main>
+ <footer class="model-rights">角色制作 © 2026 洛穹偎 · <a href="../rights.html" target="_blank" rel="noopener">使用声明</a><br><small>Live2D Cubism SDK © Live2D Inc.</small></footer>
+ <script src="vendor/live2dcubismcore.min.js"></script><script src="vendor/pixi.min.js"></script><script src="vendor/cubism4.min.js"></script><script type="module" src="app.mjs"></script><script type="module" src="embed-runtime.mjs"></script>
+</body></html>

@@ -18,5 +18,23 @@
     "interactive": true
   },
   "expression": "neutral",
-  "parameters": {}
+  "parameters": {},
+  "secondStage": {
+    "dynamics": {
+      "gaze": 0.58,
+      "head": 0.62,
+      "hair": 0.55,
+      "breath": 0.48,
+      "breathRate": 13
+    },
+    "presentation": {
+      "height": 520,
+      "zoom": 0.985,
+      "fps": 30,
+      "resolution": 1.5
+    },
+    "behavior": {"idle": true, "follow": true, "interactive": true},
+    "expression": "neutral",
+    "parameters": {}
+  }
 }

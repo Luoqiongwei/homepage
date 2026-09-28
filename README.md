@@ -4,7 +4,7 @@
 ![Astro](https://img.shields.io/badge/astro-5.14.1-orange?logo=astro&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-5.9.3-blue?logo=typescript&logoColor=white)
 
-「洛穹偎的一家言」是洛穹偎的个人静态站点，收录随笔、番剧与游戏评论，也承载一些交互实验和游戏原型。项目使用 Astro 5 构建，不依赖 React、Vue 等前端框架。
+「洛穹偎的一家言」是洛穹偎的个人静态站点，收录随笔、番剧与游戏评论，也承载一些交互实验和游戏原型。项目使用 Astro 5 构建。
 
 - 站点：<https://luoqiongwei.github.io/homepage/>
 - 作者：[洛穹偎](https://github.com/Luoqiongwei)
@@ -63,7 +63,7 @@ npm ci
 npm run dev
 ```
 
-开发站点地址为 <http://localhost:4321/homepage/>。由于生产环境部署在子路径，开发时也应从 `/homepage/` 访问，而不是站点根路径。
+开发站点地址为 <http://localhost:4321/homepage/>。由于生产环境部署在子路径，开发时也应从 `/homepage/` 访问。
 
 ### 可用脚本
 
@@ -94,6 +94,16 @@ import bg from "../../assets/img/post-bg.jpg";
 </PostLayout>
 ```
 
+## Live2D 的两个阶段
+
+Tools 页面目前使用第二阶段角色，仅展示嵌入组件。完整互动页保留独立路径。
+
+第二阶段的完整页面和 iframe 共用一份页面与运行资源；iframe 使用 `index.html?embed=1`，只展示角色、简洁互动按钮和使用声明。Tools 导入 `Live2DCharacterV2.astro`；第一阶段的源码、查看器、运行库与模型均保留，可继续单独使用。
+
+第二阶段支持与主页同步的亮暗主题、离屏与后台停止绘制、原有 `window.live2dCharacters` 同源 iframe 接口。系统减少动态效果会关闭初始自动跟随与待机。完整页面保留表情选择、动作、背景、透明图片保存等控制。
+
+来源及接入说明见 [`public/live2d/v2/README.md`](public/live2d/v2/README.md)。
+
 ## 构建与部署
 
 `astro.config.mjs` 已配置静态输出、sitemap、末尾斜杠和 `/homepage/` base。执行 `npm run build` 后，产物位于 `dist/`。
@@ -104,5 +114,5 @@ import bg from "../../assets/img/post-bg.jpg";
 
 - 代码采用 [MIT License](LICENSE)。
 - 原创文章、评论与一般图像内容采用 [CC BY-NC 4.0](CONTENT-LICENSE)，转载须署名“洛穹偎”并附原文链接，且不得商用。
-- `public/live2d/model/` 下的角色模型、纹理与动作资产不适用上述两项许可；详情见 `public/live2d/rights.html`。
-- `public/live2d/vendor/` 中的第三方运行库遵循各自许可。
+- `public/live2d/model/` 和 `public/live2d/v2/model/` 下的角色模型、纹理与动作资产不适用上述两项许可；详情见 `public/live2d/rights.html`。
+- 两个版本的 `vendor/` 中的第三方运行库遵循各自许可。
