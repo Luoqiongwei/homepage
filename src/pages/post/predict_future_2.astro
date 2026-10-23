@@ -1,0 +1,411 @@
+---
+import StylizedLayout from '../../layouts/StylizedLayout.astro';
+
+const names = ['天象', '城邦', '机器', '想象'];
+
+const futureChapters = [
+  {
+    "id": "observation",
+    "index": "01",
+    "paragraphs": [
+      "我在米利都的海边住了三年，每天都记录下日月绕着大地周期的轮转。吕底亚的国王派人找到我时，我正在测量竿子的影长。使者说国王希望见我。于是，我收好行装和星图，跟随他们进宫。",
+      "国王坐在椅子上，面前摊开着一张地图，上面标着哈尔律斯河的位置，河对岸是米底。他指着地图上的标记。\"我和米底的战争已经持续了几年。哲学家，我听说你知道天空的秘密,请你看看星象，告诉我明天适合军队渡河吗？\"",
+      "\"陛下，无论您明天是否渡河，月亮都将会从太阳前面经过。黑暗会在白天降临。\"",
+      "国王沉默了一会，然后问：\"这是吉兆还是凶兆？\"我摇了摇头说，\"都不是。就像我知道什么时候是满月一样，我也只知道明天月亮会挡住太阳。\"",
+      "国王皱了皱眉。他召来了祭司，让我向他们重复我的话。他们听完我的预言，开始低声交谈。不一会，国王抬了下手，制止了祭司们的争论：\"无论原因是什么，如果明天天空变黑，我的士兵会怎么想？\"",
+      "我不知道。",
+      "第二天上午，我站在河边的山坡上。两边军队已经列阵，吕底亚的骑兵在左，米底的战车在右。士兵们的盔甲反射着凛冽的光，直到时间接近正午。光线开始变化，缓慢地、均匀地变暗。士兵们也抬起头，有人开始喊叫。黑暗扩展得很快,当太阳完全被遮住时，四周出现了一抹奇异的暮色，远处则传来阵阵狂吠。我从山上望向战场。士兵们大都放下了武器。有人跪在地上，有人用手捂住脸。两边的军队都开始溃退。",
+      "不过黑暗只持续了几分钟。当光线重新出现时，士兵们都开始祈祷，伴随着恐惧和解脱。国王的传令官骑马来到我的身边。\"陛下命令停战，\"他喘着气，\"他说神已经显示了他的不满，下决定派出了和平使者。\"",
+      "三天后，我在宫殿里见证了和约的签署。两位国王面对面坐着，签署了文件。他们商定了边界，交换了人质，甚至提到了联姻。",
+      "离开宫殿时，我被几位将领和祭司看见了。他们向我行礼，其中一个年轻人问我：\"先生，您是怎么知道神会在那一刻发怒？\"我说：\"我不知道神的意思，只预言了天象。\"他点点头，但他的眼神告诉我，他并不相信，对他而言，那天明明就是神的干预，而我向国王昭示了神的计划。",
+      "我回到米利都，继续我的记录。沙罗周期告诉我，十八年后还会有另一次月亮遮住太阳发生。我可以精确地算出日期和时辰，在地图上标记发生的地点。但我不知道，当黑暗降临时，如果还有新的战争，握剑的手是会松开，还是会因为恐惧而握得更紧。更何况，日月当然不在乎地上是战争还是和平。",
+      "所以这之后，我要求学生们在思考万物本原之余，想一想如何预测将来何时会战事再起，更进一步，如何准确地，预测未来。"
+    ]
+  },
+  {
+    "id": "order",
+    "index": "02",
+    "paragraphs": [
+      "两百年前的哲学家已经能够预测天象的运转。我则相信，人也差不多，只要能理解欲望、善恶，那么战争、暴政都可以被预测而避免。我想，只要找出未来最好的形态，那么人们就会自然地走上这条路；既然这条路注定实现，这也算是预测未来了。",
+      "我以为，一切的混乱来自多数人的欲望。只要权力掌握在一些理智之人手里，只要他们足够冷静、足够明智，城邦就可以像一架被调校好的器械，良好地运转下去。我还把城邦中的人分为三类：治国者、士兵和普通人。每一个人在社会上都有其唯一指定的功能，以满足社会的整体需要。我相信，如果每一部分各守其位，不越界，不僭越，那么正义就会出现。",
+      "我甚至想象过一座城。孩子出生便被送往公共育所，接受严格的音乐与体操训练，所读的诗歌要删去软弱的段落，神话要剔除不敬之词。护卫者不拥有私产，不知道自己的亲生父母。婚配通过抽签决定，而抽签则被私下里安排，使最优秀的血脉结合。",
+      "最终，我满意地把这个城邦的领主称为，“哲人王”。这是既定的未来，也将是唯一的未来。",
+      "但现实并不如我所愿。雅典城破的那一年，我二十出头。三十僭主上了台，伴随着他们出现的还有街角的低语，夜里的敲门声，和城头的一张张处刑名单。",
+      "我家有亲戚成了雅典新的执政者之一。他讲过一个故事：很久以前，在海的尽头有一座岛屿，名叫亚特兰蒂斯。那里的城邦呈同心圆形，一层水道环绕一层陆地，宫殿与神庙依比例而建，军队按阶级编制，法律由神授予。那里的人起初节制而勇敢，但最后人们逐渐贪婪，失去了秩序，最终在宙斯预备降下神罚的那一刻，故事戛然而止。他当时说，这样的堕落，自然会遭到神罚。",
+      "而此刻，他自认为在扮演那场神罚。几名富商被指控密谋反叛。据说实际上只是因为没收他们的财产可以补充国库。他判处富商死刑时甚至引用了我们讨论过的话来辩护：灵魂的节制，欲望的克制。“多数人无法自我约束，”他说，“少数人必须替他们决定。”",
+      "他相信自己站在理性的那一侧，但我的思想开始动摇了。我也问过他“如果亚特兰蒂斯的统治者在堕落之初，也自认是在维护秩序，他们会知道自己已经偏离了吗？”“偏离与否，由结果决定。”他说，“如果城邦稳定，方法就是正当的。”",
+      "城中确实安静下来。街道空空如也，集市上也再无人争吵。亚特兰蒂斯的同心圆，是完美的形状，而现实中的城邦，却由不完美的人组成。我的侄子讲述那座沉没之城时，告诉我们：当欲望压倒节制，毁灭便会降临。可当他握有权力时，试图通过更强的控制来避免毁灭。",
+      "后来，当三十人倒台，人群冲进议事厅时，我忽然想到那个故事的结尾，秩序的颠覆和亚特兰蒂斯的毁灭同样迅速。",
+      "最终，我只能又退回到理念世界中。在那里，统治者必须是哲学家，因为他们能理解善的形式，如同见过太阳的人不会再把影子当作真实。我让他们接受漫长的教育，远离私欲，直到年过五十才允许执政。我让他们厌恶权力，只在不得已时承担它。因为如果一个人渴望统治，他就不适合统治。",
+      "可即便如此，我心中仍有一个不安的念头。如果说当年有人能够预测天文异象，是因为天体不会改变主意，那么想要一个试图设计城邦未来的人，也必须假定人不会改变。而这一点，我没法真正相信。于是，我只好写下一个近乎不可能的条件：除非哲学家成为国王，或国王真正成为哲学家。那是一条退路，因为我知道，在现实中这样的人几乎不会出现。"
+    ]
+  },
+  {
+    "id": "chaos",
+    "index": "03",
+    "paragraphs": [
+      "自从听过拉普拉斯关于全知智能的假设，我便相信世界不过是一种尚未完善的力学。既然天体可以由牛顿的方程统治，那么人的选择，也必定只是更复杂的初值问题，差别只在规模。",
+      "十九世纪也给了我工具。巴贝奇构想的差分机证明，计算可以交给齿轮与蒸汽。于是我更激进地推想，大概一座山大小的机器，便可以计算未来。",
+      "我们挖空了一座山，把由黄铜齿轮、连杆和数亿个飞轮组成的阵列装进去。机器轰鸣时，连大地都在颤动。",
+      "我们的目标是巴黎即将爆发的冲突。查理十世的敕令已经贴出，街头的火药味浓得呛鼻。我们输入了塞纳河的流量、圣丹尼街的路面摩擦、市政厅前广场的每一块铺路石的位置。我们统计了军警的步枪数量，计算了大炮的仰角，记录了每一匹马的体重和每一车面包的重量。我们相信，只要把这些数据全部打成孔洞送进机器，它就能告诉我们未来将如何演绎。",
+      "机器运转了。第一个小时的推演看起来很准确。它预言了工人建立起第一道街垒，预言了弹药会先在郊区爆发，都与报纸记载相符。我们感到兴奋，自认为掐住了命运的咽喉。",
+      "但当我们试图把计算推进到三天后，机器却失灵了。它预测国王会早早退位，但查理十世直到预期的第二天傍晚还在杜伊勒里宫犹豫；它预测国民自卫军会占领卢浮宫，但现实中他们转向了市政厅。",
+      "我们一遍遍检查，发现不是机械故障。问题出在精度上。局部伤亡改变士气，士气改变人群流向，人群流向改变火力密度，火力密度又反馈到伤亡率。微小偏差在数轮循环后被放大，形成截然不同的轨迹。而这些，又隐隐取决于某扇窗户里飞出一个花盆，那个花盆把一位看起来无关紧要的军警绊了一跤。当然，那个花盆在输入数据时，被我们当作无关的噪声抹去了。",
+      "我们意识到一个数学上的绝境：要精确预测三天后巴黎的局势，我们需要的计算精度必须达到足够精细。或许为了计算巴黎三天的未来，我们必须先存储此刻巴黎每一个点的位置。为了容纳这些信息，我们需要一个比巴黎本身还要庞大的装置。后来我们知道，我们的计算精度必须比现实的空间乘时间更精细，否则李雅普诺夫的理论保证我们的预测必定发散。",
+      "三天后，革命按照它自己的节奏结束了。查理十世到底哪天退位，对机器来说已经不重要了。重要的是，我看着那些描述了被顶翻的马车构成的街垒的从巴黎发来的旗语信号，意识到我永远无法算清楚，如果那个花盆没有落下，这一切会不会变成另外的样子。"
+    ]
+  },
+  {
+    "id": "creation",
+    "index": "04",
+    "paragraphs": [
+      "前人付出了一轮又一轮的努力，最终都无法在精准预测未来上取得实质的进展。机器学习以另一种方式延续了这个愿望。它可以生成看起来近乎真实的8秒4K视频，在万字的上下文后回答问题，在高维空间中逼近数据科学家假想的某个流形。它的成功来自压缩，把过去的海量样本压进参数，再从参数中输出某个近似的未来。",
+      "但压缩并不等于创造。压缩只是更有效地重组既有分布，它在分布内部采样，却不改变分布本身。只要变量集合保持不变，只要可能性的边界已经被给定，那么无论模型多么复杂，它都只是在既有结构中逼近。我认为，有意义的从来不是分布内部的采样，而是分布本身的改写。虽然，人生中的绝大多数事件确实平庸，它们在既有结构内波动，可被统计，可被近似，听上去非常得无意义。但是，意义从来不在于某个事件发生的频率。日食每若干年重复一次，战争在一代代人身上重演，这些只是旧叙事的重复。意义在于那个瞬间，当某个人想出了一个前人未曾想过的想法。",
+      "我想到赛车手和领航员采用一种此前无人想到的换胎策略赢下拉力赛。拉普拉斯设想了一个全知空间，而人类的想象力恰恰在不断扩大它，使任何全知都成为阶段性的。世界的演化或许可以是决定的，但“世界是什么”却在变化。"
+    ]
+  }
+] as const;
+
+const futureFinale = "我们不可预测，是也只是因为我们会不断创造新的想法.";
+
+const titles = [
+  '日食',
+  '亚特兰蒂斯',
+  '洛伦兹系统',
+  '扩展规则图',
+];
+
+type Point = [number, number, number];
+const lorenz = ([x, y, z]: Point): Point => [10 * (y - x), x * (28 - z) - y, x * y - (8 / 3) * z];
+const increment = (point: Point, velocity: Point, step: number): Point => point.map((value, index) => value + velocity[index] * step) as Point;
+
+// 图形由方程生成
+function lorenzPaths() {
+  const step = 0.008;
+  let point: Point = [1, 1, 1];
+  const points: Point[] = [];
+  for (let index = 0; index < 9800; index += 1) {
+    const a = lorenz(point);
+    const b = lorenz(increment(point, a, step / 2));
+    const c = lorenz(increment(point, b, step / 2));
+    const d = lorenz(increment(point, c, step));
+    point = point.map((value, axis) => value + (step / 6) * (a[axis] + 2 * b[axis] + 2 * c[axis] + d[axis])) as Point;
+    if (index > 800 && index % 4 === 0) points.push(point);
+  }
+  const project = ([x, , z]: Point) => `${(100 + x * 4.05).toFixed(2)},${(111 - z * 2.05).toFixed(2)}`;
+  const path = (values: Point[]) => values.map((value, index) => `${index === 0 ? 'M' : 'L'}${project(value)}`).join('');
+  return { orbit: path(points), recent: path(points.slice(-90)) };
+}
+
+const attractor = lorenzPaths();
+const cityRadii = [8.5, 11.9, 18.7, 25.5, 35.7, 45.9];
+const cityArc = (radius: number) => {
+  const angle = 0.045;
+  const x = 76 + radius * Math.cos(angle);
+  const dy = radius * Math.sin(angle);
+  return `M${x.toFixed(2)} ${(60 + dy).toFixed(2)} A${radius} ${radius} 0 1 1 ${x.toFixed(2)} ${(60 - dy).toFixed(2)}`;
+};
+const cityLots = [15.3, 30.6].flatMap((radius, ring) => Array.from({ length: ring ? 26 : 14 }, (_, index) => {
+  const angle = ((index + 0.4) / (ring ? 26 : 14)) * Math.PI * 2;
+  return {
+    x1: 76 + (radius - 1.2) * Math.cos(angle),
+    y1: 60 + (radius - 1.2) * Math.sin(angle),
+    x2: 76 + (radius + 1.2) * Math.cos(angle),
+    y2: 60 + (radius + 1.2) * Math.sin(angle),
+  };
+}));
+const knownNodes = [
+  { x: 28, y: 61, r: 2.4 }, { x: 42, y: 32, r: 2.7 },
+  { x: 49, y: 84, r: 2.7 }, { x: 65, y: 49, r: 4 },
+  { x: 73, y: 74, r: 3 }, { x: 85, y: 55, r: 2.5 },
+];
+---
+
+<StylizedLayout title="洛穹偎的一家言 - 预测未来" description="欢迎点亮人类的未来" style={[]}>
+    <meta name="theme-color" content="#0b1014" slot="head" />
+    <div class="future-reading-progress" aria-hidden="true"><span id="reading-progress"></span></div>
+    <main id="future-page" data-scene="0" data-scene-progress="0">
+      <div class="art-field" aria-hidden="true">
+        <svg class="art-fallback" viewBox="0 0 680 680" fill="none">
+          <g stroke="currentColor" stroke-width="0.7">
+            <circle cx="340" cy="340" r="222" />
+            <circle cx="340" cy="340" r="268" stroke-dasharray="1 8" />
+            {[0, 24, 48, 72, 96, 120, 144, 168].map(angle => <ellipse cx="340" cy="340" rx="222" ry="72" transform={`rotate(${angle} 340 340)`} />)}
+            <path d="M38 340H642M340 38V642" stroke-dasharray="3 9" />
+          </g>
+          <circle cx="562" cy="340" r="4" fill="currentColor" />
+        </svg>
+        <canvas data-future-art></canvas>
+      </div>
+
+      <section class="cover" aria-labelledby="page-title">
+        <div class="cover-topline mono"><span><i></i> 微尘另册 </span></div>
+        <div class="cover-composition">
+          <div class="cover-copy">
+            <p class="eyebrow">PREDICT THE FUTURE</p>
+            <h1 id="page-title"><span>预测</span><span>未来<span class="title-period">.</span></span></h1>
+          </div>
+        </div>
+      </section>
+
+      <article class="essay" aria-label="正文">
+        {futureChapters.map((chapter, index) => {
+          const scene = index + 1;
+          return (
+          <section class="essay-chapter" id={chapter.id} data-chapter={index + 1} aria-label={names[index]}>
+            <div class="chapter-margin" aria-hidden="true"><span class="chapter-number">{chapter.index}</span><span class="chapter-margin-line"></span></div>
+            <div class="chapter-body">
+              <div class="prose">{chapter.paragraphs.map(paragraph => <p>{paragraph}</p>)}</div>
+            </div>
+            <aside class="chapter-art-note">
+              <span class="mono">FIG. {chapter.index}</span>
+              <svg class="pf-figure" viewBox="0 0 200 120" fill="none" role="img" aria-label={titles[scene - 1]}>
+                <title>{titles[scene - 1]}</title>
+              
+                {scene === 1 && <>
+                  <path class="figure-secondary figure-dashed" d="M10 21 C79 17 166 28 166 60 C166 92 79 103 10 99 M125 60 C125 48 144 41 166 41 C177 41 187 44 194 48 M125 60 C125 72 144 79 166 79 C177 79 187 76 194 72" />
+                  <path class="figure-shade" d="M32 38 168.4 60 32 82 125 67 125 53Z" />
+                  <path class="figure-secondary figure-dashed" d="M32 82 191 32.4 M32 38 191 87.6" />
+                  <path class="figure-accent" d="M32 38 168.4 60 32 82" />
+                  <path class="figure-secondary figure-dashed" d="M8 60H191" />
+                  <circle class="figure-ground" cx="32" cy="60" r="22" />
+                  <circle class="figure-accent" cx="32" cy="60" r="22" />
+                  <circle class="figure-secondary" cx="32" cy="60" r="18.5" stroke-dasharray=".5 3" />
+                  <circle class="figure-ground" cx="125" cy="60" r="7" />
+                  <circle class="figure-accent" cx="125" cy="60" r="7" />
+                  <circle class="figure-ground" cx="166" cy="60" r="14" />
+                  <circle class="figure-accent" cx="166" cy="60" r="14" />
+                  <path class="figure-secondary" d="M166 46 C157 54 157 66 166 74 M152 60H180" />
+                  <circle class="figure-signal-fill" cx="152.2" cy="60" r="1.7" />
+                  <path class="figure-secondary" d="M32 87V94 M125 72V94 M166 79V94" />
+                  <text x="32" y="105" text-anchor="middle">日</text>
+                  <text x="125" y="105" text-anchor="middle">月</text>
+                  <text x="166" y="105" text-anchor="middle">地</text>
+                  <path class="figure-secondary" d="M26 15H38 M32 9V21" />
+                </>}
+              
+                {scene === 2 && <>
+                  <circle class="figure-secondary figure-dashed" cx="76" cy="60" r="52" />
+                  {[10.2, 22.1, 40.8].map((radius, index) => <circle class="figure-water" cx="76" cy="60" r={radius} style={`stroke-width:${[3.4, 6.8, 10.2][index]}px`} />)}
+                  {cityRadii.map(radius => <path class="figure-accent" d={cityArc(radius)} />)}
+                  {cityLots.map(lot => <line class="figure-secondary" {...lot} />)}
+                  <path class="figure-ground-stroke" d="M86 60H193" />
+                  <path class="figure-accent" d="M87.9 57.9H193 M87.9 62.1H193" />
+                  <path class="figure-secondary figure-dashed" d="M128 60H194" />
+                  <g transform="rotate(-70 76 60)">
+                    {[{ start: 8.5, end: 11.9 }, { start: 18.7, end: 25.5 }, { start: 35.7, end: 45.9 }].map(bridge => <>
+                      <path class="figure-ground-stroke" d={`M${76 + bridge.start} 60H${76 + bridge.end}`} />
+                      <path class="figure-signal" d={`M${76 + bridge.start} 58.8H${76 + bridge.end} M${76 + bridge.start} 61.2H${76 + bridge.end}`} />
+                    </>)}
+                  </g>
+                  <rect class="figure-accent" x="71.6" y="56.2" width="8.8" height="7.6" />
+                  <path class="figure-secondary" d="M73.8 56.2V63.8 M78.2 56.2V63.8 M71.6 58.3H80.4 M71.6 61.7H80.4" />
+                  <path class="figure-secondary" d="M149 45 155 39H185 M30 103H118 M30 100V106 M118 100V106" />
+                  <text x="153" y="32">通海运河</text>
+                  <text x="74" y="115" text-anchor="middle">三水环 / 两陆环</text>
+                  <path class="figure-secondary" d="M17 20V33 M14 24 17 20 20 24" />
+                  <text x="17" y="15" text-anchor="middle">N</text>
+                </>}
+              
+                {scene === 3 && attractor && <>
+                  <path class="figure-secondary figure-dashed" d="M17 55.65H183 M100 9V110" />
+                  <path class="figure-secondary" d="M17 11V110H188 M14 14 17 11 20 14 M185 107 188 110 185 113" />
+                  <path class="figure-orbit" d={attractor.orbit} />
+                  <path class="figure-signal figure-recent" d={attractor.recent} />
+                  {[65.63, 134.37].map(x => <>
+                    <circle class="figure-accent" cx={x} cy="55.65" r="2.1" />
+                    <path class="figure-secondary" d={`M${x - 4} 55.65H${x + 4} M${x} 51.65V59.65`} />
+                  </>)}
+                  <text x="8" y="14">z</text><text x="191" y="113">x</text>
+                  <text x="22" y="118">σ 10 · ρ 28 · β 8/3</text>
+                </>}
+              
+                {scene === 4 && <>
+                  <path class="figure-secondary figure-dashed" d="M17 38 C24 8 84 3 106 25 C127 47 121 91 94 103 C64 116 15 99 15 69 C15 57 15 47 17 38Z" />
+                  <path class="figure-boundary figure-dashed" d="M16 38 C28 5 78 5 108 12 C137 -1 169 9 182 31 C199 59 187 99 158 108 C135 116 112 105 93 108 C53 117 13 97 14 67 C14 55 13 47 16 38Z" />
+                  <path class="figure-shade" d="M104 56 146 24 171 57 146 95Z" />
+                  <path class="figure-secondary" d="M28 61 42 32 65 49 49 84 28 61 65 49 73 74 49 84 M65 49 85 55 73 74 M42 32 85 55" />
+                  <path class="figure-secondary figure-dashed" d="M65 49 94 26 104 56 96 91 73 74 M85 55 104 56" />
+                  <path class="figure-signal" d="M104 56 146 24 M104 56 171 57 M104 56 146 95" />
+                  {knownNodes.map(node => <circle class="figure-known" cx={node.x} cy={node.y} r={node.r} />)}
+                  <circle class="figure-ground" cx="94" cy="26" r="3.3" />
+                  <circle class="figure-accent" cx="94" cy="26" r="3.3" />
+                  <circle class="figure-ground" cx="96" cy="91" r="3.3" />
+                  <circle class="figure-accent" cx="96" cy="91" r="3.3" />
+                  <circle class="figure-signal" cx="104" cy="56" r="8.5" stroke-dasharray="1 3" />
+                  <circle class="figure-signal-fill" cx="104" cy="56" r="4.7" />
+                  {[{ x: 146, y: 24 }, { x: 171, y: 57 }, { x: 146, y: 95 }].map(node => <>
+                    <circle class="figure-ground" cx={node.x} cy={node.y} r="4.2" />
+                    <circle class="figure-signal" cx={node.x} cy={node.y} r="4.2" />
+                    <circle class="figure-secondary" cx={node.x} cy={node.y} r="7.3" stroke-dasharray=".5 2.5" />
+                  </>)}
+                  <text x="23" y="115">t</text>
+                  <text class="figure-signal-text" x="168" y="117">t + 1</text>
+                  <text class="figure-signal-text" x="151" y="77">ν + 1</text>
+                </>}
+              </svg>
+            </aside>
+          </section>
+          );
+        })}
+      </article>
+
+      <section class="finale" id="finale" aria-labelledby="finale-title">
+        <div class="finale-coordinate mono" aria-hidden="true">04 → ∞</div>
+        <h2 id="finale-title">{futureFinale}</h2>
+      </section>
+    </main>
+
+    <script>
+      import { initPredictFuture } from '../../scripts/PredictFutureArt';
+      initPredictFuture();
+    </script>
+    <style is:inline slot="head">
+:root:has(#future-page) {
+  color-scheme: dark;
+  --page-bg: #0b1014;
+  --page-rgb: 11, 16, 20;
+  --ink: #ecf0ef;
+  --body-ink: #bac5cb;
+  --muted: #82939e;
+  --line: #ffffff21;
+  --accent: #b6def0;
+  --signal: #ed705e;
+  --grid: #a8c9dc06;
+  --bs-body-bg: var(--page-bg);
+  --bs-body-bg-rgb: var(--page-rgb);
+  --bs-body-color: var(--ink);
+  --sans: "Inter", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, "PingFang SC", monospace;
+  background: var(--page-bg);
+  color: var(--ink);
+  scroll-behavior: smooth;
+  scroll-padding-top: 110px;
+}
+:root:has(#future-page)[data-bs-theme="light"] {
+  color-scheme: light;
+  --page-bg: #f0f0e9;
+  --page-rgb: 240, 240, 233;
+  --ink: #162b37;
+  --body-ink: #364d59;
+  --muted: #627582;
+  --line: #233b4c29;
+  --accent: #24607c;
+  --signal: #b64231;
+  --grid: #254e6b08;
+}
+#future-page *, #future-page *::before, #future-page *::after { box-sizing: border-box; }
+:root:has(#future-page) body { margin: 0; background: var(--page-bg); -webkit-font-smoothing: antialiased; color: var(--ink); }
+#future-page::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 84px 84px; }
+#future-page ::selection { background: var(--accent); color: var(--page-bg); }
+#future-page h1, #future-page h2, #future-page p { margin: 0; }
+#future-page .mono, #future-page .eyebrow { font-family: var(--mono); }
+:root:has(#future-page) .future-reading-progress { position: fixed; top: 0; inset-inline: 0; height: 2px; z-index: 120; }
+:root:has(#future-page) .future-reading-progress span { display: block; width: 100%; height: 100%; background: var(--signal); transform: scaleX(0); transform-origin: left; }
+#future-page { position: relative; isolation: isolate; font-family: var(--sans); font-size: 16px; color: var(--ink); }
+#future-page .art-field { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+#future-page .art-field canvas { display: block; width: 100%; height: 100%; }
+#future-page .art-fallback { position: absolute; width: min(60vw, 900px); height: min(90vh, 900px); right: -1vw; top: 5vh; color: var(--accent); opacity: .32; }
+#future-page[data-art-ready="true"] .art-fallback { display: none; }
+#future-page .cover { max-width: 1600px; margin: 0 auto; padding: 118px 7.5% 0; min-height: 100svh; display: flex; flex-direction: column; }
+#future-page .cover-topline { display: flex; justify-content: space-between; gap: 20px; color: var(--muted); font-size: 10px; letter-spacing: .12em; }
+#future-page .cover-topline > span:first-child { display: flex; align-items: center; gap: 10px; color: var(--body-ink); }
+#future-page .cover-topline i { display: inline-block; width: 5px; height: 5px; background: var(--signal); }
+#future-page .cover-composition { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 520px; padding: 54px 0 48px; gap: 24px; }
+#future-page .eyebrow { font-size: 10px; letter-spacing: .18em; line-height: 1.7; font-weight: 400; color: var(--accent); }
+#future-page .cover-copy { position: relative; z-index: 2; }
+#future-page .cover-copy > .eyebrow { color: var(--muted); margin: 0 0 24px 4px; }
+#future-page .cover h1 { font-size: clamp(82px, 10.4vw, 164px); letter-spacing: -.055em; font-weight: 500; line-height: 1.05; }
+#future-page .cover h1 > span { display: block; }
+#future-page .title-period { color: var(--signal); font-family: Georgia, serif; margin-left: .03em; font-weight: 400; }
+#future-page .essay { position: relative; background: linear-gradient(90deg, rgba(var(--page-rgb), .99) 0%, rgba(var(--page-rgb), .96) 42%, rgba(var(--page-rgb), .83) 67%, rgba(var(--page-rgb), .08) 100%); }
+#future-page .essay-chapter { display: grid; grid-template-columns: 90px minmax(0, 620px) minmax(50px, 1fr); gap: 38px; padding: 100px 7.5% 20px; max-width: 1400px; margin: 0 auto; scroll-margin-top: 40px; }
+#future-page .chapter-margin { display: flex; flex-direction: column; align-items: start; gap: 22px; align-self: start; position: sticky; top: 125px; }
+#future-page .chapter-number { font-family: var(--sans); font-size: 47px; font-weight: 300; line-height: 1; color: var(--muted); letter-spacing: -.07em; }
+#future-page .chapter-margin-line { width: 22px; height: 1px; background: var(--signal); }
+#future-page .prose { font-family: var(--serif); font-size: 18px; line-height: 2.05; color: var(--body-ink); letter-spacing: .025em; overflow-wrap: break-word; }
+#future-page .prose p { margin-bottom: 1.8em; }
+#future-page .chapter-art-note { position: sticky; top: max(120px, calc(100svh - 390px)); align-self: start; justify-self: end; max-width: 200px; color: var(--muted); font-size: 11px; line-height: 1.8; margin-left: 12px; padding-top: 28px; }
+#future-page .chapter-art-note > span { display: block; line-height: 1.7; }
+#future-page .chapter-art-note svg { display: block; width: 100%; height: 120px; margin: 14px 0; }
+#future-page .finale { position: relative; padding: 180px 16.8% 150px; min-height: 90svh; background: linear-gradient(180deg, rgba(var(--page-rgb), .8), var(--page-bg) 95%); }
+#future-page .finale-coordinate { display: flex; justify-content: space-between; gap: 24px; color: var(--signal); font-size: 12px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 72px; }
+#future-page .finale h2 { max-width: 820px; font-family: var(--serif); font-size: clamp(30px, 4.2vw, 58px); line-height: 1.75; font-weight: 400; letter-spacing: -.03em; text-wrap: balance; }
+:root:has(#future-page) body > footer { position: relative; z-index: 2; background: var(--page-bg); }
+@media (min-width: 1600px) { #future-page .cover { padding-top: 126px; } #future-page .cover-composition { padding-top: 70px; } #future-page .essay-chapter { grid-template-columns: 110px minmax(0, 650px) minmax(50px, 1fr); gap: 50px; } }
+@media (max-width: 1100px) {
+  #future-page .cover { padding-inline: 6%; }
+  #future-page .cover-composition { min-height: 510px; }
+  #future-page .essay-chapter { padding-inline: 6% 10%; grid-template-columns: 55px minmax(0, 620px); gap: 30px; }
+  #future-page .chapter-art-note { display: none; }
+  #future-page .essay { background: linear-gradient(90deg, rgba(var(--page-rgb), .99) 0%, rgba(var(--page-rgb), .94) 72%, rgba(var(--page-rgb), .5) 100%); }
+  #future-page .finale { padding-inline: 14%; }
+}
+@media (max-width: 700px) {
+  :root:has(#future-page) { scroll-padding-top: 90px; }
+  #future-page .cover { padding: 108px 24px 0; min-height: 100svh; }
+  #future-page .cover-topline { font-size: 8px; letter-spacing: .06em; }
+  #future-page .cover-topline > span:last-child { display: none; }
+  #future-page .cover-composition { grid-template-columns: 1fr; min-height: 630px; padding: 42px 0 25px; position: relative; gap: 0; }
+  #future-page .cover-copy { pointer-events: none; }
+  #future-page .cover-copy > .eyebrow { font-size: 8px; margin: 0 0 23px; }
+  #future-page .cover h1 { font-size: clamp(80px, 24vw, 138px); line-height: 1.05; }
+  #future-page .art-field { opacity: .7; }
+  #future-page[data-scene="0"] .art-field { opacity: .85; }
+  #future-page .art-fallback { width: 115vw; height: 100vw; right: -50vw; top: 160px; opacity: .3; }
+  #future-page .essay { background: rgba(var(--page-rgb), .94); }
+  #future-page .essay-chapter { display: block; padding: 72px 24px 12px; scroll-margin-top: 15px; }
+  #future-page .chapter-margin { position: static; flex-direction: row; align-items: center; gap: 14px; margin-bottom: 32px; }
+  #future-page .chapter-number { font-size: 32px; }
+  #future-page .chapter-margin-line { width: 20px; }
+  #future-page .prose { font-size: 17px; line-height: 1.95; letter-spacing: .015em; }
+  #future-page .finale { padding: 95px 24px 100px; min-height: auto; }
+  #future-page .finale-coordinate { margin-bottom: 50px; font-size: 11px; }
+  #future-page .finale h2 { font-size: 32px; line-height: 1.9; }
+  :root:has(#future-page) #back-to-top { bottom: 88px; right: 24px; }
+  :root:has(#future-page) body > footer { padding-bottom: 100px; }
+}
+@media (max-width: 360px) {
+  #future-page .cover, #future-page .essay-chapter, #future-page .finale { padding-inline: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:has(#future-page) { scroll-behavior: auto; }
+  #future-page *, #future-page *::before, #future-page *::after { transition: none !important; }
+}
+@media print {
+  :root:has(#future-page) .future-reading-progress { display: none; }
+  :root:has(#future-page) { --page-bg: #fff; --ink: #000; --body-ink: #222; --muted: #555; color-scheme: light; }
+  #future-page .art-field { display: none !important; }
+  #future-page::before { display: none; }
+  #future-page .cover { min-height: auto; padding: 30px 0; }
+  #future-page .cover-composition { min-height: auto; padding: 30px 0; display: block; }
+  #future-page .cover h1 { font-size: 60px; }
+  #future-page .cover h1 > span { display: inline; }
+  #future-page .essay { background: #fff; }
+  #future-page .essay-chapter { display: block; padding: 35px 0; }
+  #future-page .chapter-margin, #future-page .chapter-art-note { display: none; }
+  #future-page .prose { font-size: 12pt; }
+  #future-page .finale { min-height: auto; padding: 40px 0; background: #fff; }
+  #future-page .finale h2 { font-size: 28px; }
+}
+
+#future-page .pf-figure { display: block; width: 100%; height: auto; color: var(--accent, currentColor); overflow: visible; }
+  #future-page .pf-figure :is(path, line, circle, ellipse, rect) { fill: none; stroke: currentColor; stroke-width: .8; vector-effect: non-scaling-stroke; }
+  #future-page .pf-figure .figure-secondary { opacity: .44; stroke-width: .65; }
+  #future-page .pf-figure .figure-accent { opacity: .85; }
+  #future-page .pf-figure .figure-dashed { stroke-dasharray: 2.2 3.2; }
+  #future-page .pf-figure .figure-shade { fill: currentColor; fill-opacity: .08; stroke: none; }
+  #future-page .pf-figure .figure-ground { fill: var(--page-bg, #0b1014); stroke: none; }
+  #future-page .pf-figure .figure-ground-stroke { stroke: var(--page-bg, #0b1014); stroke-width: 4; }
+  #future-page .pf-figure .figure-water { opacity: .09; }
+  #future-page .pf-figure .figure-orbit { stroke-width: .55; opacity: .55; }
+  #future-page .pf-figure .figure-signal { stroke: var(--signal, #ed705e); }
+  #future-page .pf-figure .figure-recent { stroke-width: 1.05; opacity: .95; }
+  #future-page .pf-figure .figure-known { fill: currentColor; stroke: none; }
+  #future-page .pf-figure .figure-signal-fill { fill: var(--signal, #ed705e); stroke: none; }
+  #future-page .pf-figure .figure-boundary { opacity: .6; stroke: var(--signal, #ed705e); stroke-dasharray: 4 3; }
+  #future-page .pf-figure text { fill: currentColor; stroke: none; opacity: .66; font: 6px var(--mono, monospace); letter-spacing: .06em; }
+  #future-page .pf-figure .figure-signal-text { fill: var(--signal, #ed705e); opacity: .9; }
+    </style>
+</StylizedLayout>

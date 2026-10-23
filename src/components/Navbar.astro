@@ -33,8 +33,7 @@ const { showDecorationToggle = true } = Astro.props;
               type="button"
               id="sysStatusBtn"
               aria-pressed="true"
-              aria-label="关闭边缘脉冲装饰"
-              title="切换边缘脉冲装饰"
+              aria-label="关闭"
             >
               <span class="sys-dot" aria-hidden="true"></span>
               <span class="sys-text">PULSE: ON</span>
@@ -42,7 +41,7 @@ const { showDecorationToggle = true } = Astro.props;
           </li>
         )}
         <li class="theme-item">
-          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false" title="切换主题">
+          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false">
             🌙
           </button>
         </li>
@@ -105,7 +104,7 @@ const { showDecorationToggle = true } = Astro.props;
       sysDot.classList.toggle('offline', !systemOn);
       sysText.textContent = systemOn ? 'PULSE: ON' : 'PULSE: OFF';
       sysBtn.setAttribute('aria-pressed', String(systemOn));
-      sysBtn.setAttribute('aria-label', systemOn ? '关闭边缘脉冲装饰' : '开启边缘脉冲装饰');
+      sysBtn.setAttribute('aria-label', systemOn ? '关闭' : '开启');
       document.dispatchEvent(new CustomEvent('system-status-change', { detail: { on: systemOn } }));
     };
 
