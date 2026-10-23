@@ -3,12 +3,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import CategoryNav from "../components/CategoryNav.astro";
 import PostPreview from "../components/PostPreview.astro";
 import HeroHeader from "../components/HeroHeader.astro";
-import bg from "../assets/img/articles-bg.jpg";
+import bg from "../assets/img/articles-bg.svg";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
 
-<BaseLayout title="洛穹偎的一家言 - 文章目录" description="我的文章目录" background={bg}>
+<BaseLayout title="洛穹偎的一家言 - 文章目录" description="我的文章目录" background={bg.src}>
   
   <HeroHeader
     title="文章目录"
@@ -45,3 +45,8 @@ const BASE = import.meta.env.BASE_URL || '/';
     </div>
   </div>
 </BaseLayout>
+
+<style is:global>
+  /* 将站点手动选择的亮色方案传给外部 SVG 图片。 */
+  :root[data-bs-theme="light"] .masthead-bg { color-scheme: light; }
+</style>

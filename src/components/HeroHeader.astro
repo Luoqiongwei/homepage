@@ -5,15 +5,19 @@ const BASE = import.meta.env.BASE_URL;
 const { title, subtitle, background } = Astro.props;
 ---
 
-<header class="masthead" style={`background-image: url('${background}')`}>
-  <Image
-    src={background}
-    alt=""
-    widths={[576, 768, 992, 1200, 1400]}
-    sizes="100vw"
-    loading="eager"
-    class="masthead-bg"
-  />
+<header class="masthead">
+  {background.format === 'svg' ? (
+    <img src={background.src} width={background.width} height={background.height} alt="" loading="eager" decoding="async" class="masthead-bg" />
+  ) : (
+    <Image
+      src={background}
+      alt=""
+      widths={[576, 768, 992, 1200, 1400]}
+      sizes="100vw"
+      loading="eager"
+      class="masthead-bg"
+    />
+  )}
   <div class="container position-relative px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7 text-center">
