@@ -15,7 +15,6 @@
 - 亮色/暗色主题：主题偏好保存在浏览器本地。
 - 系统装饰：可选开关的心电图效果，以及 Canvas 动态句子场、余烬生命游戏等计算艺术视觉实验。
 - 工具与实验：包括「从夯到拉」、Marching Cubes 技术页和「熔炉 · 边界站」原型。
-- Markdown 文档：通过 Astro Content Collections 生成游戏设计文档页面。
 - Live2D 展示：站内角色「疏燕 · 偎红」。
 
 ## 技术栈
@@ -43,7 +42,6 @@
 │   ├── assets/img/           # 由 Astro 优化的页面头图
 │   ├── components/           # 页面与交互组件
 │   ├── config/               # Live2D 等功能配置
-│   ├── content/game-docs/    # 游戏文档 Markdown
 │   ├── layouts/              # 通用、文章与特殊样式布局
 │   ├── pages/                # 文件路由、文章与工具页面
 │   └── scripts/              # Canvas 组件运行时与 Worker
