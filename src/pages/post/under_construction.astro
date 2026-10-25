@@ -1,302 +1,463 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const defaultProgram = `q0 1 -> q1 2 L
+q1 1 -> q1 0 L
+q1 0 -> q1 1 L
+q1 B -> q2 B R
+q2 0 -> q2 0 R
+q2 1 -> q2 1 R
+q2 2 -> q3 0 R
+q3 0 -> q3 1 R
+q3 1 -> q3 0 R
+q3 B -> e B L`;
 ---
 
 <BaseLayout title="施工中" description="洛穹偎的一家言 - 页面建设中">
-  <style>
+  <main class="turing-page">
+    <header class="page-intro">
+      <div class="construction-site">
+        <div class="construction-copy">
+          <h1>施工<span class="unfinished-glyph">中</span></h1>
+          <p class="intro-lead"><strong>恭喜你闯入了这个神秘的页面。</strong></p>
+          <p class="intro-description">这里原本是为尚未完成的内容准备的占位页。但我想，既然你已经来了，不妨玩一玩这个小游戏：</p>
+        </div>
 
-    /* 使用 :global 确保这些类在全局生效（脚本动态生成的元素也能被样式影响） */
-    :global(body) {
-      font-family: "Lora", serif;
-      background-color: #0d0f17;
-      color: #ddd;
-      padding-top: 70px;
-      text-align: center;
-    }
-    :global(h1) { color: #aaf; }
-
-    :global(#tape) {
-      display: flex;
-      justify-content: center;
-      margin: 1em auto;
-      gap: 4px;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-    }
-    :global(.cell) {
-      width: 32px;
-      height: 32px;
-      border: 1px solid #444;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      background: #1b1b1b;
-      color: #ccc;
-      font-family: monospace;
-      font-size: 1.05rem;
-    }
-    :global(.cell.head) {
-      background: #5a73ff;
-      color: #fff;
-    }
-
-    :global(textarea), :global(input), :global(select), :global(button) {
-      margin: 0.3em;
-      padding: 0.4em;
-      background: #0c0e14;
-      color: #ddd;
-      border: 1px solid #2f3642;
-      border-radius: 5px;
-    }
-    :global(button) { cursor: pointer; }
-
-    :global(.intro) {
-      max-width: 700px;
-      margin: 1.5em auto;
-      line-height: 1.6;
-      color: #bbb;
-    }
-    :global(footer) {
-      margin-top: 2em;
-      opacity: 0.7;
-    }
-    /* 保持 pre 的基础样式（和原页一致） */
-    :global(pre.example) {
-      background: rgba(255,255,255,0.02);
-      padding: 12px;
-      border-radius: 6px;
-      color: #ddd;
-      overflow:auto;
-      text-align:left;
-      max-width: 900px;
-      margin: 0.6em auto;
-    }
-  </style>
-
-  <main>
-    <!-- 与原始 HTML 一致的内容结构 -->
-    <section class="intro">
-      <p><strong>恭喜你闯入了这个神秘的页面。</strong><br />
-      这里原本是为尚未完成的内容准备的占位页。但我想，既然你已经来了，不妨玩一玩这个小游戏：<br />
-      这是一个最简单的图灵机模拟器。</p>
-    </section>
-
-    <p>编写转移规则，初始化带并运行图灵机。<br />
-    （建议使用 <strong>B</strong> 表示空格，也支持 <strong>_</strong> 或 <strong>□</strong>；状态名可用 <code>q0</code>、<code>q1</code> 或 <code>e</code> 等。）</p>
-
-    <div style="max-width:900px;margin:0 auto;">
-      <div class="controls">
-        <!-- 恢复原来的 textarea 默认内容（示例规则） -->
-        <textarea id="rules" rows="8" cols="48" placeholder="在此输入规则，每行一条，格式：q0 1 -> q1 2 L">q0 1 -> q1 2 L
-q1 1 -> q1 0 L
-q1 0 -> q1 1 L
-q1 B -> q2 B R
-q2 0 -> q2 0 R
-q2 1 -> q2 1 R
-q2 2 -> q3 0 R
-q3 0 -> q3 1 R
-q3 1 -> q3 0 R
-q3 B -> e B L</textarea>
-
-        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <label style="font-size:0.9rem">初始带（只写带中间的内容）</label>
-          <input id="tapeInput" type="text" value="1001001" placeholder="例如：1001001" style="width:220px;">
-          <label style="font-size:0.9rem">读写头位置</label>
-          <select id="headPos" style="width:200px;">
-            <option value="start">start（左端）</option>
-            <option value="center" selected>center（中间）</option>
-            <option value="end">end（右端）</option>
-          </select>
-
-          <div style="display:flex;flex-direction:row;gap:6px;margin-top:8px;">
-            <button onclick="initMachine()">初始化</button>
-            <button onclick="step()">执行一步</button>
-            <button onclick="run()">自动运行</button>
-            <button onclick="stopRun()">停止</button>
+        <div class="instruction-blueprint" role="img" aria-label="q0 1 -> q1 2 L" aria-live="off">
+          <div class="blueprint-heading">
+            <code id="blueprint-rule">q0 1 -&gt; q1 2 L</code>
+            <span class="blueprint-marker" aria-hidden="true"></span>
           </div>
-
-          <small class="hint">提示：建议使用 <strong>B</strong> 代表空白，或用 <strong>_</strong>、<strong>□</strong>。状态 <strong>e</strong> 常用于终止（halt）。</small>
+          <div class="instruction-flow" aria-hidden="true">
+            <div class="instruction-before">
+              <span id="blueprint-state">q0</span>
+              <span id="blueprint-read">1</span>
+            </div>
+            <span class="transfer-arrow">→</span>
+            <div class="instruction-after">
+              <span id="blueprint-next">q1</span>
+              <span id="blueprint-write">2</span>
+              <span id="blueprint-direction">L</span>
+            </div>
+          </div>
+          <div class="blueprint-foot" aria-hidden="true"><span class="blueprint-dimension"></span></div>
         </div>
       </div>
+      <div class="construction-seam" aria-hidden="true"><span></span></div>
+    </header>
 
-      <p class="info">当前状态：<strong id="state">q0</strong> &nbsp; | &nbsp; 读头索引：<span id="headIndex">-</span></p>
+    <section aria-labelledby="machine-title">
+      <div class="section-heading">
+        <h2 id="machine-title">这是一个最简单的图灵机模拟器。</h2>
+      </div>
+      <p id="tm-instructions">编写转移规则，初始化带并运行图灵机。</p>
+      <p class="original-hint">（建议使用 <strong>B</strong> 表示空格，也支持 <strong>_</strong> 或 <strong>□</strong>；状态名可用 <code>q0</code>、<code>q1</code> 或 <code>e</code> 等。）</p>
 
-      <!-- 这是带子容器（脚本会在此处渲染方格） -->
-      <div id="tape" aria-live="polite" role="region"></div>
+      <form id="tm-form">
+        <div class="machine-panel">
+          <dl class="machine-stats">
+            <div><dt>当前状态：</dt><dd id="tm-state">q0</dd></div>
+            <div><dt>读头索引：</dt><dd id="tm-head">3</dd></div>
+          </dl>
+          <div class="tape-window">
+            <div id="tm-tape" class="tape-track" role="list" aria-label="带"></div>
+          </div>
+          <output class="result-row" id="tm-output" aria-live="off">1001001</output>
 
-      <hr style="margin:1.2em 0; border-color:#333;">
-      <h3>练习（示例题）</h3>
-      <p>我们从一个带中某个位置的 <code>1</code> 开始（请保证你的初始带和带头位置满足这一点，否则示例程序无法运行），将队列中的1变为0，0变为1，最后停止在初始01串的最右端。示例程序做的是先扫描到最左端再返回，并向右直到最右端，进入终止状态。</p>
+          <div class="execution-controls">
+            <div class="execution-buttons">
+              <button type="submit">初始化</button>
+              <button id="tm-step" type="button">执行一步</button>
+              <button class="primary-button" id="tm-run" type="button">自动运行</button>
+              <button id="tm-stop" type="button" disabled>停止</button>
+            </div>
+          </div>
+          <p class="machine-status" id="tm-status" role="status" aria-live="polite" aria-atomic="true"></p>
+        </div>
 
-      <pre class="example">
-q0 1 -> q1 2 L
-q1 1 -> q1 0 L
-q1 0 -> q1 1 L
-q1 B -> q2 B R
-q2 0 -> q2 0 R
-q2 1 -> q2 1 R
-q2 2 -> q3 0 R
-q3 0 -> q3 1 R
-q3 1 -> q3 0 R
-q3 B -> e B L
-      </pre>
-    </div>
+        <fieldset class="program-editor" id="tm-editor" aria-labelledby="tm-instructions">
+          <div class="rules-editor">
+            <textarea id="tm-rules" rows="10" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="在此输入规则，每行一条，格式：q0 1 -> q1 2 L" aria-label="在此输入规则，每行一条，格式：q0 1 -> q1 2 L" aria-describedby="tm-error">{defaultProgram}</textarea>
+          </div>
+          <div class="initial-settings">
+            <div class="field">
+              <label for="tm-input">初始带（只写带中间的内容）</label>
+              <input id="tm-input" type="text" value="1001001" placeholder="例如：1001001" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="tm-input-hint" />
+            </div>
+            <div class="field">
+              <label for="tm-position">读写头位置</label>
+              <select id="tm-position">
+                <option value="start">start（左端）</option>
+                <option value="center" selected>center（中间）</option>
+                <option value="end">end（右端）</option>
+              </select>
+            </div>
+            <p id="tm-input-hint" class="field-hint">提示：建议使用 <strong>B</strong> 代表空白，或用 <strong>_</strong>、<strong>□</strong>。状态 <strong>e</strong> 常用于终止（halt）。</p>
+          </div>
+        </fieldset>
+        <p class="program-error" id="tm-error" role="alert" hidden></p>
+      </form>
 
-    <!-- 完整保留你的原始脚本逻辑，is:inline 防止 Astro 打包改动 -->
-    <script is:inline>
-      let tape = [], head = 0, state = 'q0', rules = {}, running = false;
-
-      function initMachine() {
-          // 读取并解析规则
-          const raw = document.getElementById('rules').value || '';
-          const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length>0);
-          rules = {};
-          for (let line of lines) {
-              // 统一替换一些可选空白符表示法：全角下划线 -> 半角，下划线、方框或 B 视为空白
-              line = line.replace(/＿/g, "_").replace(/□/g, "B").trim();
-              // 规则格式： <state> <symbol> -> <newState> <newSymbol> <L|R>
-              // state/newState: 字母数字下划线组合 (\w+), symbol/newSymbol: 单字符非空白 (\S)
-              const m = line.match(/^(\w+)\s+(\S)\s*->\s*(\w+)\s+(\S)\s+([LR])$/);
-              if (!m) {
-                  console.warn('无法解析规则行：', line);
-                  continue;
-              }
-              let [, q, sym, nq, nsym, dir] = m;
-              // 把 B 映射为内部空白符号 '_'，其余符号保持原样
-              sym = (sym === 'B') ? '_' : (sym === '_' ? '_' : sym);
-              nsym = (nsym === 'B') ? '_' : (nsym === '_' ? '_' : nsym);
-              rules[q + sym] = { nq, nsym, dir };
-          }
-
-          // 初始化带（默认长度充分，居中填入输入）
-          const userInput = (document.getElementById('tapeInput').value || '').trim().split('');
-          const baseLen = Math.max(41, userInput.length + 21);
-          tape = new Array(baseLen).fill('_');
-          const startIndex = Math.floor(baseLen/2) - Math.floor(userInput.length/2);
-          for (let i = 0; i < userInput.length; i++) {
-              const ch = userInput[i];
-              tape[startIndex + i] = (ch === 'B' || ch === '□') ? '_' : ch;
-          }
-
-          // 读写头位置选择：start/center/end
-          const headPos = document.getElementById('headPos').value;
-          if (headPos === 'start') head = startIndex;
-          else if (headPos === 'end') head = startIndex + Math.max(0, userInput.length - 1);
-          else head = startIndex + Math.floor(userInput.length/2);
-
-          state = 'q0';
-          running = false;
-          renderTape();
-      }
-
-      function renderTape() {
-          const tapeDiv = document.getElementById('tape');
-          tapeDiv.innerHTML = '';
-          // 显示窗口：尽量中心化在 head 左右若干格
-          const windowSize = 21;
-          let start = head - Math.floor(windowSize/2);
-          if (start < 0) start = 0;
-          let end = start + windowSize;
-          if (end > tape.length) end = tape.length;
-          for (let i = start; i < end; i++) {
-              const c = document.createElement('div');
-              c.className = 'cell' + (i === head ? ' head' : '');
-              c.textContent = tape[i] === '_' ? '_' : tape[i];
-              tapeDiv.appendChild(c);
-          }
-          document.getElementById('state').textContent = state;
-          document.getElementById('headIndex').textContent = head;
-      }
-
-      function ensureTapeBounds() {
-          // 扩展左侧
-          while (head < 0) {
-              tape.unshift('_');
-              head++; // unshift 会把当前位置右移一位
-          }
-          // 扩展右侧
-          while (head >= tape.length) {
-              tape.push('_');
-          }
-      }
-
-      function step() {
-          const sym = tape[head];
-          const key = state + sym;
-          const rule = rules[key];
-          if (!rule) {
-              running = false;
-              if (state === 'e') {
-                  alert('机器已进入终止状态 e，程序停止。');
-              } else {
-                  alert('无匹配规则，程序停止。（当前状态：' + state + '，读到符号：' + sym + '）');
-              }
-              return;
-          }
-          // 执行写、移、转
-          tape[head] = rule.nsym;
-          if (rule.dir === 'R') head++; else head--;
-          state = rule.nq;
-          ensureTapeBounds();
-          renderTape();
-
-          // 如果进入显式终止状态（如 e），停止运行
-          if (state === 'e') {
-              running = false;
-              alert('已进入终止状态 e，程序停止。');
-          }
-      }
-
-      function run() {
-          if (running) return;
-          running = true;
-          function tick() {
-              if (!running) return;
-              const sym = tape[head];
-              const key = state + sym;
-              const rule = rules[key];
-              if (!rule) {
-                  running = false;
-                  if (state === 'e') {
-                      alert('机器已进入终止状态 e，程序停止。');
-                  } else {
-                      alert('无匹配规则，程序停止。（当前状态：' + state + '，读到符号：' + sym + '）');
-                  }
-                  return;
-              }
-              tape[head] = rule.nsym;
-              if (rule.dir === 'R') head++; else head--;
-              state = rule.nq;
-              ensureTapeBounds();
-              renderTape();
-              if (state === 'e') {
-                  running = false;
-                  alert('已进入终止状态 e，程序停止。');
-                  return;
-              }
-              setTimeout(tick, 250);
-          }
-          tick();
-      }
-
-      function stopRun() {
-          running = false;
-      }
-
-      // 页面加载时先初始化一次（保证页面一打开就能看到完整方格并填入默认带）
-      window.addEventListener('DOMContentLoaded', () => {
-        // 先确保初始带数组存在（用于 renderTape）
-        const defaultBaseLen = 41;
-        tape = new Array(defaultBaseLen).fill('_');
-        head = Math.floor(defaultBaseLen / 2);
-        renderTape();
-        // 然后再初始化（会读取 textarea 的默认规则与 input 的默认值）
-        initMachine();
-      });
-    </script>
-
+      <details class="machine-guide">
+        <summary>练习（示例题）</summary>
+        <div class="guide-content">
+          <p>我们从一个带中某个位置的 <code>1</code> 开始（请保证你的初始带和带头位置满足这一点，否则示例程序无法运行），将队列中的1变为0，0变为1，最后停止在初始01串的最右端。示例程序做的是先扫描到最左端再返回，并向右直到最右端，进入终止状态。</p>
+          <pre class="example">{defaultProgram}</pre>
+        </div>
+      </details>
+    </section>
+    <template id="tm-cell-template">
+      <div class="tape-cell" role="listitem">
+        <span class="cell-symbol"></span>
+        <span class="cell-index" aria-hidden="true"></span>
+      </div>
+    </template>
   </main>
 </BaseLayout>
+
+<script>
+  import { parseProgram, TuringMachine } from "../../scripts/turing-machine.mjs";
+
+  const page = document.querySelector<HTMLElement>(".turing-page")!;
+  const find = <T extends HTMLElement>(selector: string) => page.querySelector<T>(selector)!;
+  const form = find<HTMLFormElement>("#tm-form");
+  const editor = find<HTMLFieldSetElement>("#tm-editor");
+  const rulesInput = find<HTMLTextAreaElement>("#tm-rules");
+  const tapeInput = find<HTMLInputElement>("#tm-input");
+  const positionInput = find<HTMLSelectElement>("#tm-position");
+  const runButton = find<HTMLButtonElement>("#tm-run");
+  const stopButton = find<HTMLButtonElement>("#tm-stop");
+  const stepButton = find<HTMLButtonElement>("#tm-step");
+  const status = find("#tm-status");
+  const errorMessage = find("#tm-error");
+  const tape = find("#tm-tape");
+  const cellTemplate = find<HTMLTemplateElement>("#tm-cell-template");
+  const AUTO_STEP_LIMIT = 10_000;
+  const STEP_DELAY = 250;
+
+  let machine: TuringMachine | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let running = false;
+  let dirty = false;
+  let autoSteps = 0;
+
+  const symbol = (value: string) => value === "_" ? "□" : value;
+
+  function renderBlueprint() {
+    const next = machine && !dirty && !machine.haltReason
+      ? machine.program.get(machine.state)?.get(machine.read()) : undefined;
+    const rule = next && machine
+      ? `${machine.state} ${symbol(machine.read())} -> ${next.state} ${symbol(next.write)} ${next.direction}` : "";
+    find("#blueprint-rule").textContent = rule;
+    find(".instruction-blueprint").setAttribute("aria-label", dirty || !machine ? "初始化" : rule || haltMessage());
+    find("#blueprint-state").textContent = machine && !dirty ? machine.state : "—";
+    find("#blueprint-read").textContent = machine && !dirty ? symbol(machine.read()) : "—";
+    find("#blueprint-next").textContent = next?.state ?? "—";
+    find("#blueprint-write").textContent = next ? symbol(next.write) : "—";
+    find("#blueprint-direction").textContent = next?.direction ?? "—";
+  }
+
+  function cancelRun() {
+    clearTimeout(timer);
+    timer = undefined;
+    running = false;
+  }
+
+  function haltMessage() {
+    if (!machine) return "";
+    if (machine.haltReason === "terminal") return `已进入终止状态 ${machine.state}，程序停止。`;
+    return `无匹配规则，程序停止。（当前状态：${machine.state}，读到符号：${symbol(machine.read())}）`;
+  }
+
+  function renderTape() {
+    if (!machine) return;
+    let count = Math.max(5, Math.min(21, Math.floor(tape.clientWidth / 48)));
+    if (count % 2 === 0) count--;
+    const start = machine.head - Math.floor(count / 2);
+    const fragment = document.createDocumentFragment();
+    for (let index = start; index < start + count; index++) {
+      const cell = cellTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      const value = symbol(machine.read(index));
+      const isHead = index === machine.head;
+      cell.classList.toggle("read-head", isHead);
+      cell.setAttribute("aria-label", `读头索引：${index}，${value}${isHead ? "，读写头位置" : ""}`);
+      if (isHead) cell.setAttribute("aria-current", "true");
+      cell.querySelector(".cell-symbol")!.textContent = value;
+      cell.querySelector(".cell-index")!.textContent = String(index);
+      fragment.append(cell);
+    }
+    tape.style.gridTemplateColumns = `repeat(${count}, minmax(0, 1fr))`;
+    tape.replaceChildren(fragment);
+  }
+
+  function render() {
+    page.dataset.machine = dirty ? "pending" : running ? "running" : machine?.haltReason ? "halted" : "idle";
+    editor.disabled = running;
+    runButton.disabled = running || !machine || dirty || Boolean(machine.haltReason);
+    stopButton.disabled = !running;
+    stepButton.disabled = running || !machine || dirty || Boolean(machine.haltReason);
+    renderBlueprint();
+    if (!machine) return;
+    find("#tm-state").textContent = machine.state;
+    find("#tm-head").textContent = String(machine.head);
+    find("#tm-output").textContent = machine.output() || "□";
+    renderTape();
+  }
+
+  function initialize(focusError = true) {
+    cancelRun();
+    try {
+      machine = new TuringMachine({
+        program: parseProgram(rulesInput.value),
+        input: tapeInput.value,
+        headPosition: positionInput.value as "start" | "center" | "end",
+      });
+      dirty = false;
+      rulesInput.removeAttribute("aria-invalid");
+      errorMessage.hidden = true;
+      errorMessage.textContent = "";
+      status.textContent = machine.haltReason ? haltMessage() : "";
+    } catch (error) {
+      dirty = true;
+      const problem = error as Error & { line?: number };
+      const lines = rulesInput.value.split("\n");
+      errorMessage.textContent = problem.line
+        ? `无法解析规则行：${problem.line} ${lines[problem.line - 1] ?? ""}`
+        : find("#tm-input-hint").textContent;
+      errorMessage.hidden = false;
+      status.textContent = "";
+      if (problem.line) {
+        rulesInput.setAttribute("aria-invalid", "true");
+        if (focusError) {
+          rulesInput.focus();
+          const start = lines.slice(0, problem.line - 1).join("\n").length + (problem.line > 1 ? 1 : 0);
+          rulesInput.setSelectionRange(start, start + (lines[problem.line - 1]?.length ?? 0));
+        }
+      }
+    }
+    render();
+  }
+
+  function tick() {
+    timer = undefined;
+    if (!running || !machine) return;
+    machine.step();
+    autoSteps++;
+    if (machine.haltReason) {
+      cancelRun();
+      status.textContent = haltMessage();
+    } else if (autoSteps >= AUTO_STEP_LIMIT) {
+      cancelRun();
+      status.textContent = "程序停止。";
+    }
+    render();
+    if (running) timer = setTimeout(tick, STEP_DELAY);
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    initialize();
+  });
+
+  runButton.addEventListener("click", () => {
+    if (running || !machine || dirty || machine.haltReason) return;
+    running = true;
+    autoSteps = 0;
+    status.textContent = "";
+    timer = setTimeout(tick, STEP_DELAY);
+    render();
+  });
+
+  stopButton.addEventListener("click", () => {
+    cancelRun();
+    status.textContent = "";
+    render();
+  });
+
+  stepButton.addEventListener("click", () => {
+    if (!machine || running || dirty || machine.haltReason) return;
+    machine.step();
+    status.textContent = machine.haltReason ? haltMessage() : "";
+    render();
+  });
+
+  editor.addEventListener("input", () => {
+    dirty = true;
+    rulesInput.removeAttribute("aria-invalid");
+    errorMessage.hidden = true;
+    status.textContent = "";
+    render();
+  });
+
+  window.addEventListener("pagehide", () => {
+    if (!running) return;
+    cancelRun();
+    status.textContent = "";
+    render();
+  });
+  page.dataset.effects = String(document.getElementById("sysStatusBtn")?.getAttribute("aria-pressed") !== "false");
+  document.addEventListener("system-status-change", (event) => {
+    page.dataset.effects = String((event as CustomEvent<{ on: boolean }>).detail.on);
+  });
+  new ResizeObserver(renderTape).observe(tape);
+  initialize(false);
+</script>
+
+<style>
+  .turing-page {
+    --tm-accent: #176e72;
+    --tm-accent-ink: #fff;
+    --tm-muted: #626e71;
+    --tm-line: #d7dfe0;
+    --tm-surface: #f5f7f6;
+    --tm-cell: #fff;
+    --tm-head: #e0efeb;
+    --tm-error: #a33434;
+    --tm-work: #98601c;
+    --tm-grid: rgba(92, 119, 112, .1);
+    --tm-blueprint: #edf2ee;
+    max-width: 1192px;
+    margin: 0 auto;
+    padding: 144px 28px 80px;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  :global(:root[data-bs-theme="dark"]) .turing-page {
+    --tm-accent: #9ad6cd;
+    --tm-accent-ink: #172c2a;
+    --tm-muted: #a7b5b7;
+    --tm-line: #3b4647;
+    --tm-surface: #202727;
+    --tm-cell: #272f30;
+    --tm-head: #304b45;
+    --tm-error: #ffb3ac;
+    --tm-work: #e8bf77;
+    --tm-grid: rgba(159, 197, 186, .09);
+    --tm-blueprint: #222d2b;
+  }
+  .turing-page p, .turing-page dl, .turing-page dd { margin: 0; }
+  .page-intro { margin-bottom: 40px; }
+  .construction-site { position: relative; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: 64px; padding: 34px 0 40px; }
+  .construction-site::before { content: ""; position: absolute; inset: 0 -18px 0 38%; background-image: linear-gradient(var(--tm-grid) 1px, transparent 1px), linear-gradient(90deg, var(--tm-grid) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(90deg, transparent, #000 35%, #000 90%, transparent); pointer-events: none; }
+  .construction-copy, .instruction-blueprint { position: relative; }
+  .page-intro h1 { margin: 14px 0 24px; font-size: clamp(4.5rem, 8vw, 6.3rem); line-height: 1.2; letter-spacing: -.065em; }
+  .unfinished-glyph { position: relative; display: inline-block; margin-left: .07em; padding: .015em .06em; border: 1px dashed var(--tm-work); border-right-color: transparent; letter-spacing: 0; }
+  .unfinished-glyph::before { content: ""; position: absolute; top: -12px; bottom: -12px; left: -10px; width: 4px; background: repeating-linear-gradient(0deg, var(--tm-work) 0 1px, transparent 1px 8px); opacity: .7; }
+  .unfinished-glyph::after { content: ""; position: absolute; top: -9px; left: -14px; right: -14px; height: 4px; border-bottom: 1px solid var(--tm-work); background: repeating-linear-gradient(90deg, var(--tm-work) 0 1px, transparent 1px 8px); opacity: .7; }
+  .construction-copy .intro-lead { font-size: 21px; letter-spacing: .025em; }
+  .construction-copy .intro-description { max-width: 28em; margin-top: 12px; color: var(--tm-muted); font-size: 15px; }
+  .instruction-blueprint { padding: 22px 24px 18px; background: var(--tm-blueprint); border: 1px solid var(--tm-line); box-shadow: 7px 7px 0 var(--tm-grid); }
+  .instruction-blueprint::before, .instruction-blueprint::after { content: ""; position: absolute; width: 16px; height: 16px; border-color: var(--tm-work); border-style: solid; pointer-events: none; }
+  .instruction-blueprint::before { top: -5px; left: -5px; border-width: 1px 0 0 1px; }
+  .instruction-blueprint::after { right: -5px; bottom: -5px; border-width: 0 1px 1px 0; }
+  .blueprint-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .turing-page .blueprint-heading code { min-height: 21px; font-size: 12px; overflow-wrap: anywhere; }
+  .blueprint-marker { width: 6px; height: 6px; flex-shrink: 0; background: var(--tm-work); }
+  .instruction-flow { display: grid; grid-template-columns: minmax(0, 2fr) 22px minmax(0, 3fr); gap: 12px; align-items: end; margin-top: 24px; }
+  .instruction-before, .instruction-after { display: grid; gap: 10px; }
+  .instruction-before { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .instruction-after { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .instruction-before > span, .instruction-after > span { display: grid; place-items: center; min-height: 48px; padding: 6px 2px; border-bottom: 1px solid var(--tm-line); font: 20px/1.4 "JetBrains Mono", monospace; overflow-wrap: anywhere; }
+  .instruction-after > span { border-bottom: 2px solid var(--tm-accent); background: var(--tm-head); color: var(--tm-accent); }
+  .transfer-arrow { display: grid; align-items: center; height: 48px; color: var(--tm-work); font: 24px/1 "JetBrains Mono", monospace; }
+  .blueprint-foot { display: flex; align-items: center; margin-top: 24px; }
+  .blueprint-dimension { position: relative; flex: 1; height: 7px; border-left: 1px solid var(--tm-line); border-right: 1px solid var(--tm-line); }
+  .blueprint-dimension::after { content: ""; position: absolute; top: 3px; left: 0; right: 0; border-top: 1px solid var(--tm-line); }
+  .construction-seam { display: flex; align-items: center; gap: 0; height: 8px; }
+  .construction-seam span { width: 144px; height: 100%; background: repeating-linear-gradient(135deg, var(--tm-work) 0 4px, transparent 4px 11px); background-size: 16px 16px; opacity: .75; }
+  .construction-seam::after { content: ""; flex: 1; height: 1px; background: var(--tm-line); }
+  .turing-page[data-machine="running"][data-effects="true"] .construction-seam span { animation: site-work 2s linear infinite; }
+  .turing-page[data-machine="running"] .blueprint-marker { background: var(--tm-accent); box-shadow: 0 0 0 4px var(--tm-head); }
+  .turing-page[data-machine="pending"] .instruction-flow { opacity: .45; }
+  .turing-page[data-machine="halted"] .blueprint-marker { background: var(--tm-muted); }
+  @keyframes site-work { to { background-position: 32px 0; } }
+  .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+  .section-heading h2 { margin: 0 0 8px; font-size: 1.5rem; scroll-margin-top: 110px; }
+  .turing-page .original-hint { margin: 8px 0 24px; color: var(--tm-muted); font-size: 14px; }
+  .machine-panel { position: relative; padding: 28px; border: 1px solid var(--tm-line); border-radius: 2px; background: var(--tm-surface); }
+  .machine-panel::before { content: ""; position: absolute; top: -2px; left: 28px; width: 36px; height: 3px; background: var(--tm-work); }
+  .machine-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .machine-stats > div + div { border-left: 1px solid var(--tm-line); padding-left: 24px; }
+  .machine-stats dt { color: var(--tm-muted); font-size: 13px; font-weight: 400; }
+  .machine-stats dd { font-family: "JetBrains Mono", monospace; font-size: 1.65rem; overflow-wrap: anywhere; }
+  .tape-window { position: relative; margin: 22px -28px 0; padding: 26px 28px 14px; border-top: 1px solid var(--tm-line); border-bottom: 1px solid var(--tm-line); background: var(--tm-cell); }
+  .tape-window::before, .tape-window::after { content: ""; position: absolute; left: 0; right: 0; height: 4px; background: radial-gradient(circle, var(--tm-line) 1.5px, transparent 2px) 0 0 / 14px 4px; pointer-events: none; }
+  .tape-window::before { top: 6px; }
+  .tape-window::after { bottom: 5px; }
+  .tape-track { display: grid; gap: 4px; min-height: 78px; }
+  .tape-cell { position: relative; min-width: 0; text-align: center; font-family: "JetBrains Mono", monospace; }
+  .cell-symbol { display: grid; place-items: center; min-height: 48px; border: 1px solid var(--tm-line); background: var(--tm-cell); font-size: 21px; }
+  .cell-index { display: block; margin-top: 5px; color: var(--tm-muted); font-size: 10px; line-height: 1.5; }
+  .read-head .cell-symbol { border: 2px solid var(--tm-accent); background: var(--tm-head); color: var(--tm-accent); font-weight: 700; }
+  .read-head::before { content: ""; position: absolute; top: -11px; left: calc(50% - 4px); border: 4px solid transparent; border-top-color: var(--tm-accent); }
+  .turing-page code { font-family: "JetBrains Mono", monospace; color: var(--tm-accent); font-size: .88em; }
+  .result-row { display: block; padding-top: 18px; font: 14px/1.7 "JetBrains Mono", monospace; overflow-wrap: anywhere; }
+  .execution-controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 20px; padding-top: 22px; border-top: 1px solid var(--tm-line); }
+  .execution-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+  .turing-page button { border: 1px solid var(--tm-line); border-radius: 6px; padding: 9px 16px; background: var(--tm-cell); color: inherit; font: inherit; font-size: 14px; line-height: 1.5; cursor: pointer; }
+  .turing-page button:hover:not(:disabled) { border-color: var(--tm-accent); color: var(--tm-accent); }
+  .turing-page .primary-button { min-width: 94px; background: var(--tm-accent); border-color: var(--tm-accent); color: var(--tm-accent-ink); }
+  .turing-page .primary-button:hover:not(:disabled) { color: var(--tm-accent-ink); filter: brightness(.92); }
+  .turing-page button:disabled { opacity: .45; cursor: not-allowed; }
+  .turing-page .machine-status { margin-top: 18px; color: var(--tm-muted); font-size: 14px; overflow-wrap: anywhere; }
+  .machine-status:empty { display: none; }
+  .program-editor { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 30px; margin: 30px 0 0; padding: 0; border: 0; min-width: 0; }
+  .program-editor:disabled { opacity: .6; }
+  .rules-editor, .initial-settings, .field { min-width: 0; }
+  .turing-page label { font-size: 14px; font-weight: 600; }
+  .turing-page textarea, .initial-settings input, .turing-page select { border: 1px solid var(--tm-line); border-radius: 6px; background: var(--tm-cell); color: inherit; font: inherit; font-size: 14px; padding: 9px 11px; max-width: 100%; }
+  .turing-page textarea { display: block; width: 100%; resize: vertical; min-height: 240px; font-family: "JetBrains Mono", monospace; font-size: 14px; line-height: 1.9; tab-size: 2; }
+  .field { display: grid; gap: 7px; }
+  .field + .field { margin-top: 18px; }
+  .initial-settings > .field:first-child { margin-top: 3px; }
+  .initial-settings input, .initial-settings select { width: 100%; }
+  .initial-settings input { font-family: "JetBrains Mono", monospace; }
+  .turing-page .field-hint { margin-top: 7px; font-size: 12px; color: var(--tm-muted); line-height: 1.65; }
+  .field .field-hint { margin-top: 0; }
+  .turing-page .program-error { margin-top: 16px; padding: 10px 14px; border-left: 3px solid var(--tm-error); color: var(--tm-error); font-size: 14px; }
+  .turing-page [aria-invalid="true"] { border-color: var(--tm-error); }
+  .turing-page :is(button, input, textarea, select, summary, a):focus-visible { outline: 2px solid var(--tm-accent); outline-offset: 3px; }
+  .machine-guide { margin-top: 30px; border-top: 1px solid var(--tm-line); border-bottom: 1px solid var(--tm-line); }
+  .machine-guide summary { padding: 17px 0; font-size: 14px; cursor: pointer; }
+  .guide-content { display: grid; gap: 14px; padding: 0 0 22px; font-size: 14px; color: var(--tm-muted); }
+  .guide-content strong { color: var(--bs-body-color, #212529); }
+  .guide-content .example { margin: 0; padding: 14px; overflow: auto; background: var(--tm-surface); color: inherit; font: 13px/1.8 "JetBrains Mono", monospace; }
+  @media (min-width: 761px) and (max-width: 1000px) {
+    .construction-site { gap: 36px; }
+    .page-intro h1 { font-size: 5rem; }
+    .instruction-blueprint { padding: 20px 16px 16px; }
+    .instruction-flow { gap: 8px; }
+    .instruction-before, .instruction-after { gap: 6px; }
+  }
+  @media (max-width: 760px) {
+    .turing-page { padding: 110px 20px 56px; }
+    .page-intro { margin-bottom: 36px; }
+    .construction-site { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 28px 0 30px; }
+    .construction-site::before { inset: 46% -8px 0 0; mask-image: linear-gradient(180deg, transparent, #000 35%); }
+    .page-intro h1 { margin-top: 12px; font-size: 4.8rem; }
+    .construction-copy .intro-lead { font-size: 19px; }
+    .construction-copy .intro-description { max-width: 32em; font-size: 14px; }
+    .instruction-blueprint { padding: 18px 20px 16px; }
+    .section-heading { align-items: flex-start; }
+    .machine-panel { padding: 20px 16px; }
+    .tape-window { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+    .program-editor { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .machine-stats > div + div { padding-left: 14px; }
+    .machine-stats dd { font-size: 1.4rem; }
+    .execution-controls { gap: 18px; }
+  }
+  @media (max-width: 400px) {
+    .section-heading { flex-direction: column; gap: 12px; }
+    .turing-page button { padding: 9px 12px; }
+    .machine-stats { gap: 8px; }
+    .machine-stats dt { font-size: 11px; }
+    .instruction-blueprint { padding-left: 16px; padding-right: 16px; }
+    .instruction-flow { grid-template-columns: minmax(0, 2fr) 18px minmax(0, 3fr); gap: 8px; }
+    .instruction-before, .instruction-after { gap: 6px; }
+    .instruction-before > span, .instruction-after > span { font-size: 17px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .turing-page[data-machine="running"][data-effects="true"] .construction-seam span { animation: none; }
+  }
+</style>
 
