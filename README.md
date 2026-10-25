@@ -37,7 +37,6 @@
 │   ├── css/                  # 全站及特殊页面样式
 │   ├── js/                   # 全站脚本
 │   ├── live2d/               # Live2D 查看器、模型与许可声明
-│   └── tools/furnace/        # 独立游戏原型
 ├── src/
 │   ├── assets/img/           # 由 Astro 优化的页面头图
 │   ├── components/           # 页面与交互组件
