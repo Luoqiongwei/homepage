@@ -1,44 +1,73 @@
 
-.archive-button {
-  display: inline-block;
-  margin: 3rem auto;
-  padding: 0.4rem 1.0rem;
-  border: 2px solid var(--bs-primary);
-  color: var(--bs-primary);
-  background-color: transparent;
-  font-family: "Open Sans", Lora, serif;
-  font-size: 1.1rem;
-  border-radius: 50px;
+/* 首页与工具入口共用；不影响 Bootstrap 或嵌入应用的按钮。 */
+.site-action {
+  --action-bg: transparent;
+  --action-hover: rgba(34, 46, 52, 0.05);
+  --action-ink: #35434b;
+  --action-border: #8b969b;
+  --action-focus: #4c6772;
+}
+
+.site-action--primary {
+  --action-bg: #273238;
+  --action-hover: #3d494f;
+  --action-ink: #f5f7f7;
+  --action-border: #273238;
+}
+
+:root[data-bs-theme="dark"] .site-action {
+  --action-bg: transparent;
+  --action-hover: rgba(230, 237, 239, 0.07);
+  --action-ink: #e2e7e8;
+  --action-border: #6e7b82;
+  --action-focus: #b8d2d5;
+}
+
+:root[data-bs-theme="dark"] .site-action--primary {
+  --action-bg: #e0e6e5;
+  --action-hover: #f6f8f7;
+  --action-ink: #20282c;
+  --action-border: #e0e6e5;
+}
+
+.site-action,
+:root[data-bs-theme="dark"] .site-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  max-width: 100%;
+  padding: 10px 20px;
+  border: 1px solid var(--action-border);
+  border-radius: 6px;
+  background: var(--action-bg);
+  color: var(--action-ink);
+  font-family: "Inter", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
   text-decoration: none;
-  transition: all 0.25s ease-in-out;
+  vertical-align: middle;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 
-.archive-button:hover {
-  background-color: var(--bs-primary);
-  color: white;
-  box-shadow: 0 0 8px rgba(0,133,161,0.3);
-  transform: translateY(-2px);
-}
+.site-action--small,
+:root[data-bs-theme="dark"] .site-action--small { min-width: 88px; min-height: 44px; padding: 9px 16px; font-size: 14px; }
+.site-action:focus-visible { outline: 2px solid var(--action-focus); outline-offset: 4px; }
+.site-action:hover,
+:root[data-bs-theme="dark"] .site-action:hover { color: var(--action-ink); text-decoration: none; }
 
-.article-button {
-  display: inline-block;
-  margin: 3rem auto;
-  padding: 0.4rem 1.0rem;
-  border: 2px solid var(--bs-secondary-color);
-  color: var(--bs-secondary-color);
-  background-color: transparent;
-  font-family: "Open Sans", Lora, serif;
-  font-size: 1.1rem;
-  border-radius: 999px;
-  text-decoration: none;
-  transition: all 0.25s ease-in-out;
-}
+.home-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 40px 0 48px; }
 
-.article-button:hover {
-  background-color: var(--bs-secondary-color);
-  color: white;
-  box-shadow: 0 0 6px rgba(0,133,161,0.2);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .site-action:hover,
+  :root[data-bs-theme="dark"] .site-action:hover { background: var(--action-hover); border-color: var(--action-focus); }
+}
+@media (max-width: 575px) {
+  .home-actions { gap: 12px; margin-top: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-action, :root[data-bs-theme="dark"] .site-action { transition: none; }
 }
 
 .spoiler {
