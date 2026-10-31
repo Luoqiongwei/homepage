@@ -1,212 +1,396 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-const BASE = import.meta.env.BASE_URL || '/';
+import displayFont from "../assets/fonts/about-display.ttf?url";
+import fontLicense from "../assets/fonts/OFL-NotoSansSC.txt?url";
+
+// 优设标题黑的三个字形轮廓，避免为标题加载完整字库。
+// 字体来源：https://www.uisdc.com/uisdc-first-free-font
+const nameGlyphs = [
+  "M710 320 608 385 476 320H316L329 416H399L491 459L454 483H312L432 676L400 709H604L580 664H903L883 521L746 453L810 416H887L874 320ZM848 291 808 8H289L329 291ZM16 8 110 282H278L184 8ZM144 521 131 692H299L312 521ZM115 318 101 483H269L283 318ZM645 96 660 199H491L476 96ZM534 579 533 577 625 523 741 579Z",
+  "M835 455 805 246H245L237 215H820L797 52Q793 26 774.0 9.0Q755 -8 727 -8H377L464 66H607L616 128H19L67 331H630L636 371H70L82 455ZM702 551 707 583H281L276 551H399L291 474H91L176 535H90L108 663H407L410 679L376 711H608L601 663H901L883 535H797L865 474H661L575 551Z",
+  "M891 690 846 369H299L340 663L317 690ZM273 593 189 -8H28L107 556L56 545L73 660L289 708ZM862 347 849 259H445L423 97L544 106L530 11L254 -6L291 259H242L255 347ZM651 239 675 202 828 244 815 149 726 125 813 -7H649L488 239ZM464 564H539L544 594H468ZM525 465 529 495H454L450 465ZM721 465 725 495H651L647 465ZM666 594 661 564H735L739 594Z",
+];
+
+const BASE = import.meta.env.BASE_URL || "/";
+const interests = [
+  "应用数学", "统计学", "计算机科学", "计量经济学", "运筹学",
+  "VOCALOID", "电子音乐", "百合", "番剧", "逻辑解谜", "Roguelike", "经营模拟", "音游",
+];
 ---
 
 <BaseLayout title="洛穹偎的一家言 - 关于" description="行者的随笔">
-  <link rel="preconnect" href="https://fonts.googleapis.com" slot="head" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin slot="head" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" slot="head" />
+  <link rel="preload" href={displayFont} as="font" type="font/ttf" crossorigin slot="head" />
+  <meta name="font-license" content={fontLicense} slot="head" />
 
-  <style is:global>
-    .about-terminal { font-family: 'JetBrains Mono', monospace; }
-    .about-terminal .cmd-line {
-      display: flex; align-items: baseline; gap: .6rem;
-      margin-bottom: .4rem; font-size: .95rem;
-    }
-    .about-terminal .cmd-text {
-      display: inline-block;
-      color: var(--bs-secondary-color);
-    }
-    .about-terminal .cmd-text::first-letter {
-      color: var(--bs-info);
-      font-weight: 600;
-    }
-    .about-terminal .cmd-block {
-      margin-bottom: 2.2rem; padding-left: 1rem;
-      border-left: 2px solid transparent; transition: border-color .4s ease;
-    }
-    .about-terminal .cmd-block.active { border-left-color: var(--bs-info); }
-    .about-terminal .cmd-body {
-      opacity: 0; transform: translateY(6px);
-      transition: opacity .6s ease, transform .6s ease;
-    }
-    .about-terminal .cmd-block.revealed .cmd-body { opacity: 1; transform: translateY(0); }
-    .about-terminal .cursor {
-      display: inline-block; width: 8px; height: 1.1em;
-      background: var(--bs-info); vertical-align: text-bottom;
-      animation: blink 1s step-end infinite; margin-left: 2px;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-
-    .about-terminal .tag-list { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
-    .about-terminal .tag {
-      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
-      padding: .25rem .6rem; border-radius: .375rem;
-      border: 1px solid var(--bs-border-color);
-      background: rgba(var(--bs-info-rgb), .06);
-      color: var(--bs-secondary-color);
-    }
-    .about-terminal .tag.accent {
-      border-color: rgba(var(--bs-info-rgb), .4);
-      color: var(--bs-info); background: rgba(var(--bs-info-rgb), .08);
-    }
-    .about-terminal .spoiler {
-      background: var(--bs-secondary-color); color: var(--bs-secondary-color);
-      padding: 1px 4px; border-radius: 4px; cursor: pointer; transition: all .3s ease;
-    }
-    .about-terminal .spoiler:hover, .about-terminal .spoiler.revealed {
-      background: transparent; color: var(--bs-info);
-    }
-  </style>
-
-  <br><br><br>
-
-  <main class="mb-5 about-terminal">
-    <div class="container px-4 px-lg-5 pt-5">
-      <div class="row gx-4 gx-lg-5 justify-content-center">
-        <div class="col-md-10 col-lg-8 col-xl-7">
-
-          <!-- Hero prompt -->
-          <div class="cmd-line mb-4" style="font-size:1.05rem;">
-            <span class="cmd-text" id="hero-cmd" data-text="$ whoami"></span>
-            <span class="cursor" id="hero-cursor"></span>
-          </div>
-          <div id="hero-reply" style="opacity:0; transform:translateY(6px); transition:all .6s ease; margin-bottom:2.5rem;">
-            <h1 class="mb-2" style="font-family:'JetBrains Mono',monospace; font-size:clamp(1.5rem,4vw,2.2rem); font-weight:700;">洛穹偎</h1>
-            <div class="d-flex gap-2 flex-wrap">
-              <span class="badge bg-secondary bg-opacity-10 text-secondary border"><i class="fa-solid fa-location-dot me-1"></i> Earth</span>
-              <span class="badge bg-secondary bg-opacity-10 text-secondary border"><i class="fa-solid fa-clock me-1"></i> <span id="liveClock">--:--:--</span></span>
-            </div>
-          </div>
-
-          <!-- Content blocks -->
-          <div class="cmd-block" id="block-identity">
-            <div class="cmd-line">
-              <span class="cmd-text" id="b1" data-text="$ cat identity.md"></span>
-            </div>
-            <div class="cmd-body">
-              <p>你好，欢迎你的到来，我是洛穹偎。</p>
-              <p>这里是一个用来安放我的热爱与思考的角落。我将这里视为展示我的理性与感性的交汇的地点。</p>
-            </div>
-          </div>
-
-          <div class="cmd-block" id="block-rational">
-            <div class="cmd-line">
-              <span class="cmd-text" id="b2" data-text="$ cat rational_side.md"></span>
-            </div>
-            <div class="cmd-body">
-              <p>一边，是我的思想的骨架。</p>
-              <p class="mb-0">我的思维常常沉浸于应用数学、统计学、计算机科学、计量经济学和运筹学构成的知识之海。在这里，世界被简化为优雅的模型与算法，我可以通过理想化的透镜，去窥探更复杂、更多变的世界。我追求逻辑的自洽、数据的印证与效率的最优解。</p>
-            </div>
-          </div>
-
-          <div class="cmd-block" id="block-creative">
-            <div class="cmd-line">
-              <span class="cmd-text" id="b3" data-text="$ cat creative_side.md"></span>
-            </div>
-            <div class="cmd-body">
-              <p>另一边，是我的幻想的灵魂。</p>
-              <p>我会自公式和代码中隐遁到VOCALOID或者说更大的电子音乐的世界，从初音未来的未来感旋律到洛天依的韵味，从重音Teto的活力到星尘的空灵，都让我感受到电子音乐与人声合成的无限可能。我对音乐史、音乐理论与电子音色有持续的兴趣。</p>
-              <p>同样的，在虚构的叙事里，我尤其喜爱那些细腻的情感图谱。我钟情于百合题材的番剧——无论是轻百合中那如清风拂面般的温馨日常，还是真百合里深沉的情感羁绊。我喜爱那些幻梦中最柔软、最真挚的微光。<span class="spoiler" onclick="this.classList.add('revealed')" title="点击查看"><a href={`${BASE}tools/my_fptsc_yuri/`}>我看过的...从夯到拉</a></span></p>
-            </div>
-          </div>
-
-          <div class="cmd-block" id="block-interests">
-            <div class="cmd-line">
-              <span class="cmd-text" id="b4" data-text="$ ls interests/"></span>
-            </div>
-            <div class="cmd-body">
-              <p>那么，也可以据此猜测我的游戏品味。我喜爱逻辑编程解谜游戏，以及在肉鸽、经营类游戏中寻找"更优解"，当然，我也十分喜爱音游。</p>
-              <div class="tag-list">
-                <span class="tag accent">应用数学</span>
-                <span class="tag accent">统计学</span>
-                <span class="tag accent">计算机科学</span>
-                <span class="tag accent">计量经济学</span>
-                <span class="tag accent">运筹学</span>
-                <span class="tag">VOCALOID</span>
-                <span class="tag">电子音乐</span>
-                <span class="tag">百合</span>
-                <span class="tag">番剧</span>
-                <span class="tag">逻辑解谜</span>
-                <span class="tag">Roguelike</span>
-                <span class="tag">经营模拟</span>
-                <span class="tag">音游</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="cmd-block" id="block-closing">
-            <div class="cmd-line">
-              <span class="cmd-text" id="b5" data-text="$ cat closing.txt"></span>
-            </div>
-            <div class="cmd-body">
-              <p>那么，我想在这里与你分享：</p>
-              <p>我对音乐的品味，科学与哲学的思辨，对某款游戏的鉴赏，对番剧的体会和热忱。此外，也可能摘选我的游记，我对某本书的读后感，抑或是更广泛的一些思考。</p>
-              <p>感谢你阅读到这里。希望在这个思维交汇的十字路口，你能找到一些引发共鸣的碎片。期待通过任何方式与你相遇，一起聊聊你或我热爱的一切。</p>
-              <div class="cmd-line mt-3" style="opacity:.55;">
-                <span class="cmd-text" id="b6" data-text="$ exit"></span>
-                <span class="cursor"></span>
-              </div>
-            </div>
-          </div>
-
+  <main class="about-cyber">
+    <header class="identity-poster" id="block-identity">
+      <code class="identity-command">$ whoami</code>
+      <div class="poster-layout">
+        <h1 class="poster-name" aria-label="洛穹偎">
+          <svg viewBox="0 0 3060 1120" aria-hidden="true" focusable="false">
+            <defs>
+              <g id="about-name-shape">
+                {nameGlyphs.map((glyph, index) => (
+                  <path d={glyph} transform={`translate(70 930) scale(1 -1) skewX(5) translate(${index * 960} 0)`} />
+                ))}
+              </g>
+              <clipPath id="about-accent-clip">
+                <path d="M2350 -200H3300V1200H1420Z" />
+              </clipPath>
+              <clipPath id="about-name-clip">
+                {nameGlyphs.map((glyph, index) => (
+                  <path d={glyph} transform={`translate(70 930) scale(1 -1) skewX(5) translate(${index * 960} 0)`} />
+                ))}
+              </clipPath>
+            </defs>
+            <path class="poster-plane" d="M2350 -200H3300V1200H1420Z" />
+            <path class="poster-slash" d="M2200 -100 1370 1150" />
+            <g class="name-echo">
+              <use href="#about-name-shape" />
+            </g>
+            <g class="name-solid">
+              <use href="#about-name-shape" />
+            </g>
+            <g clip-path="url(#about-accent-clip)">
+              <g class="name-solid name-reverse">
+                <use href="#about-name-shape" />
+              </g>
+            </g>
+            <g clip-path="url(#about-name-clip)">
+              <path class="name-scan" d="M-220 -100H-90L-670 1220H-800Z" />
+            </g>
+          </svg>
+        </h1>
+        <div class="poster-intro">
+          <p class="greeting">你好，欢迎你的到来，<span class="greeting-name">我是洛穹偎。</span></p>
+          <p>这里是一个用来安放我的热爱与思考的角落。我将这里视为展示我的理性与感性的交汇的地点。</p>
         </div>
       </div>
-    </div>
+    </header>
+
+    <section class="bio-spread rational-spread" id="block-rational" aria-labelledby="rational-title" data-poster-section>
+      <div class="spread-heading">
+        <h2 id="rational-title"><span class="heading-lead">一边，是我的</span><span class="heading-subject">思想的</span><span class="heading-anchor">骨架<span class="heading-echo" aria-hidden="true">骨架</span></span></h2>
+        <code>$ cat rational_side.md</code>
+      </div>
+      <div class="spread-body">
+        <p>我的思维常常沉浸于应用数学、统计学、计算机科学、计量经济学和运筹学构成的知识之海。在这里，世界被简化为优雅的模型与算法，我可以通过理想化的透镜，去窥探更复杂、更多变的世界。我追求<span class="prose-emphasis">逻辑的自洽、数据的印证与效率的最优解。</span></p>
+      </div>
+    </section>
+
+    <section class="bio-spread creative-spread" id="block-creative" aria-labelledby="creative-title" data-poster-section>
+      <div class="spread-heading">
+        <h2 id="creative-title"><span class="heading-lead">另一边，是我的</span><span class="heading-subject">幻想的</span><span class="heading-anchor">灵魂<span class="heading-echo" aria-hidden="true">灵魂</span></span></h2>
+        <code>$ cat creative_side.md</code>
+      </div>
+      <div class="spread-body">
+        <p>我会自公式和代码中隐遁到VOCALOID或者说更大的电子音乐的世界，从初音未来的未来感旋律到洛天依的韵味，从重音Teto的活力到星尘的空灵，都让我感受到电子音乐与人声合成的无限可能。我对音乐史、音乐理论与电子音色有持续的兴趣。</p>
+        <p>同样的，在虚构的叙事里，我尤其喜爱那些细腻的情感图谱。我钟情于百合题材的番剧——无论是轻百合中那如清风拂面般的温馨日常，还是真百合里深沉的情感羁绊。我喜爱那些幻梦中最柔软、最真挚的微光。</p>
+        <span class="spoiler" onclick="this.classList.add('revealed')"><a href={`${BASE}tools/my_fptsc_yuri/`}>我看过的...从夯到拉</a></span>
+      </div>
+    </section>
+
+    <section class="interests-spread" id="block-interests" aria-labelledby="interests-title" data-poster-section>
+      <h2 id="interests-title"><code>$ ls interests/</code></h2>
+      <p>那么，也可以据此猜测我的游戏品味。我喜爱逻辑编程解谜游戏，以及在肉鸽、经营类游戏中寻找"更优解"，当然，我也十分喜爱音游。</p>
+      <ul class="interest-index">
+        {interests.map((interest, index) => <li class:list={{ rational: index < 5 }}><span>{interest}</span></li>)}
+      </ul>
+    </section>
+
+    <section class="closing-spread" id="block-closing" aria-labelledby="closing-title" data-poster-section>
+      <div class="closing-heading">
+        <h2 id="closing-title"><span>那么，</span><span>我想在这里</span><span>与你分享</span></h2>
+        <code>$ cat closing.txt</code>
+      </div>
+      <div>
+        <p>我对音乐的品味，科学与哲学的思辨，对某款游戏的鉴赏，对番剧的体会和热忱。此外，也可能摘选我的游记，我对某本书的读后感，抑或是更广泛的一些思考。</p>
+        <p>感谢你阅读到这里。希望在这个思维交汇的十字路口，你能找到一些引发共鸣的碎片。期待通过任何方式与你相遇，一起聊聊你或我热爱的一切。</p>
+      </div>
+      <code class="exit-command">$ exit</code>
+    </section>
   </main>
+</BaseLayout>
 
-  <script is:inline>
-    (() => {
-      /* Live clock */
-      const clock = document.getElementById('liveClock');
-      const pad = (n) => String(n).padStart(2, '0');
-      setInterval(() => {
-        const now = new Date();
-        clock.textContent = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-      }, 1000);
+<script>
+  const about = document.querySelector<HTMLElement>(".about-cyber");
+  const poster = document.querySelector<HTMLElement>(".identity-poster");
+  if (about && poster) {
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let enabled = document.querySelector("#sysStatusBtn")?.getAttribute("aria-pressed") !== "false";
+    let inView = true;
 
-      /* Typewriter */
-      function typeTo(el, text, speed = 55) {
-        return new Promise(resolve => {
-          el.textContent = '';
-          let i = 0;
-          function step() {
-            if (i < text.length) {
-              el.textContent += text[i];
-              i++;
-              setTimeout(step, speed + (Math.random() * 30 - 15));
-            } else { resolve(); }
-          }
-          step();
+    const updateMotion = () => {
+      poster.dataset.motion = enabled && !motionPreference.matches ? "on" : "off";
+      about.dataset.motion = poster.dataset.motion;
+      poster.dataset.paused = String(!inView || document.hidden);
+      if (about.dataset.motion === "off") {
+        about.querySelectorAll<HTMLElement>("[data-entered]").forEach((section) => {
+          section.dataset.settled = "true";
         });
       }
-      function revealBlock(block) { block.classList.add('active', 'revealed'); }
+    };
 
-      /* Sequential reveal on load */
-      const blocks = [
-        { cmdEl: document.getElementById('hero-cmd'), replyEl: document.getElementById('hero-reply'), cursor: document.getElementById('hero-cursor'), delay: 400 },
-        { block: document.getElementById('block-identity'), cmdEl: document.getElementById('b1'), delay: 600 },
-        { block: document.getElementById('block-rational'), cmdEl: document.getElementById('b2'), delay: 600 },
-        { block: document.getElementById('block-creative'), cmdEl: document.getElementById('b3'), delay: 600 },
-        { block: document.getElementById('block-interests'), cmdEl: document.getElementById('b4'), delay: 400 },
-        { block: document.getElementById('block-closing'), cmdEl: document.getElementById('b5'), delay: 500 },
-        { cmdEl: document.getElementById('b6'), delay: 400 },
-      ];
+    // 动效与全站 PULSE 开关一致；离开视口后暂停扫描。
+    document.addEventListener("system-status-change", (event) => {
+      enabled = (event as CustomEvent<{ on: boolean }>).detail.on;
+      updateMotion();
+    });
+    motionPreference.addEventListener("change", updateMotion);
+    document.addEventListener("visibilitychange", updateMotion);
+    window.addEventListener("pageshow", updateMotion);
 
-      async function runSequence() {
-        for (const item of blocks) {
-          await new Promise(r => setTimeout(r, item.delay || 300));
-          if (item.cmdEl) await typeTo(item.cmdEl, item.cmdEl.dataset.text, 50);
-          if (item.replyEl) {
-            item.replyEl.style.opacity = '1';
-            item.replyEl.style.transform = 'translateY(0)';
-            if (item.cursor) item.cursor.style.display = 'none';
-          }
-          if (item.block) revealBlock(item.block);
-        }
+    const visibility = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      updateMotion();
+    });
+    visibility.observe(poster);
+
+    // 仅装饰线与叠印轮廓在首次进入时落位，正文始终完整显示。
+    about.addEventListener("animationend", (event) => {
+      const section = (event.target as Element).closest<HTMLElement>("[data-poster-section]");
+      if (section) section.dataset.settled = "true";
+    });
+    const sectionVisibility = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const section = entry.target as HTMLElement;
+        section.dataset.entered = "true";
+        if (about.dataset.motion === "off") section.dataset.settled = "true";
+        sectionVisibility.unobserve(entry.target);
       }
-      runSequence();
-    })();
-  </script>
-</BaseLayout>
+    }, { threshold: .15, rootMargin: "0px 0px -8% 0px" });
+    about.querySelectorAll("[data-poster-section]").forEach((section) => sectionVisibility.observe(section));
+    updateMotion();
+  }
+</script>
+
+<style>
+  @font-face {
+    font-family: "About Display";
+    src: url("../assets/fonts/about-display.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+  }
+
+  .about-cyber {
+    --about-ink: #18252b;
+    --about-muted: #53676a;
+    --about-line: #bfccc8;
+    --about-cold: #245f73;
+    --poster-ground: #142027;
+    --poster-paper: #edf3f2;
+    --poster-muted: #b2c2ce;
+    --poster-acid: #b0e4dc;
+    --poster-cyan: #9bceeb;
+    --poster-coral: #dcb5ac;
+    --poster-stage: #111b22;
+    --poster-flash: #78e8e3;
+    --poster-red: #ff775f;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 104px 32px 80px;
+    color: var(--about-ink);
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 17px;
+    line-height: 1.95;
+  }
+
+  :global(:root[data-bs-theme="dark"]) .about-cyber {
+    --about-ink: #e6eee4;
+    --about-muted: #a8bdb8;
+    --about-line: #3a504d;
+    --about-cold: #9dcfd7;
+    --poster-ground: #10171c;
+    --poster-stage: #0c151b;
+    --poster-flash: #8af3d9;
+  }
+
+  .about-cyber ::selection { color: var(--poster-ground); background: var(--poster-acid); }
+  .about-cyber p { margin: 0; text-wrap: pretty; }
+  .about-cyber h1, .about-cyber h2 { text-wrap: balance; }
+  .about-cyber code { color: inherit; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .about-cyber :is(a, summary):focus-visible { outline: 2px solid var(--poster-acid); outline-offset: 6px; }
+
+  .identity-poster {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding: 28px 0 40px;
+    background: var(--poster-stage);
+    color: var(--poster-paper);
+  }
+  .identity-poster::after { content: ""; position: absolute; bottom: 0; left: 0; width: 38%; height: 3px; background: var(--poster-red); }
+  .poster-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .poster-name { min-width: 0; margin: 0; line-height: 0; }
+  .poster-name svg { display: block; width: 100%; height: auto; overflow: hidden; }
+  .poster-plane { fill: var(--poster-flash); }
+  .poster-slash { fill: none; stroke: var(--poster-red); stroke-width: 7px; }
+  .name-echo { fill: none; stroke: #5e929c; stroke-width: 5px; transform: translate(-8px, -104px); }
+  .name-solid { fill: var(--poster-paper); }
+  .name-reverse { fill: var(--poster-stage); }
+  .name-scan { fill: var(--poster-red); opacity: 0; }
+  .poster-intro { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 80px; align-items: end; padding: 0 40px; }
+  .poster-intro .greeting { font-size: clamp(21px, 2.3vw, 29px); line-height: 1.65; font-weight: 600; }
+  .greeting-name { display: block; }
+  .poster-intro > p + p { max-width: 38em; color: var(--poster-muted); font-size: 16px; }
+  .about-cyber .identity-command { display: block; margin: 0 40px; color: var(--poster-flash); font-size: 14px; }
+
+  .identity-poster[data-motion="on"] .name-solid { animation: name-arrive 720ms var(--ease-out) both; }
+  .identity-poster[data-motion="on"] .name-echo { animation: echo-arrive 820ms var(--ease-out) both; }
+  .identity-poster[data-motion="on"] .name-scan { animation: name-scan 9s linear 500ms infinite; }
+  .identity-poster[data-paused="true"] :is(.name-solid, .name-echo, .name-scan) { animation-play-state: paused; }
+
+  @keyframes name-arrive {
+    from { transform: translate(55px, 20px); }
+    to { transform: translate(0, 0); }
+  }
+  @keyframes echo-arrive {
+    from { transform: translate(-70px, -160px); opacity: .3; }
+    to { transform: translate(-8px, -104px); opacity: 1; }
+  }
+  @keyframes name-scan {
+    0% { transform: translateX(0); opacity: 0; }
+    1%, 16% { opacity: 1; }
+    18% { transform: translateX(4100px); opacity: 0; }
+    100% { transform: translateX(4100px); opacity: 0; }
+  }
+
+  .bio-spread { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 80px; align-items: center; padding: 88px 40px; }
+  .rational-spread { overflow: clip; }
+  .structure-art { position: absolute; z-index: -1; left: -24px; top: 48px; width: 48%; height: calc(100% - 64px); fill: none; stroke: var(--about-line); stroke-width: 1; }
+  .structure-art .structure-plane { fill: color-mix(in srgb, var(--poster-flash) 14%, transparent); stroke: none; }
+  .structure-art .structure-offset { stroke: var(--about-cold); opacity: .3; }
+  .spread-heading { min-width: 0; }
+  .spread-heading h2 { position: relative; margin: 0 0 24px; font-family: "About Display", sans-serif; font-weight: 900; line-height: 1.15; letter-spacing: -.02em; }
+  .spread-heading h2 span { display: block; width: fit-content; }
+  .heading-lead { margin-bottom: 20px; font-size: 20px; line-height: 1.5; }
+  .heading-subject { position: relative; z-index: 1; font-size: clamp(32px, 3.4vw, 44px); transform: skewX(-7deg); }
+  .heading-anchor { position: relative; z-index: 0; margin-top: 6px; font-size: clamp(64px, 6.4vw, 84px); line-height: 1.2; color: var(--about-cold); transform: skewX(-7deg); white-space: nowrap; }
+  .heading-echo { position: absolute; z-index: -1; inset: 0; color: transparent; -webkit-text-stroke: 1px var(--about-line); transform: translate(12px, -12px); }
+  .rational-spread .heading-anchor::after { content: ""; display: block; width: 72%; height: 8px; margin-top: 8px; background: var(--poster-flash); transform: skewX(-20deg); transform-origin: left; }
+  .spread-heading > code { color: var(--about-muted); }
+  .spread-body { min-width: 0; max-width: 38em; }
+  .prose-emphasis { font-weight: 650; color: var(--about-cold); }
+  .spread-body > p + p { margin-top: 24px; }
+
+  .creative-spread {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+    gap: 80px;
+    padding-top: 104px;
+    padding-bottom: 88px;
+    color: var(--poster-paper);
+  }
+  .creative-spread::before { content: ""; position: absolute; z-index: -1; inset: 0; background: var(--poster-stage); clip-path: polygon(0 36px, 12% 0, 100% 0, 100% calc(100% - 36px), 88% 100%, 0 100%); }
+  .creative-spread::after { content: ""; position: absolute; z-index: -1; top: 24px; right: 6%; width: 27%; height: 1px; background: var(--poster-red); transform: rotate(-8deg); }
+  .creative-spread .spread-heading { grid-column: 2; grid-row: 1; align-self: start; padding-top: 8px; }
+  .creative-spread .spread-body { grid-column: 1; grid-row: 1; color: #d4e1e1; }
+  .creative-spread .heading-anchor { color: var(--poster-red); }
+  .creative-spread .heading-echo { -webkit-text-stroke-color: #667c84; transform: translate(14px, -16px); }
+  .creative-spread .spread-heading > code { color: var(--poster-muted); }
+
+  .spoiler-link { margin-top: 18px; font-size: 14px; }
+  .spoiler-link summary { display: flex; align-items: center; gap: 12px; width: fit-content; min-height: 44px; color: var(--poster-cyan); text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 50%, transparent); text-underline-offset: 5px; text-decoration-thickness: 1px; list-style: none; cursor: pointer; }
+  .spoiler-link summary:hover { color: var(--poster-paper); text-decoration-color: currentColor; }
+  .spoiler-link summary::-webkit-details-marker { display: none; }
+  .spoiler-link summary::after { content: ""; width: 7px; height: 7px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+  .spoiler-link[open] summary::after { transform: translateY(2px) rotate(225deg); }
+  .spoiler-link a { display: inline-flex; min-height: 44px; align-items: center; margin-top: 8px; color: var(--poster-acid); text-underline-offset: 5px; text-decoration-thickness: 1px; }
+  .spoiler-link a:hover { color: var(--poster-paper); }
+
+  .interests-spread { position: relative; display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 36px 80px; padding: 80px 40px 72px; }
+  .interests-spread::after { content: ""; position: absolute; bottom: 0; left: 40px; right: 40px; height: 1px; background: var(--about-line); transform-origin: left; }
+  .interests-spread h2 { margin: 0; line-height: 1.5; }
+  .interests-spread h2 code { color: var(--about-cold); font-size: 18px; }
+  .interest-index { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px 24px; margin: 4px 0 0; padding: 28px 0 0; border-top: 1px solid var(--about-line); list-style: none; }
+  .interest-index li { grid-column: span 3; color: var(--about-ink); font-size: clamp(22px, 2.4vw, 30px); line-height: 1.6; font-weight: 750; }
+  .interest-index li span { display: inline-block; transform: skewX(-7deg); }
+  .interest-index li:nth-child(6) { grid-column: 1 / span 3; }
+  .interest-index .rational { grid-column: span 2; padding-bottom: 14px; color: var(--about-cold); font-size: 17px; font-weight: 500; }
+  .interest-index .rational span { transform: none; }
+
+  .closing-spread { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 48px 80px; padding: 80px 40px 0; }
+  .closing-heading h2 { margin: 0 0 24px; font-family: "About Display", sans-serif; font-size: 28px; line-height: 1.6; font-weight: 900; }
+  .closing-heading h2 span { display: block; }
+  .closing-heading h2 span:last-child { width: fit-content; margin-top: 12px; color: var(--about-cold); font-size: clamp(32px, 3.6vw, 46px); transform: skewX(-7deg); }
+  .closing-heading code { color: var(--about-muted); }
+  .closing-body p + p { margin-top: 32px; font-size: 20px; line-height: 1.9; }
+  .about-cyber .exit-command { grid-column: 1 / -1; display: flex; align-items: center; gap: 24px; margin-top: 8px; color: var(--about-muted); font-size: 14px; }
+  .exit-command::before { content: ""; width: 30%; height: 2px; margin-right: auto; background: var(--poster-red); transform-origin: left; }
+
+  .about-cyber[data-motion="on"] [data-entered="true"]:not([data-settled]) .structure-art { animation: structure-arrive 900ms var(--ease-out) both; }
+  .about-cyber[data-motion="on"] .creative-spread[data-entered="true"]:not([data-settled]) .heading-echo { animation: spirit-arrive 800ms var(--ease-out) both; }
+  .about-cyber[data-motion="on"] .interests-spread[data-entered="true"]:not([data-settled])::after,
+  .about-cyber[data-motion="on"] .closing-spread[data-entered="true"]:not([data-settled]) .exit-command::before { animation: rule-arrive 800ms var(--ease-out) both; }
+  @keyframes structure-arrive { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+  @keyframes spirit-arrive { from { transform: translate(32px, -28px); opacity: .3; } to { transform: translate(14px, -16px); opacity: 1; } }
+  @keyframes rule-arrive { from { transform: scaleX(.3); } to { transform: scaleX(1); } }
+
+  @media (max-width: 1050px) {
+    .poster-intro { gap: 48px; }
+    .poster-intro .greeting { font-size: 23px; }
+    .bio-spread, .interests-spread, .closing-spread { gap: 48px; }
+    .bio-spread { padding-inline: 32px; }
+    .creative-spread .heading-anchor { font-size: 68px; }
+    .interest-index { gap: 16px; }
+    .interest-index .rational { grid-column: span 4; padding-bottom: 0; }
+    .interest-index li:nth-child(6) { margin-top: 16px; }
+    .interest-index li:nth-child(7), .interest-index li:nth-child(8), .interest-index li:nth-child(9) { margin-top: 16px; }
+  }
+
+  @media (max-width: 960px) {
+    .bio-spread, .interests-spread, .closing-spread { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .bio-spread { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 40px; }
+    .heading-anchor { font-size: 64px; }
+    .creative-spread { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); }
+  }
+
+  @media (max-width: 760px) {
+    .about-cyber { padding: 88px 20px 56px; font-size: 16px; line-height: 1.95; }
+    .identity-poster { padding: 22px 0 28px; }
+    .poster-layout { gap: 24px; }
+    .poster-intro { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 0 24px; }
+    .poster-intro .greeting { font-size: 20px; line-height: 1.65; }
+    .poster-intro > p + p { font-size: 14px; }
+    .about-cyber .identity-command { margin: 0 24px 12px; font-size: 12px; }
+    .bio-spread, .interests-spread, .closing-spread { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .bio-spread { padding: 60px 24px; gap: 32px; }
+    .rational-spread { margin: 0; padding-top: 64px; }
+    .structure-art { top: 28px; left: -16px; width: 100%; height: 300px; }
+    .spread-heading h2 { margin-bottom: 20px; }
+    .heading-lead { margin-bottom: 16px; font-size: 18px; }
+    .heading-subject { font-size: 32px; }
+    .heading-anchor, .creative-spread .heading-anchor { font-size: 64px; }
+    .spread-heading > code { font-size: 12px; }
+    .creative-spread { padding: 72px 24px 64px; }
+    .creative-spread .spread-heading, .creative-spread .spread-body { grid-column: auto; grid-row: auto; }
+    .creative-spread .spread-heading { padding-top: 0; }
+    .interests-spread { padding: 56px 8px; gap: 24px; }
+    .interests-spread::after { left: 8px; right: 8px; }
+    .interests-spread h2 code { font-size: 15px; }
+    .interest-index { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; margin-top: 4px; padding-top: 24px; }
+    .interest-index li, .interest-index .rational { grid-column: span 1; }
+    .interest-index .rational { font-size: 14px; }
+    .interest-index li { font-size: clamp(18px, 5.4vw, 24px); }
+    .interest-index li:nth-child(6) { grid-column: 1; }
+    .interest-index li:nth-child(7) { margin-top: 16px; }
+    .interest-index li:nth-child(8), .interest-index li:nth-child(9) { margin-top: 0; }
+    .closing-spread { padding: 56px 8px 0; }
+    .closing-heading h2 { margin-bottom: 20px; font-size: 24px; }
+    .closing-heading h2 span:last-child { font-size: 36px; }
+    .closing-body p + p { font-size: 19px; }
+    .about-cyber .exit-command { margin-top: 8px; }
+  }
+
+  @media (max-width: 380px) {
+    .poster-intro { padding-inline: 20px; }
+    .bio-spread { padding-inline: 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .identity-poster :is(.name-solid, .name-echo, .name-scan) { animation: none !important; }
+    .about-cyber .structure-art, .creative-spread .heading-echo, .interests-spread::after, .exit-command::before { animation: none !important; }
+  }
+</style>
