@@ -1,13 +1,15 @@
 ---
 import { Image } from "astro:assets";
 
-const BASE = import.meta.env.BASE_URL;
-const { title, subtitle, background } = Astro.props;
+const { title, subtitle, background, class: className } = Astro.props;
 ---
 
-<header class="masthead">
+<header class:list={["masthead", className]}>
   {background.format === 'svg' ? (
-    <img src={background.src} width={background.width} height={background.height} alt="" loading="eager" decoding="async" class="masthead-bg" />
+    <picture>
+      <slot name="sources" />
+      <img src={background.src} width={background.width} height={background.height} alt="" loading="eager" fetchpriority="high" decoding="async" class="masthead-bg" />
+    </picture>
   ) : (
     <Image
       src={background}

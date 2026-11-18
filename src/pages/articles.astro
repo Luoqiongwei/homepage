@@ -4,17 +4,21 @@ import CategoryNav from "../components/CategoryNav.astro";
 import PostPreview from "../components/PostPreview.astro";
 import HeroHeader from "../components/HeroHeader.astro";
 import bg from "../assets/img/articles-bg.svg";
+import portrait from "../assets/img/articles-bg-mobile.svg";
 
 const BASE = import.meta.env.BASE_URL || '/';
 ---
 
-<BaseLayout title="洛穹偎的一家言 - 文章目录" description="我的文章目录" background={bg.src}>
+<BaseLayout title="洛穹偎的一家言 - 文章目录" description="我的文章目录">
   
   <HeroHeader
+    class="articles-cover"
     title="文章目录"
     subtitle="星屑簿"
     background={bg}
-  />
+  >
+    <source slot="sources" media="(max-width: 680px)" srcset={portrait.src} width={portrait.width} height={portrait.height} />
+  </HeroHeader>
   
   <CategoryNav />
 
@@ -26,6 +30,7 @@ const BASE = import.meta.env.BASE_URL || '/';
         <PostPreview href=`${BASE}post/fall_of_a_city/` title="一座城之死" subtitle="一座被时代抽干心脏的“功臣”之城，用沉默向过客展现褪色的荣光" meta="Posted on July 08, 2025, uploaded on October 07, 2025" />
         <PostPreview href=`${BASE}post/Thanatocide/` title="解构的解构" subtitle="如果死神本身会被杀死" meta="Posted on November 22, 2025, uploaded on November 22, 2025" />
         <PostPreview href=`${BASE}post/predict_future_2/` title="预测未来" subtitle="" meta="Posted on February 28, 2026, uploaded on February 28, 2026" />
+        <PostPreview href=`${BASE}post/Realism/` title="论现实主义" subtitle="" meta="Posted on November 17, 2026, uploaded on November 18, 2026" />
 
         <h2 id="anime" class="mb-4">虹幕小札</h2>
         <PostPreview href=`${BASE}post/BOCCHI_THE_ROCK!/` title="《孤独摇滚》:孤独的心" subtitle="但是有你在，或许就不孤独？" meta="Posted on February 15, 2025, uploaded on October 08, 2025" />
@@ -47,6 +52,29 @@ const BASE = import.meta.env.BASE_URL || '/';
 </BaseLayout>
 
 <style is:global>
-  /* 将站点手动选择的亮色方案传给外部 SVG 图片。 */
-  :root[data-bs-theme="light"] .masthead-bg { color-scheme: light; }
+  header.articles-cover {
+    display: grid;
+    min-height: 0;
+    padding: 0;
+    background-color: transparent;
+  }
+  .articles-cover > picture,
+  .articles-cover > .container {
+    grid-area: 1 / 1;
+  }
+  header.articles-cover .masthead-bg {
+    position: static;
+    display: block;
+    height: auto;
+  }
+  header.articles-cover::before { content: none; }
+  :root[data-bs-theme="light"] .articles-cover .masthead-bg { color-scheme: light; }
+  :root[data-bs-theme="dark"] .articles-cover .masthead-bg { color-scheme: dark; }
+
+  @media (max-width: 680px) {
+    .articles-cover .site-heading { padding-top: 57px; }
+  }
+  @media (min-width: 992px) {
+    :root[data-bs-theme="light"] #mainNav.tech-nav .nav-menu a.active { color: #07545d; }
+  }
 </style>
